@@ -11,7 +11,7 @@ import {
 	PredictionContextCache,
 	Token
 } from "antlr4";
-import LuaLexerBase from './LuaLexerBase.js';
+import LuaLexerBase from "./LuaLexerBase";
 
 export default class LuaLexer extends LuaLexerBase {
 	public static readonly SEMI = 1;
