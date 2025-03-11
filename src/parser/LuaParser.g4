@@ -30,21 +30,21 @@ block
     ;
 
 stat
-    : ';'
-    | varlist '=' explist
-    | functioncall
-    | label
-    | 'break'
-    | 'goto' NAME
-    | 'do' block 'end'
-    | 'while' exp 'do' block 'end'
-    | 'repeat' block 'until' exp
-    | 'if' exp 'then' block ('elseif' exp 'then' block)* ('else' block)? 'end'
-    | 'for' NAME '=' exp ',' exp (',' exp)? 'do' block 'end'
-    | 'for' namelist 'in' explist 'do' block 'end'
-    | 'function' funcname funcbody
-    | 'local' 'function' NAME funcbody
-    | 'local' attnamelist ('=' explist)?
+    : ';' #stat_no_op
+    | varlist '=' explist # stat_assing_vars
+    | functioncall # stat_function_call
+    | label # stat_label
+    | 'break' # stat_break
+    | 'goto' NAME #stat_goto
+    | 'do' block 'end' #stat_do
+    | 'while' exp 'do' block 'end' # stat_while
+    | 'repeat' block 'until' exp # stat_repeat
+    | 'if' exp 'then' block ('elseif' exp 'then' block)* ('else' block)? 'end' #stat_if
+    | 'for' NAME '=' exp ',' exp (',' exp)? 'do' block 'end' #stat_for_var
+    | 'for' namelist 'in' explist 'do' block 'end' # stat_for_list
+    | 'function' funcname funcbody # stat_function
+    | 'local' 'function' NAME funcbody # stat_local_function
+    | 'local' attnamelist ('=' explist)? # stat_local_attnamelist
     ;
 
 attnamelist
@@ -80,53 +80,53 @@ explist
     ;
 
 exp
-    : 'nil'
-    | 'false'
-    | 'true'
-    | number
-    | string
-    | '...'
-    | functiondef
-    | prefixexp
-    | tableconstructor
-    | <assoc = right> exp ('^') exp
-    | ('not' | '#' | '-' | '~') exp
-    | exp ('*' | '/' | '%' | '//') exp
-    | exp ('+' | '-') exp
-    | <assoc = right> exp ('..') exp
-    | exp ('<' | '>' | '<=' | '>=' | '~=' | '==') exp
-    | exp ('and') exp
-    | exp ('or') exp
-    | exp ('&' | '|' | '~' | '<<' | '>>') exp
+    : 'nil' # exp_nil
+    | 'false' # exp_false
+    | 'true' # exp_true
+    | number # exp_number
+    | string # exp_string
+    | '...' # exp_vararg
+    | functiondef # exp_function_def
+    | prefixexp # stat_prefix_exp
+    | tableconstructor #stat_table_construnctor
+    | <assoc = right> exp ('^') exp # exp_exponent
+    | ('not' | '#' | '-' | '~') exp # exp_unary
+    | exp ('*' | '/' | '%' | '//') exp # exp_arithmetic_high
+    | exp ('+' | '-') exp # exp_arithmetic_low
+    | <assoc = right> exp ('..') exp # exp_concat
+    | exp ('<' | '>' | '<=' | '>=' | '~=' | '==') exp # exp_rel
+    | exp ('and') exp # exp_and
+    | exp ('or') exp # exp_or
+    | exp ('&' | '|' | '~' | '<<' | '>>') exp # exp_bits
     ;
 
 // var ::=  Name | prefixexp '[' exp ']' | prefixexp '.' Name 
 var
-    : NAME
-    | prefixexp ('[' exp ']' | '.' NAME)
+    : NAME # var_name
+    | prefixexp ('[' exp ']' | '.' NAME) # var_exp
     ;
 
 // prefixexp ::= var | functioncall | '(' exp ')'
 prefixexp
-    : NAME ('[' exp ']' | '.' NAME)*
-    | functioncall ('[' exp ']' | '.' NAME)*
-    | '(' exp ')' ('[' exp ']' | '.' NAME)*
+    : NAME ('[' exp ']' | '.' NAME)* # prefixexp_name
+    | functioncall ('[' exp ']' | '.' NAME)* # prefixexp_function_call
+    | '(' exp ')' ('[' exp ']' | '.' NAME)* # prefixexp_exp
     ;
 
 // functioncall ::=  prefixexp args | prefixexp ':' Name args;
 functioncall
-    : NAME ('[' exp ']' | '.' NAME)* args
-    | functioncall ('[' exp ']' | '.' NAME)* args
-    | '(' exp ')' ('[' exp ']' | '.' NAME)* args
-    | NAME ('[' exp ']' | '.' NAME)* ':' NAME args
-    | functioncall ('[' exp ']' | '.' NAME)* ':' NAME args
-    | '(' exp ')' ('[' exp ']' | '.' NAME)* ':' NAME args
+    : NAME ('[' exp ']' | '.' NAME)* args # fcall_name
+    | functioncall ('[' exp ']' | '.' NAME)* args # fcall_function_call
+    | '(' exp ')' ('[' exp ']' | '.' NAME)* args # fcall_exp
+    | NAME ('[' exp ']' | '.' NAME)* ':' NAME args # fcall_name_ext
+    | functioncall ('[' exp ']' | '.' NAME)* ':' NAME args # fcall_function_call_ext
+    | '(' exp ')' ('[' exp ']' | '.' NAME)* ':' NAME args # fcall_exp_ext
     ;
 
 args
-    : '(' explist? ')'
-    | tableconstructor
-    | string
+    : '(' explist? ')' # args_exp_list
+    | tableconstructor # args_table_constructor
+    | string # args_string
     ;
 
 functiondef
@@ -142,9 +142,9 @@ funcbody
  * This means that parlist can derive empty.
  */
 parlist
-    : namelist (',' '...')?
-    | '...'
-    |
+    : namelist (',' '...')? # parlist_namellist
+    | '...' # parlist_vararg
+    | # parlist_none
     ;
 
 tableconstructor
@@ -156,9 +156,9 @@ fieldlist
     ;
 
 field
-    : '[' exp ']' '=' exp
-    | NAME '=' exp
-    | exp
+    : '[' exp ']' '=' exp # field_exp_exp
+    | NAME '=' exp # field_name_exp
+    | exp # field_exp
     ;
 
 fieldsep
@@ -167,14 +167,14 @@ fieldsep
     ;
 
 number
-    : INT
-    | HEX
-    | FLOAT
-    | HEX_FLOAT
+    : INT # number_int
+    | HEX # number_hex
+    | FLOAT # number_float
+    | HEX_FLOAT # number_hex_float
     ;
 
 string
-    : NORMALSTRING
-    | CHARSTRING
-    | LONGSTRING
+    : NORMALSTRING # string_string
+    | CHARSTRING # string_charstring
+    | LONGSTRING # string_longstring
     ;
