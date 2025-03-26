@@ -45,3 +45,11 @@ test("42/10", () => {
 test("420/10", () => {
     expect(parse("420/10").number).toBe(42);
 });
+
+test("2*2+2", () => {
+    expect(parse("2*2+2").number).toBe(6);
+});
+
+test("2+2*2", () => {
+    expect(parse("2+2*2").number).toBe(6);
+});
