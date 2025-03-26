@@ -1,25 +1,23 @@
 import LuaInterpreter from "@src/LuaInterpreter";
+import { ExpContext } from "@src/parser/LuaParser";
 
 import { NumberValue } from "@src/types";
 import { make_parser } from "@src/utils";
 
 const interpreter = new LuaInterpreter();
 
-
-test("42", () => {
-    const luaCode = "42";
+function parse(luaCode: string): NumberValue {
     const parser = make_parser(luaCode);
     const node = parser.exp();
     const result = node.accept(interpreter);
     expect(result).toBeInstanceOf(NumberValue);
-    expect((result as NumberValue).number).toBe(42);
+    return (result as NumberValue);
+}
+
+test("42", () => {
+    
 });
 
 test("-42", () => {
-    const luaCode = "-42";
-    const parser = make_parser(luaCode);
-    const node = parser.exp();
-    const result = node.accept(interpreter);
-    expect(result).toBeInstanceOf(NumberValue);
-    expect((result as NumberValue).number).toBe(-42);
+    expect(parse("-42").number).toBe(-42);
 });
