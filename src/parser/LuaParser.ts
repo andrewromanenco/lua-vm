@@ -3546,6 +3546,9 @@ export class ExpContext extends ParserRuleContext {
 	public override copyFrom(ctx: ExpContext): void {
 		super.copyFrom(ctx);
 	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Method not implemented.");
+	}
 }
 export class Exp_trueContext extends ExpContext {
 	constructor(parser: LuaParser, ctx: ExpContext) {
@@ -5300,6 +5303,9 @@ export class NumberContext extends ParserRuleContext {
 	}
 	public override copyFrom(ctx: NumberContext): void {
 		super.copyFrom(ctx);
+	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Method not implemented.");
 	}
 }
 export class Number_hexContext extends NumberContext {

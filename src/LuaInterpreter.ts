@@ -77,7 +77,7 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "./parser/LuaParser";
-import { Value } from "./types";
+import { NumberValue, Value } from "./types";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
     visitStart_ = (ctx: Start_Context): Value => {
@@ -233,7 +233,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_number = (ctx: Exp_numberContext): Value => {
-        throw new Error("Not Implemented");
+        return ctx.number_().accept(this);
     };
 
     visitExp_concat = (ctx: Exp_concatContext): Value => {
@@ -357,7 +357,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitNumber_int = (ctx: Number_intContext): Value => {
-        throw new Error("Not Implemented");
+        return new NumberValue(parseInt(ctx.getText()));
     };
 
     visitNumber_hex = (ctx: Number_hexContext): Value => {
