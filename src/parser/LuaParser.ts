@@ -4231,6 +4231,9 @@ export class PrefixexpContext extends ParserRuleContext {
 	public override copyFrom(ctx: PrefixexpContext): void {
 		super.copyFrom(ctx);
 	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Method not implemented.");
+	}
 }
 export class Prefixexp_expContext extends PrefixexpContext {
 	constructor(parser: LuaParser, ctx: PrefixexpContext) {

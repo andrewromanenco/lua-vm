@@ -247,7 +247,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_prefix_exp = (ctx: Stat_prefix_expContext): Value => {
-        throw new Error("Not Implemented");
+        return ctx.prefixexp().accept(this);
     };
 
     visitExp_exponent = (ctx: Exp_exponentContext): Value => {
@@ -307,7 +307,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
-        throw new Error("Not Implemented");
+        if (ctx.exp_list.length > 1) {
+            throw new Error("Not yet Implemented");
+        }
+        return ctx.exp(0).accept(this);
     };
 
     visitFcall_name = (ctx: Fcall_nameContext): Value => {

@@ -53,3 +53,7 @@ test("2*2+2", () => {
 test("2+2*2", () => {
     expect(parse("2+2*2").number).toBe(6);
 });
+
+test("(2+2)*2", () => {
+    expect(parse("(2+2)*2").number).toBe(8);
+});
