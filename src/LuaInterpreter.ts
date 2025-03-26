@@ -77,309 +77,310 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "./parser/LuaParser";
+import { Value } from "./types";
 
-export default class LuaInterpreter extends LuaParserVisitor<number> {
-    visitStart_ = (ctx: Start_Context): number => {
+export default class LuaInterpreter extends LuaParserVisitor<Value> {
+    visitStart_ = (ctx: Start_Context): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitChunk = (ctx: ChunkContext): number => {
+    visitChunk = (ctx: ChunkContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitBlock = (ctx: BlockContext): number => {
+    visitBlock = (ctx: BlockContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_no_op = (ctx: Stat_no_opContext): number => {
+    visitStat_no_op = (ctx: Stat_no_opContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_assing_vars = (ctx: Stat_assing_varsContext): number => {
+    visitStat_assing_vars = (ctx: Stat_assing_varsContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_function_call = (ctx: Stat_function_callContext): number => {
+    visitStat_function_call = (ctx: Stat_function_callContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_label = (ctx: Stat_labelContext): number => {
+    visitStat_label = (ctx: Stat_labelContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_break = (ctx: Stat_breakContext): number => {
+    visitStat_break = (ctx: Stat_breakContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_goto = (ctx: Stat_gotoContext): number => {
+    visitStat_goto = (ctx: Stat_gotoContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_do = (ctx: Stat_doContext): number => {
+    visitStat_do = (ctx: Stat_doContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_while = (ctx: Stat_whileContext): number => {
+    visitStat_while = (ctx: Stat_whileContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_repeat = (ctx: Stat_repeatContext): number => {
+    visitStat_repeat = (ctx: Stat_repeatContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_if = (ctx: Stat_ifContext): number => {
+    visitStat_if = (ctx: Stat_ifContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_for_var = (ctx: Stat_for_varContext): number => {
+    visitStat_for_var = (ctx: Stat_for_varContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_for_list = (ctx: Stat_for_listContext): number => {
+    visitStat_for_list = (ctx: Stat_for_listContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_function = (ctx: Stat_functionContext): number => {
+    visitStat_function = (ctx: Stat_functionContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_local_function = (ctx: Stat_local_functionContext): number => {
+    visitStat_local_function = (ctx: Stat_local_functionContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): number => {
+    visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitAttnamelist = (ctx: AttnamelistContext): number => {
+    visitAttnamelist = (ctx: AttnamelistContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitAttrib = (ctx: AttribContext): number => {
+    visitAttrib = (ctx: AttribContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitRetstat = (ctx: RetstatContext): number => {
+    visitRetstat = (ctx: RetstatContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitLabel = (ctx: LabelContext): number => {
+    visitLabel = (ctx: LabelContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFuncname = (ctx: FuncnameContext): number => {
+    visitFuncname = (ctx: FuncnameContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitVarlist = (ctx: VarlistContext): number => {
+    visitVarlist = (ctx: VarlistContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitNamelist = (ctx: NamelistContext): number => {
+    visitNamelist = (ctx: NamelistContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExplist = (ctx: ExplistContext): number => {
+    visitExplist = (ctx: ExplistContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_true = (ctx: Exp_trueContext): number => {
+    visitExp_true = (ctx: Exp_trueContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_bits = (ctx: Exp_bitsContext): number => {
+    visitExp_bits = (ctx: Exp_bitsContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_and = (ctx: Exp_andContext): number => {
+    visitExp_and = (ctx: Exp_andContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_string = (ctx: Exp_stringContext): number => {
+    visitExp_string = (ctx: Exp_stringContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_arithmetic_high = (ctx: Exp_arithmetic_highContext): number => {
+    visitExp_arithmetic_high = (ctx: Exp_arithmetic_highContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_rel = (ctx: Exp_relContext): number => {
+    visitExp_rel = (ctx: Exp_relContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_table_construnctor = (ctx: Stat_table_construnctorContext): number => {
+    visitStat_table_construnctor = (ctx: Stat_table_construnctorContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_unary = (ctx: Exp_unaryContext): number => {
+    visitExp_unary = (ctx: Exp_unaryContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_or = (ctx: Exp_orContext): number => {
+    visitExp_or = (ctx: Exp_orContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_false = (ctx: Exp_falseContext): number => {
+    visitExp_false = (ctx: Exp_falseContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitStat_prefix_exp = (ctx: Stat_prefix_expContext): number => {
+    visitStat_prefix_exp = (ctx: Stat_prefix_expContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_exponent = (ctx: Exp_exponentContext): number => {
+    visitExp_exponent = (ctx: Exp_exponentContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_number = (ctx: Exp_numberContext): number => {
+    visitExp_number = (ctx: Exp_numberContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_concat = (ctx: Exp_concatContext): number => {
+    visitExp_concat = (ctx: Exp_concatContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_vararg = (ctx: Exp_varargContext): number => {
+    visitExp_vararg = (ctx: Exp_varargContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): number => {
+    visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_function_def = (ctx: Exp_function_defContext): number => {
+    visitExp_function_def = (ctx: Exp_function_defContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitExp_nil = (ctx: Exp_nilContext): number => {
+    visitExp_nil = (ctx: Exp_nilContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitVar_name = (ctx: Var_nameContext): number => {
+    visitVar_name = (ctx: Var_nameContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitVar_exp = (ctx: Var_expContext): number => {
+    visitVar_exp = (ctx: Var_expContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitPrefixexp_name = (ctx: Prefixexp_nameContext): number => {
+    visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitPrefixexp_function_call = (ctx: Prefixexp_function_callContext): number => {
+    visitPrefixexp_function_call = (ctx: Prefixexp_function_callContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitPrefixexp_exp = (ctx: Prefixexp_expContext): number => {
+    visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFcall_name = (ctx: Fcall_nameContext): number => {
+    visitFcall_name = (ctx: Fcall_nameContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFcall_name_ext = (ctx: Fcall_name_extContext): number => {
+    visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFcall_function_call = (ctx: Fcall_function_callContext): number => {
+    visitFcall_function_call = (ctx: Fcall_function_callContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFcall_exp = (ctx: Fcall_expContext): number => {
+    visitFcall_exp = (ctx: Fcall_expContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFcall_exp_ext = (ctx: Fcall_exp_extContext): number => {
+    visitFcall_exp_ext = (ctx: Fcall_exp_extContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFcall_function_call_ext = (ctx: Fcall_function_call_extContext): number => {
+    visitFcall_function_call_ext = (ctx: Fcall_function_call_extContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitArgs_exp_list = (ctx: Args_exp_listContext): number => {
+    visitArgs_exp_list = (ctx: Args_exp_listContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitArgs_table_constructor = (ctx: Args_table_constructorContext): number => {
+    visitArgs_table_constructor = (ctx: Args_table_constructorContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitArgs_string = (ctx: Args_stringContext): number => {
+    visitArgs_string = (ctx: Args_stringContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFunctiondef = (ctx: FunctiondefContext): number => {
+    visitFunctiondef = (ctx: FunctiondefContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFuncbody = (ctx: FuncbodyContext): number => {
+    visitFuncbody = (ctx: FuncbodyContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitParlist_namellist = (ctx: Parlist_namellistContext): number => {
+    visitParlist_namellist = (ctx: Parlist_namellistContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitParlist_vararg = (ctx: Parlist_varargContext): number => {
+    visitParlist_vararg = (ctx: Parlist_varargContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitParlist_none = (ctx: Parlist_noneContext): number => {
+    visitParlist_none = (ctx: Parlist_noneContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitTableconstructor = (ctx: TableconstructorContext): number => {
+    visitTableconstructor = (ctx: TableconstructorContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFieldlist = (ctx: FieldlistContext): number => {
+    visitFieldlist = (ctx: FieldlistContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitField_exp_exp = (ctx: Field_exp_expContext): number => {
+    visitField_exp_exp = (ctx: Field_exp_expContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitField_name_exp = (ctx: Field_name_expContext): number => {
+    visitField_name_exp = (ctx: Field_name_expContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitField_exp = (ctx: Field_expContext): number => {
+    visitField_exp = (ctx: Field_expContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitFieldsep = (ctx: FieldsepContext): number => {
+    visitFieldsep = (ctx: FieldsepContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitNumber_int = (ctx: Number_intContext): number => {
+    visitNumber_int = (ctx: Number_intContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitNumber_hex = (ctx: Number_hexContext): number => {
+    visitNumber_hex = (ctx: Number_hexContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitNumber_float = (ctx: Number_floatContext): number => {
+    visitNumber_float = (ctx: Number_floatContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitNumber_hex_float = (ctx: Number_hex_floatContext): number => {
+    visitNumber_hex_float = (ctx: Number_hex_floatContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitString_string = (ctx: String_stringContext): number => {
+    visitString_string = (ctx: String_stringContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitString_charstring = (ctx: String_charstringContext): number => {
+    visitString_charstring = (ctx: String_charstringContext): Value => {
         throw new Error("Not Implemented");
     };
 
-    visitString_longstring = (ctx: String_longstringContext): number => {
+    visitString_longstring = (ctx: String_longstringContext): Value => {
         throw new Error("Not Implemented");
     };
 }
