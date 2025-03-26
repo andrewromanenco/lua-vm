@@ -212,6 +212,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (ctx.STAR()) {
             return new NumberValue((left as NumberValue).number * (right as NumberValue).number)
         }
+        if (ctx.SLASH()) {
+            return new NumberValue((left as NumberValue).number / (right as NumberValue).number)
+        }
         throw new Error("Other operations not yet supported");
     };
 

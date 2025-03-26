@@ -37,3 +37,11 @@ test("10-32", () => {
 test("42*10", () => {
     expect(parse("42 * 10").number).toBe(420);
 });
+
+test("42/10", () => {
+    expect(parse("42 / 10").number).toBe(4.2);
+});
+
+test("420/10", () => {
+    expect(parse("420/10").number).toBe(42);
+});
