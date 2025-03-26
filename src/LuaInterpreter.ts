@@ -213,7 +213,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_unary = (ctx: Exp_unaryContext): Value => {
-        throw new Error("Not Implemented");
+        if (ctx.MINUS()) {
+            const exp = ctx.exp().accept(this);
+            if (exp instanceof NumberValue) {
+                return new NumberValue(-1*(exp as NumberValue).number);
+            } else {
+                new Error(`minus unary only supported for number, got ${exp.constructor.name}`);
+            }
+        }
+        throw new Error("Other unary ops are not yet implemented");
     };
 
     visitExp_or = (ctx: Exp_orContext): Value => {
