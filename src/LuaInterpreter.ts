@@ -201,7 +201,18 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_arithmetic_high = (ctx: Exp_arithmetic_highContext): Value => {
-        throw new Error("Not Implemented");
+        const left = ctx.exp(0).accept(this);
+        const right = ctx.exp(1).accept(this);
+        if (!(left instanceof NumberValue)) {
+            throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
+        }
+        if (!(right instanceof NumberValue)) {
+            throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
+        }
+        if (ctx.STAR()) {
+            return new NumberValue((left as NumberValue).number * (right as NumberValue).number)
+        }
+        throw new Error("Other operations not yet supported");
     };
 
     visitExp_rel = (ctx: Exp_relContext): Value => {
@@ -253,7 +264,19 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): Value => {
-        throw new Error("Not Implemented");
+        const left = ctx.exp(0).accept(this);
+        const right = ctx.exp(1).accept(this);
+        if (!(left instanceof NumberValue)) {
+            throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
+        }
+        if (!(right instanceof NumberValue)) {
+            throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
+        }
+        if (ctx.PLUS()) {
+            return new NumberValue((left as NumberValue).number + (right as NumberValue).number)
+        } else {
+            return new NumberValue((left as NumberValue).number - (right as NumberValue).number)
+        }
     };
 
     visitExp_function_def = (ctx: Exp_function_defContext): Value => {

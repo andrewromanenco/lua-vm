@@ -21,3 +21,19 @@ test("42", () => {
 test("-42", () => {
     expect(parse("-42").number).toBe(-42);
 });
+
+test("42+10", () => {
+    expect(parse("42+10").number).toBe(52);
+});
+
+test("42-10", () => {
+    expect(parse("42-10").number).toBe(32);
+});
+
+test("10-32", () => {
+    expect(parse("10 - 42").number).toBe(-32);
+});
+
+test("42*10", () => {
+    expect(parse("42 * 10").number).toBe(420);
+});
