@@ -77,7 +77,7 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "./parser/LuaParser";
-import { NumberValue, Value } from "./types";
+import { NilValue, NumberValue, TableValue, Value } from "./types";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
     visitStart_ = (ctx: Start_Context): Value => {
@@ -161,6 +161,13 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitRetstat = (ctx: RetstatContext): Value => {
+        if (ctx.RETURN()) {
+            if (ctx.explist()) {
+                return ctx.explist().accept(this);
+            } else {
+                return new TableValue();
+            }
+        }
         throw new Error("Not Implemented");
     };
 
@@ -181,7 +188,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExplist = (ctx: ExplistContext): Value => {
-        throw new Error("Not Implemented");
+        const values = ctx.exp_list().map(exp => exp.accept(this));
+        const result = new TableValue();
+        for (let i = 0; i < values.length; i++) {
+            result.set(NumberValue.from(i + 1), values[i]);
+        }
+        return result;
     };
 
     visitExp_true = (ctx: Exp_trueContext): Value => {
