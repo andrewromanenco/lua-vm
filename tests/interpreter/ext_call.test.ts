@@ -1,6 +1,6 @@
 import LuaInterpreter from "@src/LuaInterpreter";
 
-import { NilValue, NumberValue, TableValue } from "@src/types";
+import { NilValue, NumberValue, StringValue, TableValue } from "@src/types";
 import { make_parser } from "@src/utils";
 
 const interpreter = new LuaInterpreter();
@@ -36,4 +36,15 @@ test("return 42, 24;", () => {
     const num2 = (result as TableValue).get(NumberValue.from(2))
     expect(num2).toBeInstanceOf(NumberValue);
     expect((num2 as NumberValue).number).toBe(24);
+});
+
+test("return string", () => {
+    const parser = make_parser('return "some string";');
+    const node = parser.retstat();
+    const result = node.accept(interpreter);
+    expect(result).toBeInstanceOf(TableValue);
+    expect((result as TableValue).size()).toBe(1);
+    const str = (result as TableValue).get(NumberValue.from(1))
+    expect(str).toBeInstanceOf(StringValue);
+    expect((str as StringValue).string).toBe("some string");
 });

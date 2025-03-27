@@ -31,6 +31,27 @@ class NumberValue extends Value {
     }
 }
 
+class StringValue extends Value {
+    private readonly _str: string;
+
+    static from(str: string): StringValue {
+        return new StringValue(str);
+    }
+
+    constructor(str: string) {
+        super();
+        this._str = str;
+    }
+
+    get string(): string {
+        return this._str;
+    }
+
+    asIdString(): string {
+        return `string:${this._str}`;
+    }
+}
+
 class TableValue extends Value {
     private readonly _table: Map<String, Value> = new Map();
 
@@ -51,4 +72,4 @@ class TableValue extends Value {
     }
 }
 
-export { Value, NilValue, NumberValue, TableValue };
+export { Value, NilValue, NumberValue, StringValue, TableValue };

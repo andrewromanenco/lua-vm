@@ -5432,6 +5432,9 @@ export class StringContext extends ParserRuleContext {
 	public override copyFrom(ctx: StringContext): void {
 		super.copyFrom(ctx);
 	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Not implemented");
+	}
 }
 export class String_longstringContext extends StringContext {
 	constructor(parser: LuaParser, ctx: StringContext) {

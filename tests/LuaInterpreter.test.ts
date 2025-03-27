@@ -28,7 +28,6 @@ NamelistContext,
 Exp_trueContext,
 Exp_bitsContext,
 Exp_andContext,
-Exp_stringContext,
 Exp_relContext,
 Stat_table_construnctorContext,
 Exp_orContext,
@@ -65,7 +64,6 @@ FieldsepContext,
 Number_hexContext,
 Number_floatContext,
 Number_hex_floatContext,
-String_stringContext,
 String_charstringContext,
 String_longstringContext
 } from "@src/parser/LuaParser";
@@ -101,7 +99,6 @@ const contexts = [
     { method: "visitExp_true", context: Exp_trueContext },
     { method: "visitExp_bits", context: Exp_bitsContext },
     { method: "visitExp_and", context: Exp_andContext },
-    { method: "visitExp_string", context: Exp_stringContext },
     { method: "visitExp_rel", context: Exp_relContext },
     { method: "visitStat_table_construnctor", context: Stat_table_construnctorContext },
     { method: "visitExp_or", context: Exp_orContext },
@@ -138,7 +135,6 @@ const contexts = [
     { method: "visitNumber_hex", context: Number_hexContext },
     { method: "visitNumber_float", context: Number_floatContext },
     { method: "visitNumber_hex_float", context: Number_hex_floatContext },
-    { method: "visitString_string", context: String_stringContext },
     { method: "visitString_charstring", context: String_charstringContext },
     { method: "visitString_longstring", context: String_longstringContext }
 ];
