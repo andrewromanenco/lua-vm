@@ -77,7 +77,7 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "./parser/LuaParser";
-import { NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
+import { BooleanValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
@@ -140,7 +140,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_while = (ctx: Stat_whileContext): Value => {
-        throw new Error("Not Implemented");
+        while (true) {
+            const exp = ctx.exp().accept(this);
+            let result = NilValue;
+            if ((exp instanceof NilValue)||
+                ((exp instanceof BooleanValue) && !(exp as BooleanValue).boolean)) {
+                return new NilValue();
+            }
+            ctx.block().accept(this);
+        }
     };
 
     visitStat_repeat = (ctx: Stat_repeatContext): Value => {
@@ -250,6 +258,14 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_rel = (ctx: Exp_relContext): Value => {
+        const left = ctx.exp(0).accept(this);
+        const right = ctx.exp(1).accept(this);
+        if ((left instanceof NumberValue) && (right instanceof NumberValue)) {
+            const l = (left as NumberValue).number;
+            const r = (right as NumberValue).number;
+            if (ctx.LT()) return BooleanValue.from(l < r);
+            throw new Error("OP Not Implemented");
+        }
         throw new Error("Not Implemented");
     };
 

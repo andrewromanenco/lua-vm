@@ -73,4 +73,34 @@ class TableValue extends Value {
     }
 }
 
-export { Value, NilValue, NumberValue, StringValue, TableValue };
+class BooleanValue extends Value {
+
+    private readonly value: boolean;
+
+    static true(): BooleanValue {
+        return new BooleanValue(true);
+    }
+
+    static false(): BooleanValue {
+        return new BooleanValue(false);
+    }
+
+    static from(b: boolean): BooleanValue {
+        return new BooleanValue(b);
+    }
+
+    constructor(value: boolean) {
+        super();
+        this.value = value;
+    }
+
+    get boolean(): boolean {
+        return this.value;
+    }
+
+    asIdString(): string {
+        return `boolean:${this.value}`;
+    }
+}
+
+export { Value, NilValue, NumberValue, StringValue, BooleanValue, TableValue };

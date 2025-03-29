@@ -19,3 +19,21 @@ test("c=a+b", () => {
     expect(num).toBeInstanceOf(NumberValue);
     expect((num as NumberValue).number).toBe(42);
 });
+
+test("while loop", () => {
+    const lua = `
+    a = 1
+    b = 2
+    while a < 5 do
+      b = b * 2
+      a = a + 1
+    end
+    return b
+    `;
+    const result = execute(lua, interpreter);
+    expect(result).toBeInstanceOf(TableValue);
+    expect((result as TableValue).size()).toBe(1);
+    const num = (result as TableValue).get(NumberValue.from(1))
+    expect(num).toBeInstanceOf(NumberValue);
+    expect((num as NumberValue).number).toBe(32);
+});
