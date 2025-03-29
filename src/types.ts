@@ -1,3 +1,5 @@
+import { BlockContext } from "./parser/LuaParser";
+
 abstract class Value {
 
     abstract asIdString(): string;
@@ -103,4 +105,21 @@ class BooleanValue extends Value {
     }
 }
 
-export { Value, NilValue, NumberValue, StringValue, BooleanValue, TableValue };
+class FunctionValue extends Value {
+    private readonly id: string;
+    private readonly parameters: TableValue;
+    private readonly block: BlockContext
+
+    constructor(parameters: TableValue, block: BlockContext) {
+        super();
+        this.id = crypto.randomUUID();
+        this.parameters = parameters;
+        this.block = block;
+    }
+
+    asIdString(): string {
+        return `function:${this.id}`;
+    }
+}
+
+export { Value, NilValue, NumberValue, StringValue, BooleanValue, TableValue, FunctionValue };

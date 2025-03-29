@@ -4988,6 +4988,9 @@ export class ParlistContext extends ParserRuleContext {
 	public override copyFrom(ctx: ParlistContext): void {
 		super.copyFrom(ctx);
 	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Not implemented");
+	}
 }
 export class Parlist_noneContext extends ParlistContext {
 	constructor(parser: LuaParser, ctx: ParlistContext) {

@@ -77,7 +77,7 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "./parser/LuaParser";
-import { BooleanValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
+import { BooleanValue, FunctionValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
@@ -86,6 +86,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     constructor() {
         super();
         this.vars = new TableValue();
+    }
+
+    getGlobalVar(key: Value): Value {
+        return this.vars.get(key);
     }
 
     visitStart_ = (ctx: Start_Context): Value => {
@@ -168,7 +172,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_function = (ctx: Stat_functionContext): Value => {
-        throw new Error("Not Implemented");
+        if (ctx.funcname().NAME_list().length != 1) {
+            throw new Error("Only simple function names are supported");
+        }
+        const name = StringValue.from(ctx.funcname().NAME(0).getText());
+        const parameters = ctx.funcbody().parlist().accept(this);
+        const block = ctx.funcbody().block();
+        const f = new FunctionValue(parameters as TableValue, block);
+        this.vars.set(name, f);
+        return new NilValue();
     };
 
     visitStat_local_function = (ctx: Stat_local_functionContext): Value => {
@@ -417,7 +429,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitParlist_none = (ctx: Parlist_noneContext): Value => {
-        throw new Error("Not Implemented");
+        return new TableValue();
     };
 
     visitTableconstructor = (ctx: TableconstructorContext): Value => {

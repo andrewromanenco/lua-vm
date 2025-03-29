@@ -1,9 +1,8 @@
 import LuaInterpreter from "@src/LuaInterpreter";
+import { NumberValue, StringValue } from "@src/types";
 
 import { execute } from "@src/utils";
-import assert_number from "@tests/test_utils";
-
-const interpreter = new LuaInterpreter();
+import { assert_return_number, assert_return_nothing } from "@tests/test_utils";
 
 test("c=a+b", () => {
     const lua = `
@@ -12,8 +11,9 @@ test("c=a+b", () => {
     c = a + b
     return c
     `;
+    const interpreter = new LuaInterpreter();
     const result = execute(lua, interpreter);
-    assert_number(result, 42);
+    assert_return_number(result, 42);
 });
 
 test("while loop", () => {
@@ -26,7 +26,23 @@ test("while loop", () => {
     end
     return b
     `;
+    const interpreter = new LuaInterpreter();
     const result = execute(lua, interpreter);
-    assert_number(result, 32);
+    assert_return_number(result, 32);
 });
 
+test("define function", () => {
+  const lua = `
+  function f()
+  end
+  a = 1
+  a = a + 1
+  return
+  `;
+  const interpreter = new LuaInterpreter();
+  const result = execute(lua, interpreter);
+  assert_return_nothing(result);
+  const a = interpreter.getGlobalVar(StringValue.from("a"));
+  expect(a).toBeInstanceOf(NumberValue);
+  expect((a as NumberValue).number).toBe(2);
+});
