@@ -1,7 +1,7 @@
 import LuaInterpreter from "@src/LuaInterpreter";
 
-import { NumberValue, TableValue } from "@src/types";
 import { execute } from "@src/utils";
+import assert_number from "@tests/test_utils";
 
 const interpreter = new LuaInterpreter();
 
@@ -13,11 +13,7 @@ test("c=a+b", () => {
     return c
     `;
     const result = execute(lua, interpreter);
-    expect(result).toBeInstanceOf(TableValue);
-    expect((result as TableValue).size()).toBe(1);
-    const num = (result as TableValue).get(NumberValue.from(1))
-    expect(num).toBeInstanceOf(NumberValue);
-    expect((num as NumberValue).number).toBe(42);
+    assert_number(result, 42);
 });
 
 test("while loop", () => {
@@ -31,9 +27,6 @@ test("while loop", () => {
     return b
     `;
     const result = execute(lua, interpreter);
-    expect(result).toBeInstanceOf(TableValue);
-    expect((result as TableValue).size()).toBe(1);
-    const num = (result as TableValue).get(NumberValue.from(1))
-    expect(num).toBeInstanceOf(NumberValue);
-    expect((num as NumberValue).number).toBe(32);
+    assert_number(result, 32);
 });
+

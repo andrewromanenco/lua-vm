@@ -1,6 +1,6 @@
 import LuaInterpreter from "@src/LuaInterpreter";
 
-import { NilValue, NumberValue, StringValue, TableValue } from "@src/types";
+import { NumberValue, StringValue, TableValue } from "@src/types";
 import { make_parser } from "@src/utils";
 
 const interpreter = new LuaInterpreter();
