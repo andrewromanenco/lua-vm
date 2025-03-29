@@ -55,8 +55,9 @@ class StringValue extends Value {
 class TableValue extends Value {
     private readonly _table: Map<String, Value> = new Map();
 
-    get(key: Value): Value | undefined {
-        return this._table.get(key.asIdString());
+    get(key: Value): Value {
+        const value = this._table.get(key.asIdString());
+        return value? value : new NilValue;
     }
 
     set(key: Value, value: Value): void {

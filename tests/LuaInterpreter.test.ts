@@ -1,11 +1,7 @@
 import LuaInterpreter from "@src/LuaInterpreter";
 import {
 
-Start_Context,
-ChunkContext,
-BlockContext,
 Stat_no_opContext,
-Stat_assing_varsContext,
 Stat_function_callContext,
 Stat_labelContext,
 Stat_breakContext,
@@ -37,9 +33,7 @@ Exp_concatContext,
 Exp_varargContext,
 Exp_function_defContext,
 Exp_nilContext,
-Var_nameContext,
 Var_expContext,
-Prefixexp_nameContext,
 Prefixexp_function_callContext,
 Fcall_nameContext,
 Fcall_name_extContext,
@@ -72,11 +66,7 @@ describe("LuaInterpreter", () => {
 const interpreter = new LuaInterpreter();
 
 const contexts = [
-    { method: "visitStart_", context: Start_Context },
-    { method: "visitChunk", context: ChunkContext },
-    { method: "visitBlock", context: BlockContext },
     { method: "visitStat_no_op", context: Stat_no_opContext },
-    { method: "visitStat_assing_vars", context: Stat_assing_varsContext },
     { method: "visitStat_function_call", context: Stat_function_callContext },
     { method: "visitStat_label", context: Stat_labelContext },
     { method: "visitStat_break", context: Stat_breakContext },
@@ -108,9 +98,7 @@ const contexts = [
     { method: "visitExp_vararg", context: Exp_varargContext },
     { method: "visitExp_function_def", context: Exp_function_defContext },
     { method: "visitExp_nil", context: Exp_nilContext },
-    { method: "visitVar_name", context: Var_nameContext },
     { method: "visitVar_exp", context: Var_expContext },
-    { method: "visitPrefixexp_name", context: Prefixexp_nameContext },
     { method: "visitPrefixexp_function_call", context: Prefixexp_function_callContext },
     { method: "visitFcall_name", context: Fcall_nameContext },
     { method: "visitFcall_name_ext", context: Fcall_name_extContext },

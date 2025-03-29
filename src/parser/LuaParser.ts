@@ -2658,6 +2658,9 @@ export class StatContext extends ParserRuleContext {
 	public override copyFrom(ctx: StatContext): void {
 		super.copyFrom(ctx);
 	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Not implemented");
+	}
 }
 export class Stat_ifContext extends StatContext {
 	constructor(parser: LuaParser, ctx: StatContext) {
@@ -4147,6 +4150,9 @@ export class VarContext extends ParserRuleContext {
 	}
 	public override copyFrom(ctx: VarContext): void {
 		super.copyFrom(ctx);
+	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Not implemented");
 	}
 }
 export class Var_expContext extends VarContext {

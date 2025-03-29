@@ -80,16 +80,25 @@ import {
 import { NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
+
+    private vars: TableValue;
+
+    constructor() {
+        super();
+        this.vars = new TableValue();
+    }
+
     visitStart_ = (ctx: Start_Context): Value => {
-        throw new Error("Not Implemented");
+        return ctx.chunk().accept(this);
     };
 
     visitChunk = (ctx: ChunkContext): Value => {
-        throw new Error("Not Implemented");
+        return ctx.block().accept(this);
     };
 
     visitBlock = (ctx: BlockContext): Value => {
-        throw new Error("Not Implemented");
+        ctx.stat_list().forEach(stat => stat.accept(this));
+        return ctx.retstat() ? ctx.retstat().accept(this) : new NilValue();
     };
 
     visitStat_no_op = (ctx: Stat_no_opContext): Value => {
@@ -97,7 +106,17 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_assing_vars = (ctx: Stat_assing_varsContext): Value => {
-        throw new Error("Not Implemented");
+        if ((ctx.varlist().var__list().length > 1)||
+            ctx.explist().exp_list().length > 1) {
+                throw new Error("Multiple vars assignment is not yet supported!");
+        }
+        const variable = ctx.varlist().var_(0).accept(this);
+        const value = ctx.explist().exp(0).accept(this);
+        if (!(variable instanceof StringValue)) {
+            throw new Error("Only simple variable name supported");
+        }
+        this.vars.set(variable, value);
+        return new NilValue();
     };
 
     visitStat_function_call = (ctx: Stat_function_callContext): Value => {
@@ -303,7 +322,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitVar_name = (ctx: Var_nameContext): Value => {
-        throw new Error("Not Implemented");
+        return StringValue.from(ctx.NAME().getText());
     };
 
     visitVar_exp = (ctx: Var_expContext): Value => {
@@ -311,6 +330,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
+        if (ctx.NAME_list().length == 1) {
+            const name = StringValue.from(ctx.NAME(0).getText());
+            return this.vars.get(name);
+        }
         throw new Error("Not Implemented");
     };
 
