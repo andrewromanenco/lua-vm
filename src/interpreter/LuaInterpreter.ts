@@ -328,7 +328,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_true = (ctx: Exp_trueContext): Value => {
-        throw new NotYetImplemented("true", ctx);
+        return BooleanValue.true();
     };
 
     visitExp_bits = (ctx: Exp_bitsContext): Value => {
@@ -395,7 +395,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_false = (ctx: Exp_falseContext): Value => {
-        throw new NotYetImplemented("false", ctx);
+        return BooleanValue.false();
     };
 
     visitStat_prefix_exp = (ctx: Stat_prefix_expContext): Value => {
@@ -439,7 +439,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_nil = (ctx: Exp_nilContext): Value => {
-        throw new NotYetImplemented("nil", ctx);
+        return new NilValue();
     };
 
     visitVar_name = (ctx: Var_nameContext): Value => {
