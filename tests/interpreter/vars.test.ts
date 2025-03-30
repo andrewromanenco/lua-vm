@@ -46,3 +46,17 @@ test("define function", () => {
   expect(a).toBeInstanceOf(NumberValue);
   expect((a as NumberValue).number).toBe(2);
 });
+
+test("visibility scopes", () => {
+  const lua = `
+  a = 10
+  local a = 20
+  return a
+  `;
+  const interpreter = new LuaInterpreter();
+  const result = execute(lua, interpreter);
+  assert_return_number(result, 20);
+  const a = interpreter.getGlobalVar(StringValue.from("a"));
+  expect(a).toBeInstanceOf(NumberValue);
+  expect((a as NumberValue).number).toBe(10);
+});

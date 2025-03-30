@@ -118,8 +118,16 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitBlock = (ctx: BlockContext): Value => {
-        ctx.stat_list().forEach(stat => stat.accept(this));
-        return ctx.retstat() ? ctx.retstat().accept(this) : new NilValue();
+        this.currentScope = VisibilityScope.childOf(this.currentScope);
+        try {
+            ctx.stat_list().forEach(stat => stat.accept(this));
+            if (ctx.retstat()) {
+                ctx.retstat().accept(this);
+            }
+        } finally {
+            this.currentScope = this.currentScope.parent();
+        }
+        return new NilValue;
     };
 
     visitStat_no_op = (ctx: Stat_no_opContext): Value => {
@@ -205,11 +213,27 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
-        throw new Error("Not Implemented");
+        const names = ctx.attnamelist().accept(this) as TableValue;
+        const exps = ctx.explist().accept(this) as TableValue;
+        if (names.size() != 1) {
+            throw Error("For now a single var is supported");
+        }
+        if (exps.size() != 1) {
+            throw Error("For now a single expr is supported");
+        }
+        this.currentScope.set(
+            names.get(NumberValue.from(1)),
+            exps.get(NumberValue.from(1))
+        );
+        return new NilValue();
     };
 
     visitAttnamelist = (ctx: AttnamelistContext): Value => {
-        throw new Error("Not Implemented");
+        const result = new TableValue();
+        ctx.NAME_list().forEach((name, index) => {
+            result.set(NumberValue.from(index + 1), StringValue.from(name.getText()));
+        });
+        return result;
     };
 
     visitAttrib = (ctx: AttribContext): Value => {

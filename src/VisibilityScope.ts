@@ -1,7 +1,7 @@
 import { NilValue, TableValue, Value } from "./types";
 
 export default class VisibilityScope {
-    private readonly parent: VisibilityScope|undefined;
+    private readonly _parent: VisibilityScope|undefined;
     private readonly env: TableValue;
 
     static root():VisibilityScope {
@@ -13,15 +13,19 @@ export default class VisibilityScope {
     }
 
     private constructor(parent?: VisibilityScope) {
-        this.parent = parent;
+        this._parent = parent;
         this.env = new TableValue();
+    }
+
+    parent(): VisibilityScope {
+        return this._parent!;
     }
 
     get(key: Value): Value {
         const value = this.env.get(key);
         if (value instanceof NilValue) {
-            if (this.parent) {
-                return this.parent.get(key);
+            if (this._parent) {
+                return this._parent.get(key);
             } else {
                 return new NilValue();
             }
