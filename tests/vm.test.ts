@@ -1,5 +1,6 @@
 import { NilValue, NumberValue } from "@src/interpreter/types";
 import VMBuilder from "@src/vm";
+import { expectToBeNumber } from "./interpreter/test_utils";
 
 test("vm execution", () => {
     const lua = `
@@ -22,4 +23,42 @@ test("vm execution", () => {
     expect(a).toBeInstanceOf(NumberValue);
     expect((a as NumberValue).number).toBe(5);
     expect(result.globalVar("not-exist")).toBeInstanceOf(NilValue);
+});
+
+test("vm assignments and scopes", () => {
+    const lua = `
+    a, b, c = 1,2,3
+    q, w = 1
+    i = 42, 90
+    do
+      local x,c
+      x,c = 3,4
+      c = 100
+      local b = 200
+    end
+    z = 90
+    `;
+    const result = new VMBuilder().build().execute(lua);
+    expect(result.globalVar("x")).toBeInstanceOf(NilValue);
+    expect(result.globalVar("w")).toBeInstanceOf(NilValue);
+    expectToBeNumber(result.globalVar("a"), 1);
+    expectToBeNumber(result.globalVar("b"), 2);
+    expectToBeNumber(result.globalVar("c"), 3);
+    expectToBeNumber(result.globalVar("q"), 1);
+    expectToBeNumber(result.globalVar("i"), 42);
+    expectToBeNumber(result.globalVar("z"), 90);
+});
+
+test("vm visibility scope", () => {
+  const lua = `
+  a = 10
+  do
+    local a = a + 10
+    a = a + 10
+    b = a
+  end
+  `;
+  const result = new VMBuilder().build().execute(lua);
+  expectToBeNumber(result.globalVar("a"), 10);
+  expectToBeNumber(result.globalVar("b"), 30);
 });

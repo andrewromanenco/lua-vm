@@ -19,4 +19,9 @@ function number_value(list: InternalListValue, index: number): number {
     return (value as NumberValue).number;
 }
 
-export { assert_return_number, assert_return_nothing, number_value };
+function expectToBeNumber(value: Value, n: number): void {
+    expect(value).toBeInstanceOf(NumberValue);
+    expect((value as NumberValue).number).toBe(n);
+}
+
+export { assert_return_number, assert_return_nothing, number_value, expectToBeNumber };

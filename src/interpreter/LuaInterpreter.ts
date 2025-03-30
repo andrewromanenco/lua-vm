@@ -139,25 +139,22 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_assing_vars = (ctx: Stat_assing_varsContext): Value => {
-        if ((ctx.varlist().var__list().length > 1)||
-            ctx.explist().exp_list().length > 1) {
-                throw new Error("Multiple vars assignment is not yet supported!");
-        }
-        const variable = ctx.varlist().var_(0).accept(this);
-        const value = ctx.explist().exp(0).accept(this);
-        if (!(variable instanceof StringValue)) {
-            throw new Error("Only simple variable name supported");
-        }
-        let scope = this.currentScope;
-        while (true) {
-            if (scope.has(variable)) {
-                scope.set(variable, value);
-                break;
-            } else if (scope.parent() !== undefined) {
-                scope = scope.parent();
-            } else {
-                scope.set(variable, value);
-                break;
+        const names = ctx.varlist().accept(this) as InternalListValue;
+        const values = ctx.explist().accept(this) as InternalListValue;
+        for (let i = 1; i <= names.size(); i++) {
+            const name = names.get(i);
+            const value = values.getValueOrNil(i);
+            let scope = this.currentScope;
+            while (true) {
+                if (scope.has(name)) {
+                    scope.set(name, value);
+                    break;
+                } else if (scope.parent() !== undefined) {
+                    scope = scope.parent();
+                } else {
+                    scope.set(name, value);
+                    break;
+                }
             }
         }
         return new NilValue();
@@ -180,7 +177,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_do = (ctx: Stat_doContext): Value => {
-        throw new Error("Not Implemented");
+        return ctx.block().accept(this);
     };
 
     visitStat_while = (ctx: Stat_whileContext): Value => {
@@ -229,17 +226,14 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
         const names = ctx.attnamelist().accept(this) as InternalListValue;
-        const exps = ctx.explist()? ctx.explist().accept(this) as InternalListValue : new InternalListValue([]);
-        if (names.size() > 1) {
-            throw Error("For now a single var is supported");
+        const exps = ctx.explist() ?
+            ctx.explist().accept(this) as InternalListValue : new InternalListValue([]);
+        for (let i = 1; i <= names.size(); i++) {
+            this.currentScope.set(
+                names.get(i),
+                exps.getValueOrNil(i)
+            );
         }
-        if (exps.size() > 1) {
-            throw Error("For now a single expr is supported");
-        }
-        this.currentScope.set(
-            names.get(1),
-            exps.size() == 1 ? exps.get(1) : new NilValue()
-        );
         return new NilValue();
     };
 
@@ -282,7 +276,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitVarlist = (ctx: VarlistContext): Value => {
-        throw new Error("Not Implemented");
+        const result: Value[] = []
+        ctx.var__list().forEach(v => result.push(v.accept(this)));
+        return new InternalListValue(result);
     };
 
     visitNamelist = (ctx: NamelistContext): Value => {

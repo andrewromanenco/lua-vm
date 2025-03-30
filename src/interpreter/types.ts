@@ -150,6 +150,14 @@ class InternalListValue extends Value {
         return this._list[index-1];
     }
 
+    getValueOrNil(index: number) {
+        if (index <= this._list.length) {
+            return this._list[index-1];
+        } else {
+            return new NilValue();
+        }
+    }
+
     size(): number {
         return this._list.length;
     }
