@@ -1,7 +1,7 @@
+import { NotYetImplemented } from "@src/interpreter/errors";
 import LuaInterpreter from "@src/interpreter/LuaInterpreter";
 import {
 
-Stat_no_opContext,
 Stat_labelContext,
 Stat_breakContext,
 Stat_gotoContext,
@@ -52,7 +52,6 @@ describe("LuaInterpreter", () => {
 const interpreter = new LuaInterpreter();
 
 const contexts = [
-    { method: "visitStat_no_op", context: Stat_no_opContext },
     { method: "visitStat_label", context: Stat_labelContext },
     { method: "visitStat_break", context: Stat_breakContext },
     { method: "visitStat_goto", context: Stat_gotoContext },
@@ -102,7 +101,7 @@ const contexts = [
 contexts.forEach(({ method, context }) => {
     test(`${method} throws an error`, () => {
         const ctx = {} as unknown as InstanceType<typeof context>;
-        expect(() => (interpreter as any)[method](ctx)).toThrow("Not Implemented");
+        expect(() => (interpreter as any)[method](ctx)).toThrow(NotYetImplemented);
     });
 });
 });

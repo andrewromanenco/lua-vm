@@ -80,6 +80,7 @@ import {
 import { BooleanValue, FunctionValue, InternalListValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
+import { NotYetImplemented } from "./errors";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
@@ -135,7 +136,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_no_op = (ctx: Stat_no_opContext): Value => {
-        throw new Error("Not Implemented");
+        return new NilValue();
     };
 
     visitStat_assing_vars = (ctx: Stat_assing_varsContext): Value => {
@@ -165,15 +166,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_label = (ctx: Stat_labelContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("label", ctx);
     };
 
     visitStat_break = (ctx: Stat_breakContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("break", ctx);
     };
 
     visitStat_goto = (ctx: Stat_gotoContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("goto", ctx);
     };
 
     visitStat_do = (ctx: Stat_doContext): Value => {
@@ -193,19 +194,19 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_repeat = (ctx: Stat_repeatContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("repeat", ctx);
     };
 
     visitStat_if = (ctx: Stat_ifContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("if", ctx);
     };
 
     visitStat_for_var = (ctx: Stat_for_varContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("for exp", ctx);
     };
 
     visitStat_for_list = (ctx: Stat_for_listContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("for list", ctx);
     };
 
     visitStat_function = (ctx: Stat_functionContext): Value => {
@@ -221,7 +222,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_local_function = (ctx: Stat_local_functionContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("local function", ctx);
     };
 
     visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
@@ -246,7 +247,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitAttrib = (ctx: AttribContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("attribute", ctx);
     };
 
     visitRetstat = (ctx: RetstatContext): Value => {
@@ -264,15 +265,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             }
             throw  ReturnStmt.withList(resultList);
         }
-        throw new Error("break&continue are not yet implemented");
+        throw new NotYetImplemented("break & continue", ctx);
     };
 
     visitLabel = (ctx: LabelContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("label", ctx);
     };
 
     visitFuncname = (ctx: FuncnameContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("function name", ctx);
     };
 
     visitVarlist = (ctx: VarlistContext): Value => {
@@ -301,15 +302,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_true = (ctx: Exp_trueContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("true", ctx);
     };
 
     visitExp_bits = (ctx: Exp_bitsContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("bits", ctx);
     };
 
     visitExp_and = (ctx: Exp_andContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("and", ctx);
     };
 
     visitExp_string = (ctx: Exp_stringContext): Value => {
@@ -331,7 +332,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (ctx.SLASH()) {
             return new NumberValue((left as NumberValue).number / (right as NumberValue).number)
         }
-        throw new Error("Other operations not yet supported");
+        throw new NotYetImplemented("operation", ctx);
     };
 
     visitExp_rel = (ctx: Exp_relContext): Value => {
@@ -341,13 +342,13 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             const l = (left as NumberValue).number;
             const r = (right as NumberValue).number;
             if (ctx.LT()) return BooleanValue.from(l < r);
-            throw new Error("OP Not Implemented");
+            throw new NotYetImplemented("OP Not Implemented", ctx);
         }
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("operation", ctx);
     };
 
     visitStat_table_construnctor = (ctx: Stat_table_construnctorContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("table constructor", ctx);
     };
 
     visitExp_unary = (ctx: Exp_unaryContext): Value => {
@@ -356,18 +357,18 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             if (exp instanceof NumberValue) {
                 return new NumberValue(-1*(exp as NumberValue).number);
             } else {
-                new Error(`minus unary only supported for number, got ${exp.constructor.name}`);
+                new NotYetImplemented(`minus unary only supported for number, got ${exp.constructor.name}`, ctx);
             }
         }
-        throw new Error("Other unary ops are not yet implemented");
+        throw new NotYetImplemented("this unary", ctx);
     };
 
     visitExp_or = (ctx: Exp_orContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("or", ctx);
     };
 
     visitExp_false = (ctx: Exp_falseContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("false", ctx);
     };
 
     visitStat_prefix_exp = (ctx: Stat_prefix_expContext): Value => {
@@ -375,7 +376,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_exponent = (ctx: Exp_exponentContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("exponent", ctx);
     };
 
     visitExp_number = (ctx: Exp_numberContext): Value => {
@@ -383,11 +384,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_concat = (ctx: Exp_concatContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("concat", ctx);
     };
 
     visitExp_vararg = (ctx: Exp_varargContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("vararg", ctx);
     };
 
     visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): Value => {
@@ -407,11 +408,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_function_def = (ctx: Exp_function_defContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("funct def", ctx);
     };
 
     visitExp_nil = (ctx: Exp_nilContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("nil", ctx);
     };
 
     visitVar_name = (ctx: Var_nameContext): Value => {
@@ -419,7 +420,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitVar_exp = (ctx: Var_expContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("var exp", ctx);
     };
 
     visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
@@ -427,31 +428,31 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             const name = StringValue.from(ctx.NAME(0).getText());
             return this.currentScope.get(name);
         }
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("prefix", ctx);
     };
 
     visitPrefixexp_function_call = (ctx: Prefixexp_function_callContext): Value => {
         if (ctx.NAME_list().length > 0) {
-            throw new Error("Functionality not yet Implemented ");
+            throw new NotYetImplemented("prefix function", ctx);
         }
         return ctx.functioncall().accept(this);
     };
 
     visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
         if (ctx.exp_list.length > 1) {
-            throw new Error("Not yet Implemented");
+            throw new NotYetImplemented("this operation", ctx);
         }
         return ctx.exp(0).accept(this);
     };
 
     visitFcall_name = (ctx: Fcall_nameContext): Value => {
         if (ctx.exp_list().length > 0) {
-            throw new Error("Not yet suported function invocation");
+            throw new NotYetImplemented("invocation", ctx);
         }
         const fname = ctx.NAME(0).getText();
         const fun = this.currentScope.get(StringValue.from(fname));
         if (!(fun instanceof FunctionValue)) {
-            throw new Error("Calling a non functional variable");
+            throw new NotYetImplemented("non function", ctx);
         }
         const list_params = (fun as FunctionValue).params() as InternalListValue;
         const list_args = ctx.args().accept(this) as InternalListValue;
@@ -480,23 +481,23 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("fcall", ctx);
     };
 
     visitFcall_function_call = (ctx: Fcall_function_callContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("fcall", ctx);
     };
 
     visitFcall_exp = (ctx: Fcall_expContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("fcall", ctx);
     };
 
     visitFcall_exp_ext = (ctx: Fcall_exp_extContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("fcall", ctx);
     };
 
     visitFcall_function_call_ext = (ctx: Fcall_function_call_extContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("fcall", ctx);
     };
 
     visitArgs_exp_list = (ctx: Args_exp_listContext): Value => {
@@ -508,30 +509,30 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitArgs_table_constructor = (ctx: Args_table_constructorContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("table constructor", ctx);
     };
 
     visitArgs_string = (ctx: Args_stringContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("string", ctx);
     };
 
     visitFunctiondef = (ctx: FunctiondefContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("fdef", ctx);
     };
 
     visitFuncbody = (ctx: FuncbodyContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("fbody", ctx);
     };
 
     visitParlist_namellist = (ctx: Parlist_namellistContext): Value => {
         if (ctx.DDD()) {
-            throw new Error("Varargs Not yet Implemented");
+            throw new NotYetImplemented("...", ctx);
         }
         return ctx.namelist().accept(this);
     };
 
     visitParlist_vararg = (ctx: Parlist_varargContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("varargs", ctx);
     };
 
     visitParlist_none = (ctx: Parlist_noneContext): Value => {
@@ -539,27 +540,27 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitTableconstructor = (ctx: TableconstructorContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("table constructor", ctx);
     };
 
     visitFieldlist = (ctx: FieldlistContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("filed list", ctx);
     };
 
     visitField_exp_exp = (ctx: Field_exp_expContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("field exp", ctx);
     };
 
     visitField_name_exp = (ctx: Field_name_expContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("field name", ctx);
     };
 
     visitField_exp = (ctx: Field_expContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("field exp", ctx);
     };
 
     visitFieldsep = (ctx: FieldsepContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("field sep", ctx);
     };
 
     visitNumber_int = (ctx: Number_intContext): Value => {
@@ -567,15 +568,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitNumber_hex = (ctx: Number_hexContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("hex", ctx);;
     };
 
     visitNumber_float = (ctx: Number_floatContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("float", ctx);
     };
 
     visitNumber_hex_float = (ctx: Number_hex_floatContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("hex loat", ctx);
     };
 
     visitString_string = (ctx: String_stringContext): Value => {
@@ -584,10 +585,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitString_charstring = (ctx: String_charstringContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("char string", ctx);
     };
 
     visitString_longstring = (ctx: String_longstringContext): Value => {
-        throw new Error("Not Implemented");
+        throw new NotYetImplemented("long string", ctx);
     };
 }

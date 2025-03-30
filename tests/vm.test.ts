@@ -1,6 +1,7 @@
 import { NilValue, NumberValue } from "@src/interpreter/types";
 import VMBuilder from "@src/vm";
 import { expectToBeNumber } from "./interpreter/test_utils";
+import { NotYetImplemented } from "@src/interpreter/errors";
 
 test("vm execution", () => {
     const lua = `
@@ -61,4 +62,21 @@ test("vm visibility scope", () => {
   const result = new VMBuilder().build().execute(lua);
   expectToBeNumber(result.globalVar("a"), 10);
   expectToBeNumber(result.globalVar("b"), 30);
+});
+
+test("not implemented feature", () => {
+    const lua = `
+    a  = 1
+    goto whatever
+    `;
+    let exception;
+    try {
+      new VMBuilder().build().execute(lua);
+    } catch (e) {
+      exception = e;
+    }
+    expect(exception).toBeInstanceOf(NotYetImplemented);
+    expect((exception as NotYetImplemented).message)
+      .toBe("Feature not yet implemented(line: 3, col: 4): goto");
+
 });
