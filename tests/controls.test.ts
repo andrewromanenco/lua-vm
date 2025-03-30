@@ -26,3 +26,19 @@ test("if", () => {
     expectToBeNumber(result.globalVar("a"), 4);
     expectToBeNumber(result.globalVar("b"),111);
 });
+
+test("repeat", () => {
+    const lua = `
+    a = 0
+    b = 2
+    repeat
+      a = a + 1
+      b = b * 2
+    until a < 3
+    `;
+    const vm = new VMBuilder().build();
+    const result = vm.execute(lua);
+    expect(result.hasReturnValue()).toBeFalsy();
+    expectToBeNumber(result.globalVar("a"), 3);
+    expectToBeNumber(result.globalVar("b"), 16);
+});

@@ -105,6 +105,14 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         this.globalScope.set(key, value);
     }
 
+    private isFalse(value: Value): boolean {
+        if (value instanceof InternalListValue) {
+            value = (value as InternalListValue).getValueOrNil(1);
+        }
+        return value instanceof NilValue
+            || (value instanceof BooleanValue && !(value as BooleanValue).boolean);
+    }
+
     visitStart_ = (ctx: Start_Context): Value => {
         return ctx.chunk().accept(this);
     };
@@ -194,7 +202,13 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_repeat = (ctx: Stat_repeatContext): Value => {
-        throw new NotYetImplemented("repeat", ctx);
+        while (true) {
+            const result = ctx.block().accept(this);
+            const exp = ctx.exp().accept(this);
+            if (this.isFalse(exp)) {
+                return result;
+            }
+        }
     };
 
     visitStat_if = (ctx: Stat_ifContext): Value => {
