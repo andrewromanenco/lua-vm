@@ -198,7 +198,19 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_if = (ctx: Stat_ifContext): Value => {
-        throw new NotYetImplemented("if", ctx);
+        for (let i = 0; i < ctx.exp_list().length; i++) {
+            let expValue = ctx.exp_list()[i].accept(this);
+            if (expValue instanceof InternalListValue) {
+                expValue = (expValue as InternalListValue).getValueOrNil(1);
+            }
+            if ((expValue instanceof NilValue)||
+                ((expValue instanceof BooleanValue) && !(expValue as BooleanValue).boolean)) {
+                continue;
+            }
+            return ctx.block_list()[i].accept(this);
+        }
+        const elseBlock = ctx.block_list()[ctx.block_list().length - 1];
+        return elseBlock.accept(this);
     };
 
     visitStat_for_var = (ctx: Stat_for_varContext): Value => {
@@ -342,9 +354,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             const l = (left as NumberValue).number;
             const r = (right as NumberValue).number;
             if (ctx.LT()) return BooleanValue.from(l < r);
+            if (ctx.EE()) return BooleanValue.from(l == r);
             throw new NotYetImplemented("OP Not Implemented", ctx);
         }
-        throw new NotYetImplemented("operation", ctx);
+        throw new NotYetImplemented("compare for non numbers", ctx);
     };
 
     visitStat_table_construnctor = (ctx: Stat_table_construnctorContext): Value => {
