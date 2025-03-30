@@ -1,4 +1,4 @@
-import { InternalListValue, NumberValue, Value } from "@src/types";
+import { InternalListValue, NumberValue, Value } from "@src/interpreter/types";
 
 function assert_return_number(result: Value, expected: number) {
     expect(result).toBeInstanceOf(InternalListValue);

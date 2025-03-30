@@ -1,5 +1,5 @@
 import LuaParser from "@src/parser/LuaParser";
-import { make_parser } from "@src/utils";
+import { make_parser } from "@src/interpreter/utils";
 
 test("validate parser", () => {
   const parser = make_parser("10+5");

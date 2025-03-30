@@ -1,6 +1,6 @@
 import { CharStreams, CommonTokenStream } from "antlr4";
-import LuaLexer from "./parser/LuaLexer";
-import LuaParser from "./parser/LuaParser";
+import LuaLexer from "../parser/LuaLexer";
+import LuaParser from "../parser/LuaParser";
 import LuaInterpreter from "./LuaInterpreter";
 import { Value } from "./types";
 

@@ -1,4 +1,4 @@
-import LuaInterpreter from "@src/LuaInterpreter";
+import LuaInterpreter from "@src/interpreter/LuaInterpreter";
 import {
 
 Stat_no_opContext,

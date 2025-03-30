@@ -1,4 +1,4 @@
-import LuaParserVisitor from "./parser/LuaParserVisitor";
+import LuaParserVisitor from "../parser/LuaParserVisitor";
 import {
     Start_Context,
     ChunkContext,
@@ -76,7 +76,7 @@ import {
     String_stringContext,
     String_charstringContext,
     String_longstringContext
-} from "./parser/LuaParser";
+} from "../parser/LuaParser";
 import { BooleanValue, FunctionValue, InternalListValue, NilValue, NumberValue, StringValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";

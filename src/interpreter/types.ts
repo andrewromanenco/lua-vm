@@ -1,4 +1,4 @@
-import { BlockContext } from "./parser/LuaParser";
+import { BlockContext } from "../parser/LuaParser";
 
 abstract class Value {
 

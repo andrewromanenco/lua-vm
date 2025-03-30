@@ -1,8 +1,8 @@
-import LuaInterpreter from "@src/LuaInterpreter";
-import { InternalListValue, NilValue, NumberValue, StringValue } from "@src/types";
+import LuaInterpreter from "@src/interpreter/LuaInterpreter";
+import { InternalListValue, NilValue, NumberValue, StringValue } from "@src/interpreter/types";
 
-import { execute } from "@src/utils";
-import { assert_return_number, assert_return_nothing, number_value } from "@tests/test_utils";
+import { execute } from "@src/interpreter/utils";
+import { assert_return_number, assert_return_nothing, number_value } from "@tests/interpreter/test_utils";
 
 test("c=a+b", () => {
     const lua = `

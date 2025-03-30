@@ -1,5 +1,6 @@
-import VisibilityScope from "../src/VisibilityScope";
-import { NilValue, StringValue } from "../src/types";
+import { NilValue, StringValue } from "@src/interpreter/types";
+import VisibilityScope from "@src/interpreter/VisibilityScope";
+
 
 describe("VisibilityScope", () => {
     it("root scope", () => {
