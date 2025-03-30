@@ -102,3 +102,39 @@ test("function return", () => {
   expect(number_value((result as InternalListValue), 2)).toBe(10);
   expect((result as InternalListValue).get(3)).toBeInstanceOf(NilValue);
 });
+
+test("function add", () => {
+  const lua = `
+  a = 10
+  function add(a, b)
+    return a + b
+  end
+  c = add(10, 32)
+  return a, c
+  `;
+  const interpreter = new LuaInterpreter();
+  const result = execute(lua, interpreter);
+  expect(result).toBeInstanceOf(InternalListValue);
+  expect((result as InternalListValue).size()).toBe(2);
+  expect(number_value((result as InternalListValue), 1)).toBe(10);
+  expect(number_value((result as InternalListValue), 2)).toBe(42);
+});
+
+test("function extra param visibility", () => {
+  const lua = `
+  a = 10
+  b = 20
+  function f(a, b)
+    b = 200
+    return a*10
+  end
+  c = f(a)
+  return c, b
+  `;
+  const interpreter = new LuaInterpreter();
+  const result = execute(lua, interpreter);
+  expect(result).toBeInstanceOf(InternalListValue);
+  expect((result as InternalListValue).size()).toBe(2);
+  expect(number_value((result as InternalListValue), 1)).toBe(100);
+  expect(number_value((result as InternalListValue), 2)).toBe(20);
+});

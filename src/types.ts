@@ -125,6 +125,10 @@ class FunctionValue extends Value {
         return this.block;
     }
 
+    params(): InternalListValue {
+        return this.parameters;
+    }
+
     asIdString(): string {
         return `function:${this.id}`;
     }

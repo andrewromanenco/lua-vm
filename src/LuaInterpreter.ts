@@ -282,7 +282,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitNamelist = (ctx: NamelistContext): Value => {
-        throw new Error("Not Implemented");
+        const result: Value[] = []
+        ctx.NAME_list().forEach(name => result.push(StringValue.from(name.getText())));
+        return new InternalListValue(result);
     };
 
     visitExplist = (ctx: ExplistContext): Value => {
@@ -447,16 +449,22 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             throw new Error("Not yet suported function invocation");
         }
         const fname = ctx.NAME(0).getText();
-        const args = ctx.args().accept(this);
-        if ((args as InternalListValue).size() != 0) {
-            // args need to be in its own context
-            throw new Error("Arguments not yet supported");
-        }
         const fun = this.currentScope.get(StringValue.from(fname));
         if (!(fun instanceof FunctionValue)) {
             throw new Error("Calling a non functional variable");
         }
+        const list_params = (fun as FunctionValue).params() as InternalListValue;
+        const list_args = ctx.args().accept(this) as InternalListValue;
         this.currentScope = VisibilityScope.childOf(this.currentScope);
+        const len = Math.max(list_params.size(), list_args.size());
+        for (let i = 1; i <= len; i++) {
+            this.currentScope.set(list_params.get(i), list_args.get(i));
+        }
+        if (len < list_params.size()) {
+            for (let i = len+1; i <= list_params.size(); i++) {
+                this.currentScope.set(list_params.get(i), new NilValue());
+            }
+        }
         let result = new NilValue();
         try {
             (fun as FunctionValue).body().accept(this);
@@ -516,7 +524,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitParlist_namellist = (ctx: Parlist_namellistContext): Value => {
-        throw new Error("Not Implemented");
+        if (ctx.DDD()) {
+            throw new Error("Varargs Not yet Implemented");
+        }
+        return ctx.namelist().accept(this);
     };
 
     visitParlist_vararg = (ctx: Parlist_varargContext): Value => {
