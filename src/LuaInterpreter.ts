@@ -96,6 +96,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return this.globalScope.get(key);
     }
 
+    setGlobalVar(key: Value, value: Value): void {
+        this.globalScope.set(key, value);
+    }
+
     visitStart_ = (ctx: Start_Context): Value => {
         return ctx.chunk().accept(this);
     };
@@ -132,7 +136,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (!(variable instanceof StringValue)) {
             throw new Error("Only simple variable name supported");
         }
-        this.currentScope.set(variable, value);
+        this.setGlobalVar(variable, value);
         return new NilValue();
     };
 
@@ -192,7 +196,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const parameters = ctx.funcbody().parlist().accept(this);
         const block = ctx.funcbody().block();
         const f = new FunctionValue(parameters as TableValue, block);
-        this.currentScope.set(name, f);
+        this.setGlobalVar(name, f);
         return new NilValue();
     };
 
