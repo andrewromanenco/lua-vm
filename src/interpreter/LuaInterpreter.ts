@@ -77,7 +77,7 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "../parser/LuaParser";
-import { BooleanValue, FunctionValue, InternalListValue, NilValue, NumberValue, StringValue, Value } from "./types";
+import { BooleanValue, FunctionValue, InternalListValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
 
@@ -90,6 +90,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         super();
         this.globalScope = VisibilityScope.root();
         this.currentScope = this.globalScope;
+    }
+
+    getAllGlobalVars(): TableValue {
+        return this.globalScope.getAll();
     }
 
     getGlobalVar(key: Value): Value {

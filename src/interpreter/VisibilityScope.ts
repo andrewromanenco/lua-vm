@@ -42,4 +42,8 @@ export default class VisibilityScope {
         return this.env.hasKey(key);
     }
 
+    getAll(): TableValue {
+        return this.env;
+    }
+
 }

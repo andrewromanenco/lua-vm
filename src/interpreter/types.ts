@@ -154,6 +154,10 @@ class InternalListValue extends Value {
         return this._list.length;
     }
 
+    asList(): Value[] {
+        return this._list;
+    }
+
     asIdString(): string {
         throw new Error("Not implemented");
     }
