@@ -205,7 +205,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         while (true) {
             const result = ctx.block().accept(this);
             const exp = ctx.exp().accept(this);
-            if (this.isFalse(exp)) {
+            if (!this.isFalse(exp)) {
                 return result;
             }
         }

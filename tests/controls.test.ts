@@ -33,7 +33,7 @@ test("repeat", () => {
     repeat
       a = a + 1
       b = b * 2
-    until a < 3
+    until a == 3
     `;
     const vm = new VMBuilder().build();
     const result = vm.execute(lua);
@@ -42,7 +42,7 @@ test("repeat", () => {
     expectToBeNumber(result.globalVar("b"), 16);
 });
 
-test("repeat", () => {
+test("set various values", () => {
     const lua = `
     a = nil
     b = true
