@@ -1,8 +1,8 @@
 import LuaInterpreter from "@src/LuaInterpreter";
-import { NumberValue, StringValue, TableValue } from "@src/types";
+import { NilValue, NumberValue, StringValue, TableValue } from "@src/types";
 
 import { execute } from "@src/utils";
-import { assert_return_number, assert_return_nothing } from "@tests/test_utils";
+import { assert_return_number, assert_return_nothing, number_value } from "@tests/test_utils";
 
 test("c=a+b", () => {
     const lua = `
@@ -83,4 +83,22 @@ test("visibility scopes in function", () => {
   expect(r2).toBeInstanceOf(NumberValue);
   expect((r1 as NumberValue).number).toBe(10);
   expect((r2 as NumberValue).number).toBe(200);
+});
+
+test("function return", () => {
+  const lua = `
+  function ff()
+    a = 10
+    local b = 100
+    return a + b
+  end
+  return ff(), a, b
+  `;
+  const interpreter = new LuaInterpreter();
+  const result = execute(lua, interpreter);
+  expect(result).toBeInstanceOf(TableValue);
+  expect((result as TableValue).size()).toBe(3);
+  expect(number_value((result as TableValue), 1)).toBe(110);
+  expect(number_value((result as TableValue), 2)).toBe(10);
+  expect((result as TableValue).get(NumberValue.from(3))).toBeInstanceOf(NilValue);
 });

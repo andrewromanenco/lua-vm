@@ -425,7 +425,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitPrefixexp_function_call = (ctx: Prefixexp_function_callContext): Value => {
-        throw new Error("Not Implemented");
+        if (ctx.NAME_list().length > 0) {
+            throw new Error("Functionality not yet Implemented ");
+        }
+        return ctx.functioncall().accept(this);
     };
 
     visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
@@ -450,7 +453,17 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             throw new Error("Calling a non functional variable");
         }
         this.currentScope = VisibilityScope.childOf(this.currentScope);
-        const result = (fun as FunctionValue).body().accept(this);
+        let result = new NilValue();
+        try {
+            result = (fun as FunctionValue).body().accept(this);
+        } catch (error) {
+            if (error instanceof ReturnStmt) {
+                // this is a stop gap
+                result = (error as ReturnStmt).retValues().get(NumberValue.from(1));
+            } else {
+                throw error;
+            }
+        }
         this.currentScope = this.currentScope.parent();
         return result;
     };

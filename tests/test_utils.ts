@@ -13,4 +13,10 @@ function assert_return_nothing(result: Value) {
     expect((result as TableValue).size()).toBe(0);
 }
 
-export { assert_return_number, assert_return_nothing };
+function number_value(table: TableValue, index: number): number {
+    const value = table.get(NumberValue.from(index));
+    expect(value).toBeInstanceOf(NumberValue);
+    return (value as NumberValue).number;
+}
+
+export { assert_return_number, assert_return_nothing, number_value };
