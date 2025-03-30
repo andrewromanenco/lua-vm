@@ -66,8 +66,9 @@ test("visibility scopes in function", () => {
   a = 10
   b = 20
   function f()
-    local a = 100
+    local a
     b = 200
+    a = 100
   end
   f()
   return a, b

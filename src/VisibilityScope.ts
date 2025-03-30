@@ -37,4 +37,9 @@ export default class VisibilityScope {
     set(key: Value, value: Value): void {
         this.env.set(key, value);
     }
+
+    has(key: Value): boolean {
+        return this.env.hasKey(key);
+    }
+
 }

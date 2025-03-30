@@ -66,6 +66,10 @@ class TableValue extends Value {
         this._table.set(key.asIdString(), value);
     }
 
+    hasKey(key: Value): boolean {
+        return this._table.has(key.asIdString());
+    }
+
     asIdString(): string {
         throw new Error("Not yet implemented");
     }

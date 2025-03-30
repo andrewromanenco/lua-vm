@@ -144,7 +144,18 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (!(variable instanceof StringValue)) {
             throw new Error("Only simple variable name supported");
         }
-        this.setGlobalVar(variable, value);
+        let scope = this.currentScope;
+        while (true) {
+            if (scope.has(variable)) {
+                scope.set(variable, value);
+                break;
+            } else if (scope.parent() !== undefined) {
+                scope = scope.parent();
+            } else {
+                scope.set(variable, value);
+                break;
+            }
+        }
         return new NilValue();
     };
 
