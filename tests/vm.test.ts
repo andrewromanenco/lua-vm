@@ -64,6 +64,17 @@ test("vm visibility scope", () => {
   expectToBeNumber(result.globalVar("b"), 30);
 });
 
+test("swap", () => {
+  const lua = `
+  a,b,c = 1,2,3
+  a,b,c = b,c,a
+  `;
+  const result = new VMBuilder().build().execute(lua);
+  expectToBeNumber(result.globalVar("a"), 2);
+  expectToBeNumber(result.globalVar("b"), 3);
+  expectToBeNumber(result.globalVar("c"), 1);
+});
+
 test("not implemented feature", () => {
     const lua = `
     a  = 1
@@ -78,5 +89,4 @@ test("not implemented feature", () => {
     expect(exception).toBeInstanceOf(NotYetImplemented);
     expect((exception as NotYetImplemented).message)
       .toBe("Feature not yet implemented(line: 3, col: 4): goto");
-
 });
