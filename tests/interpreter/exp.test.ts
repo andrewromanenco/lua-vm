@@ -1,5 +1,4 @@
 import LuaInterpreter from "@src/LuaInterpreter";
-import { ExpContext } from "@src/parser/LuaParser";
 
 import { NumberValue } from "@src/types";
 import { make_parser } from "@src/utils";

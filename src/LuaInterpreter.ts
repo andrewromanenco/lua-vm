@@ -78,18 +78,22 @@ import {
     String_longstringContext
 } from "./parser/LuaParser";
 import { BooleanValue, FunctionValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
+import ReturnStmt from "./ReturnStmt";
+import VisibilityScope from "./VisibilityScope";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
-    private vars: TableValue;
+    private readonly globalScope: VisibilityScope;
+    private currentScope: VisibilityScope;
 
     constructor() {
         super();
-        this.vars = new TableValue();
+        this.globalScope = VisibilityScope.root();
+        this.currentScope = this.globalScope;
     }
 
     getGlobalVar(key: Value): Value {
-        return this.vars.get(key);
+        return this.globalScope.get(key);
     }
 
     visitStart_ = (ctx: Start_Context): Value => {
@@ -97,7 +101,16 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitChunk = (ctx: ChunkContext): Value => {
-        return ctx.block().accept(this);
+        try {
+            ctx.block().accept(this);
+        } catch (error) {
+            if (error instanceof ReturnStmt) {
+                return (error as ReturnStmt).retValues();
+            } else {
+                throw error;
+            }
+        }
+        return new NilValue();
     };
 
     visitBlock = (ctx: BlockContext): Value => {
@@ -119,7 +132,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (!(variable instanceof StringValue)) {
             throw new Error("Only simple variable name supported");
         }
-        this.vars.set(variable, value);
+        this.currentScope.set(variable, value);
         return new NilValue();
     };
 
@@ -179,7 +192,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const parameters = ctx.funcbody().parlist().accept(this);
         const block = ctx.funcbody().block();
         const f = new FunctionValue(parameters as TableValue, block);
-        this.vars.set(name, f);
+        this.currentScope.set(name, f);
         return new NilValue();
     };
 
@@ -201,13 +214,20 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitRetstat = (ctx: RetstatContext): Value => {
         if (ctx.RETURN()) {
+            const rtrn = new ReturnStmt();
             if (ctx.explist()) {
-                return ctx.explist().accept(this);
-            } else {
-                return new TableValue();
+                const values = ctx.explist().accept(this);
+                if (!(values instanceof TableValue)) {
+                    throw new Error("Should never happen");
+                }
+                const list = values as TableValue;
+                for (let i = 1; i <= list.size(); i++) {
+                    rtrn.addValue(list.get(NumberValue.from(i)));
+                }
             }
+            throw rtrn;
         }
-        throw new Error("Not Implemented");
+        throw new Error("break&continue are not yet implemented");
     };
 
     visitLabel = (ctx: LabelContext): Value => {
@@ -360,7 +380,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
         if (ctx.NAME_list().length == 1) {
             const name = StringValue.from(ctx.NAME(0).getText());
-            return this.vars.get(name);
+            return this.currentScope.get(name);
         }
         throw new Error("Not Implemented");
     };
