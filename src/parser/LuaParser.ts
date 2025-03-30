@@ -4425,6 +4425,9 @@ export class FunctioncallContext extends ParserRuleContext {
 	public override copyFrom(ctx: FunctioncallContext): void {
 		super.copyFrom(ctx);
 	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Not implemented");
+	}
 }
 export class Fcall_nameContext extends FunctioncallContext {
 	constructor(parser: LuaParser, ctx: FunctioncallContext) {
@@ -4807,6 +4810,9 @@ export class ArgsContext extends ParserRuleContext {
 	}
 	public override copyFrom(ctx: ArgsContext): void {
 		super.copyFrom(ctx);
+	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("Not implemented");
 	}
 }
 export class Args_stringContext extends ArgsContext {

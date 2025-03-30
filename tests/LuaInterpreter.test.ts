@@ -61,7 +61,6 @@ const interpreter = new LuaInterpreter();
 
 const contexts = [
     { method: "visitStat_no_op", context: Stat_no_opContext },
-    { method: "visitStat_function_call", context: Stat_function_callContext },
     { method: "visitStat_label", context: Stat_labelContext },
     { method: "visitStat_break", context: Stat_breakContext },
     { method: "visitStat_goto", context: Stat_gotoContext },
@@ -89,13 +88,11 @@ const contexts = [
     { method: "visitExp_nil", context: Exp_nilContext },
     { method: "visitVar_exp", context: Var_expContext },
     { method: "visitPrefixexp_function_call", context: Prefixexp_function_callContext },
-    { method: "visitFcall_name", context: Fcall_nameContext },
     { method: "visitFcall_name_ext", context: Fcall_name_extContext },
     { method: "visitFcall_function_call", context: Fcall_function_callContext },
     { method: "visitFcall_exp", context: Fcall_expContext },
     { method: "visitFcall_exp_ext", context: Fcall_exp_extContext },
     { method: "visitFcall_function_call_ext", context: Fcall_function_call_extContext },
-    { method: "visitArgs_exp_list", context: Args_exp_listContext },
     { method: "visitArgs_table_constructor", context: Args_table_constructorContext },
     { method: "visitArgs_string", context: Args_stringContext },
     { method: "visitFunctiondef", context: FunctiondefContext },

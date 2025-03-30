@@ -117,6 +117,10 @@ class FunctionValue extends Value {
         this.block = block;
     }
 
+    body(): BlockContext {
+        return this.block;
+    }
+
     asIdString(): string {
         return `function:${this.id}`;
     }

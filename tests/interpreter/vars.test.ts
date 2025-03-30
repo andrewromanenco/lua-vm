@@ -1,5 +1,5 @@
 import LuaInterpreter from "@src/LuaInterpreter";
-import { NumberValue, StringValue } from "@src/types";
+import { NumberValue, StringValue, TableValue } from "@src/types";
 
 import { execute } from "@src/utils";
 import { assert_return_number, assert_return_nothing } from "@tests/test_utils";
@@ -59,4 +59,27 @@ test("visibility scopes", () => {
   const a = interpreter.getGlobalVar(StringValue.from("a"));
   expect(a).toBeInstanceOf(NumberValue);
   expect((a as NumberValue).number).toBe(10);
+});
+
+test("visibility scopes in function", () => {
+  const lua = `
+  a = 10
+  b = 20
+  function f()
+    local a = 100
+    b = 200
+  end
+  f()
+  return a, b
+  `;
+  const interpreter = new LuaInterpreter();
+  const result = execute(lua, interpreter);
+  expect(result).toBeInstanceOf(TableValue);
+  expect((result as TableValue).size()).toBe(2);
+  const r1 = (result as TableValue).get(NumberValue.from(1));
+  const r2 = (result as TableValue).get(NumberValue.from(2));
+  expect(r1).toBeInstanceOf(NumberValue);
+  expect(r2).toBeInstanceOf(NumberValue);
+  expect((r1 as NumberValue).number).toBe(10);
+  expect((r2 as NumberValue).number).toBe(200);
 });

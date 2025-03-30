@@ -149,7 +149,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_function_call = (ctx: Stat_function_callContext): Value => {
-        throw new Error("Not Implemented");
+        return ctx.functioncall().accept(this);
     };
 
     visitStat_label = (ctx: Stat_labelContext): Value => {
@@ -214,16 +214,16 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
         const names = ctx.attnamelist().accept(this) as TableValue;
-        const exps = ctx.explist().accept(this) as TableValue;
-        if (names.size() != 1) {
+        const exps = ctx.explist()? ctx.explist().accept(this) as TableValue : new TableValue();
+        if (names.size() > 1) {
             throw Error("For now a single var is supported");
         }
-        if (exps.size() != 1) {
+        if (exps.size() > 1) {
             throw Error("For now a single expr is supported");
         }
         this.currentScope.set(
             names.get(NumberValue.from(1)),
-            exps.get(NumberValue.from(1))
+            exps.size() == 1 ? exps.get(NumberValue.from(1)) : new NilValue()
         );
         return new NilValue();
     };
@@ -425,7 +425,23 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitFcall_name = (ctx: Fcall_nameContext): Value => {
-        throw new Error("Not Implemented");
+        if (ctx.exp_list().length > 0) {
+            throw new Error("Not yet suported function invocation");
+        }
+        const fname = ctx.NAME(0).getText();
+        const args = ctx.args().accept(this);
+        if ((args as TableValue).size() != 0) {
+            // args need to be in its own context
+            throw new Error("Arguments not yet supported");
+        }
+        const fun = this.currentScope.get(StringValue.from(fname));
+        if (!(fun instanceof FunctionValue)) {
+            throw new Error("Calling a non functional variable");
+        }
+        this.currentScope = VisibilityScope.childOf(this.currentScope);
+        const result = (fun as FunctionValue).body().accept(this);
+        this.currentScope = this.currentScope.parent();
+        return result;
     };
 
     visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
@@ -449,7 +465,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitArgs_exp_list = (ctx: Args_exp_listContext): Value => {
-        throw new Error("Not Implemented");
+        if (ctx.explist()) {
+            return ctx.explist().accept(this);
+        } else {
+            return new TableValue();
+        }
     };
 
     visitArgs_table_constructor = (ctx: Args_table_constructorContext): Value => {
