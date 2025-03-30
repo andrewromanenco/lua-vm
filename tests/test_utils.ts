@@ -1,20 +1,20 @@
-import { NilValue, NumberValue, TableValue, Value } from "@src/types";
+import { InternalListValue, NumberValue, Value } from "@src/types";
 
 function assert_return_number(result: Value, expected: number) {
-    expect(result).toBeInstanceOf(TableValue);
-    expect((result as TableValue).size()).toBe(1);
-    const num = (result as TableValue).get(NumberValue.from(1))
+    expect(result).toBeInstanceOf(InternalListValue);
+    expect((result as InternalListValue).size()).toBe(1);
+    const num = (result as InternalListValue).get(1)
     expect(num).toBeInstanceOf(NumberValue);
     expect((num as NumberValue).number).toBe(expected);
 }
 
 function assert_return_nothing(result: Value) {
-    expect(result).toBeInstanceOf(TableValue);
-    expect((result as TableValue).size()).toBe(0);
+    expect(result).toBeInstanceOf(InternalListValue);
+    expect((result as InternalListValue).size()).toBe(0);
 }
 
-function number_value(table: TableValue, index: number): number {
-    const value = table.get(NumberValue.from(index));
+function number_value(list: InternalListValue, index: number): number {
+    const value = list.get(index);
     expect(value).toBeInstanceOf(NumberValue);
     return (value as NumberValue).number;
 }

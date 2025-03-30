@@ -1,22 +1,28 @@
-import { NumberValue, TableValue, Value } from "./types";
+import { InternalListValue, NumberValue, TableValue, Value } from "./types";
 
 export default class ReturnStmt extends Error {
-    private readonly returnedValues: TableValue;
-    private index: number;
+    private readonly returnedValues: InternalListValue;
 
-    constructor() {
+    static withList(list :Value[]) {
+        const internalList = new InternalListValue(list);
+        return new ReturnStmt(internalList);
+    }
+
+    constructor(list: InternalListValue) {
         super();
-        this.returnedValues = new TableValue();
-        this.index = 1;
+        this.returnedValues = list;
     }
 
-    addValue(value: Value) {
-        this.returnedValues.set(NumberValue.from(this.index), value);
-        this.index++;
-    }
-
-    retValues(): TableValue {
+    retValues(): InternalListValue {
         return this.returnedValues;
+    }
+
+    retValuesAsTable(): TableValue {
+        const table = new TableValue();
+        this.returnedValues.list.forEach((value: Value, i: number) => {
+            table.set(new NumberValue(i+1), value);
+        });
+        return table;
     }
 
 }

@@ -1,5 +1,5 @@
 import LuaInterpreter from "@src/LuaInterpreter";
-import { NilValue, NumberValue, StringValue, TableValue } from "@src/types";
+import { InternalListValue, NilValue, NumberValue, StringValue } from "@src/types";
 
 import { execute } from "@src/utils";
 import { assert_return_number, assert_return_nothing, number_value } from "@tests/test_utils";
@@ -75,10 +75,10 @@ test("visibility scopes in function", () => {
   `;
   const interpreter = new LuaInterpreter();
   const result = execute(lua, interpreter);
-  expect(result).toBeInstanceOf(TableValue);
-  expect((result as TableValue).size()).toBe(2);
-  const r1 = (result as TableValue).get(NumberValue.from(1));
-  const r2 = (result as TableValue).get(NumberValue.from(2));
+  expect(result).toBeInstanceOf(InternalListValue);
+  expect((result as InternalListValue).size()).toBe(2);
+  const r1 = (result as InternalListValue).get(1);
+  const r2 = (result as InternalListValue).get(2);
   expect(r1).toBeInstanceOf(NumberValue);
   expect(r2).toBeInstanceOf(NumberValue);
   expect((r1 as NumberValue).number).toBe(10);
@@ -96,9 +96,9 @@ test("function return", () => {
   `;
   const interpreter = new LuaInterpreter();
   const result = execute(lua, interpreter);
-  expect(result).toBeInstanceOf(TableValue);
-  expect((result as TableValue).size()).toBe(3);
-  expect(number_value((result as TableValue), 1)).toBe(110);
-  expect(number_value((result as TableValue), 2)).toBe(10);
-  expect((result as TableValue).get(NumberValue.from(3))).toBeInstanceOf(NilValue);
+  expect(result).toBeInstanceOf(InternalListValue);
+  expect((result as InternalListValue).size()).toBe(3);
+  expect(number_value((result as InternalListValue), 1)).toBe(110);
+  expect(number_value((result as InternalListValue), 2)).toBe(10);
+  expect((result as InternalListValue).get(3)).toBeInstanceOf(NilValue);
 });

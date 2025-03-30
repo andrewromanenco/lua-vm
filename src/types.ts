@@ -111,10 +111,10 @@ class BooleanValue extends Value {
 
 class FunctionValue extends Value {
     private readonly id: string;
-    private readonly parameters: TableValue;
+    private readonly parameters: InternalListValue;
     private readonly block: BlockContext
 
-    constructor(parameters: TableValue, block: BlockContext) {
+    constructor(parameters: InternalListValue, block: BlockContext) {
         super();
         this.id = crypto.randomUUID();
         this.parameters = parameters;
@@ -130,4 +130,38 @@ class FunctionValue extends Value {
     }
 }
 
-export { Value, NilValue, NumberValue, StringValue, BooleanValue, TableValue, FunctionValue };
+class InternalListValue extends Value {
+    private readonly _list: Value[];
+
+    constructor(values: Value[]) {
+        super();
+        this._list = values;
+    }
+
+    get list(): Value[] {
+        return this._list;
+    }
+
+    get(index: number): Value {
+        return this._list[index-1];
+    }
+
+    size(): number {
+        return this._list.length;
+    }
+
+    asIdString(): string {
+        throw new Error("Not implemented");
+    }
+}
+
+export {
+    Value,
+    NilValue,
+    NumberValue,
+    StringValue,
+    BooleanValue,
+    TableValue,
+    FunctionValue,
+    InternalListValue,
+};

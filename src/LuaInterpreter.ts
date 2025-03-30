@@ -77,7 +77,7 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "./parser/LuaParser";
-import { BooleanValue, FunctionValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
+import { BooleanValue, FunctionValue, InternalListValue, NilValue, NumberValue, StringValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
 
@@ -214,7 +214,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const name = StringValue.from(ctx.funcname().NAME(0).getText());
         const parameters = ctx.funcbody().parlist().accept(this);
         const block = ctx.funcbody().block();
-        const f = new FunctionValue(parameters as TableValue, block);
+        const f = new FunctionValue(parameters as InternalListValue, block);
         this.setGlobalVar(name, f);
         return new NilValue();
     };
@@ -224,8 +224,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
-        const names = ctx.attnamelist().accept(this) as TableValue;
-        const exps = ctx.explist()? ctx.explist().accept(this) as TableValue : new TableValue();
+        const names = ctx.attnamelist().accept(this) as InternalListValue;
+        const exps = ctx.explist()? ctx.explist().accept(this) as InternalListValue : new InternalListValue([]);
         if (names.size() > 1) {
             throw Error("For now a single var is supported");
         }
@@ -233,18 +233,18 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             throw Error("For now a single expr is supported");
         }
         this.currentScope.set(
-            names.get(NumberValue.from(1)),
-            exps.size() == 1 ? exps.get(NumberValue.from(1)) : new NilValue()
+            names.get(1),
+            exps.size() == 1 ? exps.get(1) : new NilValue()
         );
         return new NilValue();
     };
 
     visitAttnamelist = (ctx: AttnamelistContext): Value => {
-        const result = new TableValue();
-        ctx.NAME_list().forEach((name, index) => {
-            result.set(NumberValue.from(index + 1), StringValue.from(name.getText()));
+        const result: Value[] = [];
+        ctx.NAME_list().forEach((name) => {
+            result.push(StringValue.from(name.getText()));
         });
-        return result;
+        return new InternalListValue(result);
     };
 
     visitAttrib = (ctx: AttribContext): Value => {
@@ -253,18 +253,18 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitRetstat = (ctx: RetstatContext): Value => {
         if (ctx.RETURN()) {
-            const rtrn = new ReturnStmt();
+            const resultList: Value[] = [];
             if (ctx.explist()) {
                 const values = ctx.explist().accept(this);
-                if (!(values instanceof TableValue)) {
+                if (!(values instanceof InternalListValue)) {
                     throw new Error("Should never happen");
                 }
-                const list = values as TableValue;
+                const list = values as InternalListValue;
                 for (let i = 1; i <= list.size(); i++) {
-                    rtrn.addValue(list.get(NumberValue.from(i)));
+                    resultList.push(list.get(i));
                 }
             }
-            throw rtrn;
+            throw  ReturnStmt.withList(resultList);
         }
         throw new Error("break&continue are not yet implemented");
     };
@@ -287,11 +287,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitExplist = (ctx: ExplistContext): Value => {
         const values = ctx.exp_list().map(exp => exp.accept(this));
-        const result = new TableValue();
-        for (let i = 0; i < values.length; i++) {
-            result.set(NumberValue.from(i + 1), values[i]);
-        }
-        return result;
+        const result: Value[] = []
+        values.forEach(v => {
+            if (v instanceof InternalListValue) {
+                (v as InternalListValue).list.forEach(item => result.push(item));
+            } else {
+                result.push(v);
+            }
+        });
+        return new InternalListValue(result);
     };
 
     visitExp_true = (ctx: Exp_trueContext): Value => {
@@ -444,7 +448,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         }
         const fname = ctx.NAME(0).getText();
         const args = ctx.args().accept(this);
-        if ((args as TableValue).size() != 0) {
+        if ((args as InternalListValue).size() != 0) {
             // args need to be in its own context
             throw new Error("Arguments not yet supported");
         }
@@ -455,11 +459,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         this.currentScope = VisibilityScope.childOf(this.currentScope);
         let result = new NilValue();
         try {
-            result = (fun as FunctionValue).body().accept(this);
+            (fun as FunctionValue).body().accept(this);
         } catch (error) {
             if (error instanceof ReturnStmt) {
-                // this is a stop gap
-                result = (error as ReturnStmt).retValues().get(NumberValue.from(1));
+                result = (error as ReturnStmt).retValues();
             } else {
                 throw error;
             }
@@ -492,7 +495,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (ctx.explist()) {
             return ctx.explist().accept(this);
         } else {
-            return new TableValue();
+            return new InternalListValue([]);
         }
     };
 
@@ -521,7 +524,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitParlist_none = (ctx: Parlist_noneContext): Value => {
-        return new TableValue();
+        return new InternalListValue([]);
     };
 
     visitTableconstructor = (ctx: TableconstructorContext): Value => {
