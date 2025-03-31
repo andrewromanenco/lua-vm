@@ -1,4 +1,4 @@
-import { InternalListValue, NumberValue, TableValue, Value } from "./types";
+import { InternalListValue, NilValue, NumberValue, TableValue, Value } from "./types";
 
 export default class ReturnStmt extends Error {
     private readonly returnedValues: InternalListValue;
@@ -6,6 +6,20 @@ export default class ReturnStmt extends Error {
     static withList(list :Value[]) {
         const internalList = new InternalListValue(list);
         return new ReturnStmt(internalList);
+    }
+
+    static executeReturnable(f: () => Value): Value {
+        let result = new NilValue();
+        try {
+            result = f();
+        } catch (error) {
+            if (error instanceof ReturnStmt) {
+                return (error as ReturnStmt).retValues();
+            } else {
+                throw error;
+            }
+        }
+        return result;
     }
 
     constructor(list: InternalListValue) {

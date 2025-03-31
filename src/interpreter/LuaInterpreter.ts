@@ -115,16 +115,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitChunk = (ctx: ChunkContext): Value => {
-        try {
-            ctx.block().accept(this);
-        } catch (error) {
-            if (error instanceof ReturnStmt) {
-                return (error as ReturnStmt).retValues();
-            } else {
-                throw error;
-            }
-        }
-        return new NilValue();
+        return ReturnStmt.executeReturnable(() => {
+            return ctx.block().accept(this);
+        });
     };
 
     visitBlock = (ctx: BlockContext): Value => {
@@ -192,14 +185,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             if (isFalse(exp)) {
                 return new NilValue();
             }
-            try {
-                ctx.block().accept(this);
-            } catch (error) {
-                if (error instanceof BreakStmt) {
-                    return new NilValue();
-                } else {
-                    throw error;
-                }
+            if (BreakStmt.breakCalled(()=>{ctx.block().accept(this);})) {
+                return new NilValue();
             }
         }
     };
@@ -208,14 +195,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         this.currentScope = VisibilityScope.childOf(this.currentScope);
         try {
             while (true) {
-                try {
+                const breaked = BreakStmt.breakCalled(() => {
                     ctx.block().stat_list().forEach(stmt => stmt.accept(this));
-                } catch (error) {
-                    if (error instanceof BreakStmt) {
-                        break;
-                    } else {
-                        throw error;
-                    }
+                });
+                if (breaked) {
+                    break;
                 }
                 const exp = ctx.exp().accept(this);
                 if (isTrue(exp)) {
@@ -513,16 +497,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
                 this.currentScope.set(list_params.get(i), new NilValue());
             }
         }
-        let result = new NilValue();
-        try {
-            (fun as FunctionValue).body().accept(this);
-        } catch (error) {
-            if (error instanceof ReturnStmt) {
-                result = (error as ReturnStmt).retValues();
-            } else {
-                throw error;
-            }
-        }
+        let result = ReturnStmt.executeReturnable(() => {
+            return (fun as FunctionValue).body().accept(this);
+        });
         this.currentScope = this.currentScope.parent();
         return result;
     };
