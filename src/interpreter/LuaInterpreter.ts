@@ -82,8 +82,12 @@ import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
 import { NotYetImplemented } from "./errors";
 import BreakStmt from "./BreakStmt";
+import { isFalse, isTrue } from "./utils";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
+    isFalse(exp: Value) {
+        throw new Error("Method not implemented.");
+    }
 
     private readonly globalScope: VisibilityScope;
     private currentScope: VisibilityScope;
@@ -104,14 +108,6 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     setGlobalVar(key: Value, value: Value): void {
         this.globalScope.set(key, value);
-    }
-
-    private isFalse(value: Value): boolean {
-        if (value instanceof InternalListValue) {
-            value = (value as InternalListValue).getValueOrNil(1);
-        }
-        return value instanceof NilValue
-            || (value instanceof BooleanValue && !(value as BooleanValue).boolean);
     }
 
     visitStart_ = (ctx: Start_Context): Value => {
@@ -193,7 +189,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     visitStat_while = (ctx: Stat_whileContext): Value => {
         while (true) {
             const exp = ctx.exp().accept(this);
-            if (this.isFalse(exp)) {
+            if (isFalse(exp)) {
                 return new NilValue();
             }
             try {
@@ -222,7 +218,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
                     }
                 }
                 const exp = ctx.exp().accept(this);
-                if (!this.isFalse(exp)) {
+                if (isTrue(exp)) {
                     break;
                 }
             }
@@ -238,8 +234,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             if (expValue instanceof InternalListValue) {
                 expValue = (expValue as InternalListValue).getValueOrNil(1);
             }
-            if ((expValue instanceof NilValue)||
-                ((expValue instanceof BooleanValue) && !(expValue as BooleanValue).boolean)) {
+            if (isFalse(expValue)) {
                 continue;
             }
             return ctx.block_list()[i].accept(this);
