@@ -3,7 +3,6 @@ import LuaInterpreter from "@src/interpreter/LuaInterpreter";
 import {
 
 Stat_labelContext,
-Stat_breakContext,
 Stat_gotoContext,
 Stat_for_varContext,
 Stat_for_listContext,
@@ -48,7 +47,6 @@ const interpreter = new LuaInterpreter();
 
 const contexts = [
     { method: "visitStat_label", context: Stat_labelContext },
-    { method: "visitStat_break", context: Stat_breakContext },
     { method: "visitStat_goto", context: Stat_gotoContext },
     { method: "visitStat_for_var", context: Stat_for_varContext },
     { method: "visitStat_for_list", context: Stat_for_listContext },

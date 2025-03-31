@@ -81,6 +81,7 @@ import { BooleanValue, FunctionValue, InternalListValue, NilValue, NumberValue, 
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
 import { NotYetImplemented } from "./errors";
+import BreakStmt from "./BreakStmt";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
@@ -178,7 +179,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_break = (ctx: Stat_breakContext): Value => {
-        throw new NotYetImplemented("break", ctx);
+        throw new BreakStmt();
     };
 
     visitStat_goto = (ctx: Stat_gotoContext): Value => {
@@ -192,23 +193,38 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     visitStat_while = (ctx: Stat_whileContext): Value => {
         while (true) {
             const exp = ctx.exp().accept(this);
-            let result = NilValue;
-            if ((exp instanceof NilValue)||
-                ((exp instanceof BooleanValue) && !(exp as BooleanValue).boolean)) {
+            if (this.isFalse(exp)) {
                 return new NilValue();
             }
-            ctx.block().accept(this);
+            try {
+                ctx.block().accept(this);
+            } catch (error) {
+                if (error instanceof BreakStmt) {
+                    return new NilValue();
+                } else {
+                    throw error;
+                }
+            }
         }
     };
 
     visitStat_repeat = (ctx: Stat_repeatContext): Value => {
         while (true) {
-            const result = ctx.block().accept(this);
+            try {
+                ctx.block().accept(this);
+            } catch (error) {
+                if (error instanceof BreakStmt) {
+                    break;
+                } else {
+                    throw error;
+                }
+            }
             const exp = ctx.exp().accept(this);
             if (!this.isFalse(exp)) {
-                return result;
+                break;
             }
         }
+        return new NilValue();
     };
 
     visitStat_if = (ctx: Stat_ifContext): Value => {
@@ -223,8 +239,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             }
             return ctx.block_list()[i].accept(this);
         }
-        const elseBlock = ctx.block_list()[ctx.block_list().length - 1];
-        return elseBlock.accept(this);
+        if (ctx.ELSE()) {
+            const elseBlock = ctx.block_list()[ctx.block_list().length - 1];
+            return elseBlock.accept(this);
+        } else {
+            return new NilValue();
+        }
     };
 
     visitStat_for_var = (ctx: Stat_for_varContext): Value => {

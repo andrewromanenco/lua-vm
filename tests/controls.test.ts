@@ -61,3 +61,30 @@ test("set various values", () => {
     expect((result.globalVar("c") as BooleanValue).boolean).toBeFalsy;
     expect((result.globalVar("d") as StringValue).string).toBe("string value");
 });
+
+test("break", () => {
+    const lua = `
+    a = 1
+    b = 1
+    while a < 5 do
+        a = a + 1
+        if a == 3 then break end
+        b = b + 1
+    end
+    c = 1
+    d = 1
+    repeat
+        c = c + 1
+        if c == 3 then break end
+        d = d + 1
+    until c == 5
+    `;
+    const vm = new VMBuilder().build();
+    const result = vm.execute(lua);
+    expect(result.hasReturnValue()).toBeFalsy();
+    expectToBeNumber(result.globalVar("a"), 3);
+    expectToBeNumber(result.globalVar("b"), 2);
+    expectToBeNumber(result.globalVar("c"), 3);
+    expectToBeNumber(result.globalVar("d"), 2);
+});
+
