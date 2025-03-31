@@ -209,20 +209,25 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_repeat = (ctx: Stat_repeatContext): Value => {
-        while (true) {
-            try {
-                ctx.block().accept(this);
-            } catch (error) {
-                if (error instanceof BreakStmt) {
+        this.currentScope = VisibilityScope.childOf(this.currentScope);
+        try {
+            while (true) {
+                try {
+                    ctx.block().stat_list().forEach(stmt => stmt.accept(this));
+                } catch (error) {
+                    if (error instanceof BreakStmt) {
+                        break;
+                    } else {
+                        throw error;
+                    }
+                }
+                const exp = ctx.exp().accept(this);
+                if (!this.isFalse(exp)) {
                     break;
-                } else {
-                    throw error;
                 }
             }
-            const exp = ctx.exp().accept(this);
-            if (!this.isFalse(exp)) {
-                break;
-            }
+        } finally {
+            this.currentScope = this.currentScope.parent();
         }
         return new NilValue();
     };

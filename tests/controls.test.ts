@@ -88,3 +88,25 @@ test("break", () => {
     expectToBeNumber(result.globalVar("d"), 2);
 });
 
+test("scope visibility for loops", () => {
+    const lua = `
+    a = 1
+    while a < 5 do
+        a = a + 1
+        local a = 100
+    end
+
+    b = 1
+    c = 1
+    repeat
+        b = b + 1
+        local c = b
+    until c == 5
+    `;
+    const vm = new VMBuilder().build();
+    const result = vm.execute(lua);
+    expect(result.hasReturnValue()).toBeFalsy();
+    expectToBeNumber(result.globalVar("a"), 5);
+    expectToBeNumber(result.globalVar("b"), 5);
+    expectToBeNumber(result.globalVar("c"), 1);
+});
