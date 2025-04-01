@@ -80,7 +80,7 @@ import {
 import { BooleanValue, FunctionValue, InternalListValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
-import { NotYetImplemented } from "./errors";
+import { NotYetImplemented, RuntimeError } from "./errors";
 import BreakStmt from "./BreakStmt";
 import { isFalse, isTrue, unpack } from "./utils";
 
@@ -468,7 +468,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const fname = ctx.NAME(0).getText();
         const fun = this.currentScope.get(StringValue.from(fname));
         if (!(fun instanceof FunctionValue)) {
-            throw new NotYetImplemented("non function", ctx);
+            throw new RuntimeError("Non function is called", ctx);
         }
         const list_params = (fun as FunctionValue).params() as InternalListValue;
         const list_args = ctx.args().accept(this) as InternalListValue;

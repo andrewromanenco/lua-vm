@@ -1,7 +1,7 @@
 import { NilValue, NumberValue, StringValue } from "@src/interpreter/types";
 import VMBuilder from "@src/vm";
 import { expectToBeNil, expectToBeNumber } from "./interpreter/test_utils";
-import { NotYetImplemented } from "@src/interpreter/errors";
+import { NotYetImplemented, RuntimeError } from "@src/interpreter/errors";
 
 test("vm execution", () => {
     const lua = `
@@ -137,4 +137,20 @@ test("thread keeps state between calls", () => {
   expect(result2.hasReturnValue()).toBeTruthy();
   expect(result2.returnValueAsList().length).toBe(1);
   expectToBeNumber(result2.returnValueAsList()[0], 111);
+});
+
+test("calling non function causes RuntimeError", () => {
+  const lua = `
+  a  = 1
+  f()
+  `;
+  let exception;
+  try {
+    new VMBuilder().build().execute(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(RuntimeError);
+  expect((exception as RuntimeError).message)
+    .toBe("Runtime error: (line: 3, col: 2): Non function is called");
 });
