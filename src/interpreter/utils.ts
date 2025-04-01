@@ -29,4 +29,9 @@ function isTrue(value: Value): boolean {
     return !isFalse(value);
 }
 
-export { make_parser, execute, isFalse, isTrue };
+function unpack(value: Value) {
+    return value instanceof InternalListValue ?
+        (value as InternalListValue).getValueOrNil(1) : value;
+}
+
+export { make_parser, execute, isFalse, isTrue, unpack };

@@ -120,21 +120,40 @@ test("function add", () => {
   expect(number_value((result as InternalListValue), 2)).toBe(42);
 });
 
-test("function extra param visibility", () => {
+test("function call with extra arg", () => {
   const lua = `
   a = 10
-  b = 20
-  function f(a, b)
-    b = 200
-    return a*10
+  function add(a, b)
+    return a + b
   end
-  c = f(a)
-  return c, b
+  c = add(10, 32, 100)
+  return a, c
   `;
   const interpreter = new LuaInterpreter();
   const result = execute(lua, interpreter);
   expect(result).toBeInstanceOf(InternalListValue);
   expect((result as InternalListValue).size()).toBe(2);
-  expect(number_value((result as InternalListValue), 1)).toBe(100);
-  expect(number_value((result as InternalListValue), 2)).toBe(20);
+  expect(number_value((result as InternalListValue), 1)).toBe(10);
+  expect(number_value((result as InternalListValue), 2)).toBe(42);
+});
+
+test("function call with not enough args", () => {
+  const lua = `
+  a = 1
+  b = 2
+  c = 3
+  function f(x, y)
+    a = x
+    b = y
+  end
+  f(10)
+  return a, b, c
+  `;
+  const interpreter = new LuaInterpreter();
+  const result = execute(lua, interpreter);
+  expect(result).toBeInstanceOf(InternalListValue);
+  expect((result as InternalListValue).size()).toBe(3);
+  expect(number_value((result as InternalListValue), 1)).toBe(10);
+  expect((result as InternalListValue).get(2)).toBeInstanceOf(NilValue);
+  expect(number_value((result as InternalListValue), 3)).toBe(3);
 });

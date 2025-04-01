@@ -82,7 +82,7 @@ import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
 import { NotYetImplemented } from "./errors";
 import BreakStmt from "./BreakStmt";
-import { isFalse, isTrue } from "./utils";
+import { isFalse, isTrue, unpack } from "./utils";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
@@ -168,41 +168,37 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_while = (ctx: Stat_whileContext): Value => {
-        while (true) {
-            const exp = ctx.exp().accept(this);
-            if (isFalse(exp)) {
+        let exp = ctx.exp().accept(this);
+        while (isTrue(exp)) {
+            if (BreakStmt.breakCalled(()=>{
+                    ctx.block().accept(this);
+                })) {
                 return new NilValue();
             }
-            if (BreakStmt.breakCalled(()=>{ctx.block().accept(this);})) {
-                return new NilValue();
-            }
+            exp = ctx.exp().accept(this);
         }
+        return new NilValue();
     };
 
     visitStat_repeat = (ctx: Stat_repeatContext): Value => {
         return this.scoped(() => {
-            while (true) {
+            let exp;
+            do {
                 const breaked = BreakStmt.breakCalled(() => {
                     ctx.block().stat_list().forEach(stmt => stmt.accept(this));
                 });
                 if (breaked) {
                     break;
                 }
-                const exp = ctx.exp().accept(this);
-                if (isTrue(exp)) {
-                    break;
-                }
-            }
+                exp = ctx.exp().accept(this);
+            } while (isFalse(exp));
             return new NilValue();
         });
     };
 
     visitStat_if = (ctx: Stat_ifContext): Value => {
         for (let i = 0; i < ctx.exp_list().length; i++) {
-            let expValue = ctx.exp_list()[i].accept(this);
-            if (expValue instanceof InternalListValue) {
-                expValue = (expValue as InternalListValue).getValueOrNil(1);
-            }
+            let expValue = unpack(ctx.exp_list()[i].accept(this));
             if (isFalse(expValue)) {
                 continue;
             }
@@ -473,14 +469,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const list_params = (fun as FunctionValue).params() as InternalListValue;
         const list_args = ctx.args().accept(this) as InternalListValue;
         return this.scoped(() => {
-            const len = Math.max(list_params.size(), list_args.size());
-            for (let i = 1; i <= len; i++) {
-                this.currentScope.setLocal(list_params.get(i), list_args.get(i));
-            }
-            if (len < list_params.size()) {
-                for (let i = len+1; i <= list_params.size(); i++) {
-                    this.currentScope.setLocal(list_params.get(i), new NilValue());
-                }
+            for (let i = 1; i <= list_params.size(); i++) {
+                this.currentScope.setLocal(list_params.get(i), list_args.getValueOrNil(i));
             }
             let result = ReturnStmt.executeReturnable(() => {
                 return (fun as FunctionValue).body().accept(this);
