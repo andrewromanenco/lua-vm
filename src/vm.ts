@@ -9,6 +9,18 @@ export default class VMBuilder {
 }
 
 class VM {
+
+    newThread(): ExecutionThread {
+        return new ExecutionThread();
+    }
+
+    execute(lua: string): ExecutionResult {
+        const thread = this.newThread();
+        return thread.execute(lua);
+    }
+}
+
+class ExecutionThread {
     execute(lua: string): ExecutionResult {
         const interpreter = new LuaInterpreter();
         const result = execute(lua, interpreter);
