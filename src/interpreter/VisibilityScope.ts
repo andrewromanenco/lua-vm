@@ -21,6 +21,10 @@ export default class VisibilityScope {
         return this._parent!;
     }
 
+    hasParent(): boolean {
+        return this._parent !== undefined;
+    }
+
     get(key: Value): Value {
         const value = this.env.get(key);
         if (value instanceof NilValue) {
@@ -35,6 +39,14 @@ export default class VisibilityScope {
     }
 
     set(key: Value, value: Value): void {
+        let targetScope: VisibilityScope = this;
+        while (targetScope.hasParent() && !targetScope.has(key)) {
+            targetScope = targetScope.parent();
+        }
+        targetScope.env.set(key, value);
+    }
+
+    setLocal(key: Value, value: Value): void {
         this.env.set(key, value);
     }
 
@@ -42,8 +54,12 @@ export default class VisibilityScope {
         return this.env.hasKey(key);
     }
 
-    getAll(): TableValue {
-        return this.env;
+    globalVars(): TableValue {
+        let targetScope: VisibilityScope = this;
+        while (targetScope.hasParent()) {
+            targetScope = targetScope.parent();
+        }
+        return targetScope.env;
     }
 
 }

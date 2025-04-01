@@ -26,13 +26,13 @@ describe("VisibilityScope", () => {
         expect((childScope.get(StringValue.from("x")) as StringValue).string)
             .toBe("y");
 
-        childScope.set(StringValue.from("x"), StringValue.from("y-child"));
+        childScope.setLocal(StringValue.from("x"), StringValue.from("y-child"));
         expect((rootScope.get(StringValue.from("x")) as StringValue).string)
             .toBe("y");
         expect((childScope.get(StringValue.from("x")) as StringValue).string)
             .toBe("y-child");
 
-        childScope.set(StringValue.from("n"), StringValue.from("m"));
+        childScope.setLocal(StringValue.from("n"), StringValue.from("m"));
         expect(rootScope.get(StringValue.from("n"))).toBeInstanceOf(NilValue);
         expect((childScope.get(StringValue.from("n")) as StringValue).string)
             .toBe("m");

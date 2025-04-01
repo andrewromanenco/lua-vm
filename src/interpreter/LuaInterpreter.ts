@@ -85,29 +85,22 @@ import BreakStmt from "./BreakStmt";
 import { isFalse, isTrue } from "./utils";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
-    isFalse(exp: Value) {
-        throw new Error("Method not implemented.");
-    }
 
-    private readonly globalScope: VisibilityScope;
     private currentScope: VisibilityScope;
 
     constructor() {
         super();
-        this.globalScope = VisibilityScope.root();
-        this.currentScope = this.globalScope;
+        this.currentScope = VisibilityScope.root();
     }
 
     getAllGlobalVars(): TableValue {
-        return this.globalScope.getAll();
+        return this.currentScope.globalVars();
     }
 
     getGlobalVar(key: Value): Value {
-        return this.globalScope.get(key);
-    }
-
-    setGlobalVar(key: Value, value: Value): void {
-        this.globalScope.set(key, value);
+        // this function is called after interpreter is done
+        // as a result, current scope is the global scope
+        return this.currentScope.get(key);
     }
 
     visitStart_ = (ctx: Start_Context): Value => {
@@ -143,18 +136,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         for (let i = 1; i <= names.size(); i++) {
             const name = names.get(i);
             const value = values.getValueOrNil(i);
-            let scope = this.currentScope;
-            while (true) {
-                if (scope.has(name)) {
-                    scope.set(name, value);
-                    break;
-                } else if (scope.parent() !== undefined) {
-                    scope = scope.parent();
-                } else {
-                    scope.set(name, value);
-                    break;
-                }
-            }
+            this.currentScope.set(name , value);
         }
         return new NilValue();
     };
@@ -247,7 +229,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const parameters = ctx.funcbody().parlist().accept(this);
         const block = ctx.funcbody().block();
         const f = new FunctionValue(parameters as InternalListValue, block);
-        this.setGlobalVar(name, f);
+        this.currentScope.set(name, f);
         return new NilValue();
     };
 
@@ -260,7 +242,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const exps = ctx.explist() ?
             ctx.explist().accept(this) as InternalListValue : new InternalListValue([]);
         for (let i = 1; i <= names.size(); i++) {
-            this.currentScope.set(
+            this.currentScope.setLocal(
                 names.get(i),
                 exps.getValueOrNil(i)
             );
@@ -490,11 +472,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         this.currentScope = VisibilityScope.childOf(this.currentScope);
         const len = Math.max(list_params.size(), list_args.size());
         for (let i = 1; i <= len; i++) {
-            this.currentScope.set(list_params.get(i), list_args.get(i));
+            this.currentScope.setLocal(list_params.get(i), list_args.get(i));
         }
         if (len < list_params.size()) {
             for (let i = len+1; i <= list_params.size(); i++) {
-                this.currentScope.set(list_params.get(i), new NilValue());
+                this.currentScope.setLocal(list_params.get(i), new NilValue());
             }
         }
         let result = ReturnStmt.executeReturnable(() => {
