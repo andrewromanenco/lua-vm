@@ -103,6 +103,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return this.currentScope.get(key);
     }
 
+    scoped(f:() => Value): Value {
+        this.currentScope = VisibilityScope.childOf(this.currentScope);
+        try {
+            return f();
+        } finally {
+            this.currentScope = this.currentScope.parent();
+        }
+    }
+
     visitStart_ = (ctx: Start_Context): Value => {
         return ctx.chunk().accept(this);
     };
@@ -114,16 +123,13 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitBlock = (ctx: BlockContext): Value => {
-        this.currentScope = VisibilityScope.childOf(this.currentScope);
-        try {
+        return this.scoped(() => {
             ctx.stat_list().forEach(stat => stat.accept(this));
             if (ctx.retstat()) {
                 ctx.retstat().accept(this);
             }
-        } finally {
-            this.currentScope = this.currentScope.parent();
-        }
-        return new NilValue;
+            return new NilValue;
+        });
     };
 
     visitStat_no_op = (ctx: Stat_no_opContext): Value => {
@@ -174,8 +180,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_repeat = (ctx: Stat_repeatContext): Value => {
-        this.currentScope = VisibilityScope.childOf(this.currentScope);
-        try {
+        return this.scoped(() => {
             while (true) {
                 const breaked = BreakStmt.breakCalled(() => {
                     ctx.block().stat_list().forEach(stmt => stmt.accept(this));
@@ -188,10 +193,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
                     break;
                 }
             }
-        } finally {
-            this.currentScope = this.currentScope.parent();
-        }
-        return new NilValue();
+            return new NilValue();
+        });
     };
 
     visitStat_if = (ctx: Stat_ifContext): Value => {
@@ -469,21 +472,21 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         }
         const list_params = (fun as FunctionValue).params() as InternalListValue;
         const list_args = ctx.args().accept(this) as InternalListValue;
-        this.currentScope = VisibilityScope.childOf(this.currentScope);
-        const len = Math.max(list_params.size(), list_args.size());
-        for (let i = 1; i <= len; i++) {
-            this.currentScope.setLocal(list_params.get(i), list_args.get(i));
-        }
-        if (len < list_params.size()) {
-            for (let i = len+1; i <= list_params.size(); i++) {
-                this.currentScope.setLocal(list_params.get(i), new NilValue());
+        return this.scoped(() => {
+            const len = Math.max(list_params.size(), list_args.size());
+            for (let i = 1; i <= len; i++) {
+                this.currentScope.setLocal(list_params.get(i), list_args.get(i));
             }
-        }
-        let result = ReturnStmt.executeReturnable(() => {
-            return (fun as FunctionValue).body().accept(this);
+            if (len < list_params.size()) {
+                for (let i = len+1; i <= list_params.size(); i++) {
+                    this.currentScope.setLocal(list_params.get(i), new NilValue());
+                }
+            }
+            let result = ReturnStmt.executeReturnable(() => {
+                return (fun as FunctionValue).body().accept(this);
+            });
+            return result;
         });
-        this.currentScope = this.currentScope.parent();
-        return result;
     };
 
     visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
