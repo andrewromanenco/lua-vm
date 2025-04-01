@@ -1,6 +1,6 @@
 import LuaInterpreter from "./interpreter/LuaInterpreter";
 import { InternalListValue, StringValue, TableValue, Value } from "./interpreter/types";
-import { execute } from "./interpreter/utils";
+import { executeWithInterpreter } from "./interpreter/utils";
 
 export default class VMBuilder {
     build(): VM {
@@ -22,6 +22,7 @@ class VM {
 
 class ExecutionThread {
     private readonly vars: Map<StringValue, Value> = new Map();
+    private readonly interpreter = new LuaInterpreter();
 
     setLuaVar(name: StringValue, value: Value): ExecutionThread {
         this.vars.set(name, value);
@@ -29,14 +30,13 @@ class ExecutionThread {
     }
 
     execute(lua: string): ExecutionResult {
-        const interpreter = new LuaInterpreter();
         this.vars.forEach((v, k) => {
-            interpreter.setVar(k, v);
+            this.interpreter.setVar(k, v);
         });
-        const result = execute(lua, interpreter);
+        const result = executeWithInterpreter(lua, this.interpreter);
         return new ExecutionResult(
             result,
-            interpreter.getAllGlobalVars()
+            this.interpreter.getAllGlobalVars()
         );
     }
 }

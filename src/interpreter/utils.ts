@@ -11,7 +11,7 @@ function make_parser(lua_code: string): LuaParser {
     return new LuaParser(tokenStream);
 }
 
-function execute(lua_code: string, interpreter: LuaInterpreter): Value {
+function executeWithInterpreter(lua_code: string, interpreter: LuaInterpreter): Value {
     const parser = make_parser(lua_code);
     const start = parser.start_();
     return start.accept(interpreter);
@@ -34,4 +34,4 @@ function unpack(value: Value) {
         (value as InternalListValue).getValueOrNil(1) : value;
 }
 
-export { make_parser, execute, isFalse, isTrue, unpack };
+export { make_parser, executeWithInterpreter, isFalse, isTrue, unpack };

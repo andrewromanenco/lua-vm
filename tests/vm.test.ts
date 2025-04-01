@@ -1,6 +1,6 @@
 import { NilValue, NumberValue, StringValue } from "@src/interpreter/types";
 import VMBuilder from "@src/vm";
-import { expectToBeNumber } from "./interpreter/test_utils";
+import { expectToBeNil, expectToBeNumber } from "./interpreter/test_utils";
 import { NotYetImplemented } from "@src/interpreter/errors";
 
 test("vm execution", () => {
@@ -105,4 +105,36 @@ test("injecting global variable", () => {
   expect(result.hasReturnValue()).toBeTruthy();
   expect(result.returnValueAsList().length).toBe(1);
   expectToBeNumber(result.returnValueAsList()[0], 3);
+});
+
+test("thread keeps state between calls", () => {
+  const lua1 = `
+  b = 10
+  return 99
+  `;
+  const lua2 = `
+  d = a + b + c
+  return d
+  `;
+  const vm = new VMBuilder().build();
+  const thread = vm.newThread();
+  thread.setLuaVar(StringValue.from("a"), NumberValue.from(1));
+  const result1 = thread.execute(lua1);
+  expectToBeNumber(result1.globalVar("a"), 1);
+  expectToBeNumber(result1.globalVar("b"), 10);
+  expectToBeNil(result1.globalVar("c"));
+  expectToBeNil(result1.globalVar("d"));
+  expect(result1.hasReturnValue()).toBeTruthy();
+  expect(result1.returnValueAsList().length).toBe(1);
+  expectToBeNumber(result1.returnValueAsList()[0], 99);
+
+  thread.setLuaVar(StringValue.from("c"), NumberValue.from(100));
+  const result2 = thread.execute(lua2);
+  expectToBeNumber(result2.globalVar("a"), 1);
+  expectToBeNumber(result2.globalVar("b"), 10);
+  expectToBeNumber(result2.globalVar("c"), 100);
+  expectToBeNumber(result2.globalVar("d"), 111);
+  expect(result2.hasReturnValue()).toBeTruthy();
+  expect(result2.returnValueAsList().length).toBe(1);
+  expectToBeNumber(result2.returnValueAsList()[0], 111);
 });

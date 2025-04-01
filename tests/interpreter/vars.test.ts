@@ -1,7 +1,7 @@
 import LuaInterpreter from "@src/interpreter/LuaInterpreter";
 import { InternalListValue, NilValue, NumberValue, StringValue } from "@src/interpreter/types";
 
-import { execute } from "@src/interpreter/utils";
+import { executeWithInterpreter } from "@src/interpreter/utils";
 import { assert_return_number, assert_return_nothing, number_value } from "@tests/interpreter/test_utils";
 
 test("c=a+b", () => {
@@ -12,7 +12,7 @@ test("c=a+b", () => {
     return c
     `;
     const interpreter = new LuaInterpreter();
-    const result = execute(lua, interpreter);
+    const result = executeWithInterpreter(lua, interpreter);
     assert_return_number(result, 42);
 });
 
@@ -27,7 +27,7 @@ test("while loop", () => {
     return b
     `;
     const interpreter = new LuaInterpreter();
-    const result = execute(lua, interpreter);
+    const result = executeWithInterpreter(lua, interpreter);
     assert_return_number(result, 32);
 });
 
@@ -40,7 +40,7 @@ test("define function", () => {
   return
   `;
   const interpreter = new LuaInterpreter();
-  const result = execute(lua, interpreter);
+  const result = executeWithInterpreter(lua, interpreter);
   assert_return_nothing(result);
   const a = interpreter.getGlobalVar(StringValue.from("a"));
   expect(a).toBeInstanceOf(NumberValue);
@@ -54,7 +54,7 @@ test("visibility scopes", () => {
   return a
   `;
   const interpreter = new LuaInterpreter();
-  const result = execute(lua, interpreter);
+  const result = executeWithInterpreter(lua, interpreter);
   assert_return_number(result, 20);
   const a = interpreter.getGlobalVar(StringValue.from("a"));
   expect(a).toBeInstanceOf(NumberValue);
@@ -74,7 +74,7 @@ test("visibility scopes in function", () => {
   return a, b
   `;
   const interpreter = new LuaInterpreter();
-  const result = execute(lua, interpreter);
+  const result = executeWithInterpreter(lua, interpreter);
   expect(result).toBeInstanceOf(InternalListValue);
   expect((result as InternalListValue).size()).toBe(2);
   const r1 = (result as InternalListValue).get(1);
@@ -95,7 +95,7 @@ test("function return", () => {
   return ff(), a, b
   `;
   const interpreter = new LuaInterpreter();
-  const result = execute(lua, interpreter);
+  const result = executeWithInterpreter(lua, interpreter);
   expect(result).toBeInstanceOf(InternalListValue);
   expect((result as InternalListValue).size()).toBe(3);
   expect(number_value((result as InternalListValue), 1)).toBe(110);
@@ -113,7 +113,7 @@ test("function add", () => {
   return a, c
   `;
   const interpreter = new LuaInterpreter();
-  const result = execute(lua, interpreter);
+  const result = executeWithInterpreter(lua, interpreter);
   expect(result).toBeInstanceOf(InternalListValue);
   expect((result as InternalListValue).size()).toBe(2);
   expect(number_value((result as InternalListValue), 1)).toBe(10);
@@ -130,7 +130,7 @@ test("function call with extra arg", () => {
   return a, c
   `;
   const interpreter = new LuaInterpreter();
-  const result = execute(lua, interpreter);
+  const result = executeWithInterpreter(lua, interpreter);
   expect(result).toBeInstanceOf(InternalListValue);
   expect((result as InternalListValue).size()).toBe(2);
   expect(number_value((result as InternalListValue), 1)).toBe(10);
@@ -150,7 +150,7 @@ test("function call with not enough args", () => {
   return a, b, c
   `;
   const interpreter = new LuaInterpreter();
-  const result = execute(lua, interpreter);
+  const result = executeWithInterpreter(lua, interpreter);
   expect(result).toBeInstanceOf(InternalListValue);
   expect((result as InternalListValue).size()).toBe(3);
   expect(number_value((result as InternalListValue), 1)).toBe(10);
