@@ -21,10 +21,19 @@ class VM {
 }
 
 class ExecutionThread {
+    private readonly vars: Map<StringValue, Value> = new Map();
+
+    setLuaVar(name: StringValue, value: Value): ExecutionThread {
+        this.vars.set(name, value);
+        return this;
+    }
+
     execute(lua: string): ExecutionResult {
         const interpreter = new LuaInterpreter();
+        this.vars.forEach((v, k) => {
+            interpreter.setVar(k, v);
+        });
         const result = execute(lua, interpreter);
-
         return new ExecutionResult(
             result,
             interpreter.getAllGlobalVars()

@@ -103,6 +103,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return this.currentScope.get(key);
     }
 
+    setVar(name: StringValue, value: Value): void {
+        this.currentScope.set(name, value);
+    }
+
     scoped(f:() => Value): Value {
         this.currentScope = VisibilityScope.childOf(this.currentScope);
         try {

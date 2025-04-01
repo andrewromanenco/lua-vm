@@ -1,4 +1,4 @@
-import { NilValue, NumberValue } from "@src/interpreter/types";
+import { NilValue, NumberValue, StringValue } from "@src/interpreter/types";
 import VMBuilder from "@src/vm";
 import { expectToBeNumber } from "./interpreter/test_utils";
 import { NotYetImplemented } from "@src/interpreter/errors";
@@ -89,4 +89,20 @@ test("not implemented feature", () => {
     expect(exception).toBeInstanceOf(NotYetImplemented);
     expect((exception as NotYetImplemented).message)
       .toBe("Feature not yet implemented(line: 3, col: 4): goto");
+});
+
+test("injecting global variable", () => {
+  const lua = `
+  a  = 1 + b
+  return a
+  `;
+  const vm = new VMBuilder().build();
+  const thread = vm.newThread();
+  thread.setLuaVar(StringValue.from("b"), NumberValue.from(2));
+  const result = thread.execute(lua);
+  expectToBeNumber(result.globalVar("a"), 3);
+  expectToBeNumber(result.globalVar("b"), 2);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(1);
+  expectToBeNumber(result.returnValueAsList()[0], 3);
 });
