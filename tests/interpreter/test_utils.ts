@@ -1,4 +1,4 @@
-import { InternalListValue, NilValue, NumberValue, Value } from "@src/interpreter/types";
+import { BooleanValue, InternalListValue, NilValue, NumberValue, Value } from "@src/interpreter/types";
 
 function assert_return_number(result: Value, expected: number) {
     expect(result).toBeInstanceOf(InternalListValue);
@@ -24,8 +24,13 @@ function expectToBeNumber(value: Value, n: number): void {
     expect((value as NumberValue).number).toBe(n);
 }
 
+function expectToBeBool(value: Value, b: boolean): void {
+    expect(value).toBeInstanceOf(BooleanValue);
+    expect((value as BooleanValue).boolean).toBe(b);
+}
+
 function expectToBeNil(value: Value, ): void {
     expect(value).toBeInstanceOf(NilValue);
 }
 
-export { assert_return_number, assert_return_nothing, number_value, expectToBeNumber, expectToBeNil };
+export { assert_return_number, assert_return_nothing, number_value, expectToBeNumber, expectToBeBool, expectToBeNil };

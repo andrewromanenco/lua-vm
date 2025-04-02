@@ -354,6 +354,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     visitExp_rel = (ctx: Exp_relContext): Value => {
         const left = ctx.exp(0).accept(this);
         const right = ctx.exp(1).accept(this);
+        if (ctx.EE()) {
+            return this.compare_ee(left, right);
+        }
+        if (ctx.SQEQ()) {
+            return BooleanValue.from(!this.compare_ee(left, right).boolean);
+        }
         if ((left instanceof NumberValue) && (right instanceof NumberValue)) {
             const l = (left as NumberValue).number;
             const r = (right as NumberValue).number;
@@ -363,6 +369,25 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         }
         throw new NotYetImplemented("compare for non numbers", ctx);
     };
+
+    private compare_ee(left: Value, right: Value): BooleanValue {
+        if (left.constructor != right.constructor) {
+            return BooleanValue.false();
+        } else if ((left instanceof NumberValue)
+                    && ((left as NumberValue).number == (right as NumberValue).number)) {
+                        return BooleanValue.true();
+        } else if ((left instanceof StringValue)
+            && ((left as StringValue).string == (right as StringValue).string)) {
+                return BooleanValue.true();
+        } else if ((left instanceof BooleanValue)
+            && ((left as BooleanValue).boolean == (right as BooleanValue).boolean)) {
+                return BooleanValue.true();
+        } else if ((left instanceof NilValue) && (right instanceof NilValue)) {
+                return BooleanValue.true();
+        } else {
+            return BooleanValue.from(left == right);
+        }
+    }
 
     visitStat_table_construnctor = (ctx: Stat_table_construnctorContext): Value => {
         throw new NotYetImplemented("table constructor", ctx);
