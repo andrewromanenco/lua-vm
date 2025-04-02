@@ -139,7 +139,7 @@ test("thread keeps state between calls", () => {
   expectToBeNumber(result2.returnValueAsList()[0], 111);
 });
 
-test("calling non function causes RuntimeError", () => {
+test("calling nil causes RuntimeError", () => {
   const lua = `
   a  = 1
   f()
@@ -153,4 +153,33 @@ test("calling non function causes RuntimeError", () => {
   expect(exception).toBeInstanceOf(RuntimeError);
   expect((exception as RuntimeError).message)
     .toBe("Runtime error: (line: 3, col: 2): Non function is called");
+});
+
+test("calling non function causes RuntimeError", () => {
+  const lua = `
+  a  = 1
+  a()
+  `;
+  let exception;
+  try {
+    new VMBuilder().build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(RuntimeError);
+  expect((exception as RuntimeError).message)
+    .toBe("Runtime error: (line: 3, col: 2): Non function is called");
+});
+
+test("function with multiple return", () => {
+  const lua = `
+  function f()
+    return 1 + 10, 2 + 10, 3 + 10
+  end
+  a,b,c = f()
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeNumber(result.globalVar("a"), 11);
+  expectToBeNumber(result.globalVar("b"), 12);
+  expectToBeNumber(result.globalVar("c"), 13);
 });
