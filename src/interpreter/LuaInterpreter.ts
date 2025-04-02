@@ -83,6 +83,7 @@ import VisibilityScope from "./VisibilityScope";
 import { NotYetImplemented, RuntimeError } from "./errors";
 import BreakStmt from "./BreakStmt";
 import { isFalse, isTrue, unpack } from "./utils";
+import ExtFunction from "./ExtFunction";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
@@ -467,11 +468,14 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         }
         const fname = ctx.NAME(0).getText();
         const fun = this.currentScope.get(StringValue.from(fname));
+        const list_args = ctx.args().accept(this) as InternalListValue;
+        if (fun instanceof ExtFunction) {
+            return (fun as ExtFunction).run(list_args);
+        }
         if (!(fun instanceof FunctionValue)) {
             throw new RuntimeError("Non function is called", ctx);
         }
         const list_params = (fun as FunctionValue).params() as InternalListValue;
-        const list_args = ctx.args().accept(this) as InternalListValue;
         return this.scoped(() => {
             for (let i = 1; i <= list_params.size(); i++) {
                 this.currentScope.setLocal(list_params.get(i), list_args.getValueOrNil(i));
