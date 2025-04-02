@@ -20,7 +20,7 @@ test("if", () => {
     end
     `;
     const vm = new VMBuilder().build();
-    const result = vm.execute(lua);
+    const result = vm.executeOnce(lua);
     expect(result.hasReturnValue()).toBeFalsy();
     expectToBeNumber(result.globalVar("a"), 4);
     expectToBeNumber(result.globalVar("b"),111);
@@ -36,7 +36,7 @@ test("repeat", () => {
     until a == 3
     `;
     const vm = new VMBuilder().build();
-    const result = vm.execute(lua);
+    const result = vm.executeOnce(lua);
     expect(result.hasReturnValue()).toBeFalsy();
     expectToBeNumber(result.globalVar("a"), 3);
     expectToBeNumber(result.globalVar("b"), 16);
@@ -50,7 +50,7 @@ test("set various values", () => {
     d = "string value"
     `;
     const vm = new VMBuilder().build();
-    const result = vm.execute(lua);
+    const result = vm.executeOnce(lua);
     expect(result.hasReturnValue()).toBeFalsy();
     expect(result.globalVar("a")).toBeInstanceOf(NilValue);
     expect(result.globalVar("b")).toBeInstanceOf(BooleanValue);
@@ -80,7 +80,7 @@ test("break", () => {
     until c == 5
     `;
     const vm = new VMBuilder().build();
-    const result = vm.execute(lua);
+    const result = vm.executeOnce(lua);
     expect(result.hasReturnValue()).toBeFalsy();
     expectToBeNumber(result.globalVar("a"), 3);
     expectToBeNumber(result.globalVar("b"), 2);
@@ -104,7 +104,7 @@ test("scope visibility for loops", () => {
     until c == 5
     `;
     const vm = new VMBuilder().build();
-    const result = vm.execute(lua);
+    const result = vm.executeOnce(lua);
     expect(result.hasReturnValue()).toBeFalsy();
     expectToBeNumber(result.globalVar("a"), 5);
     expectToBeNumber(result.globalVar("b"), 5);

@@ -14,7 +14,7 @@ test("vm execution", () => {
     return b
     `;
     const vm = new VMBuilder().build();
-    const result = vm.execute(lua);
+    const result = vm.executeOnce(lua);
     expect(result.hasReturnValue()).toBeTruthy();
     const returnValue = result.returnValueAsList();
     expect(returnValue).toBeInstanceOf(Array);
@@ -39,7 +39,7 @@ test("vm assignments and scopes", () => {
     end
     z = 90
     `;
-    const result = new VMBuilder().build().execute(lua);
+    const result = new VMBuilder().build().executeOnce(lua);
     expect(result.globalVar("x")).toBeInstanceOf(NilValue);
     expect(result.globalVar("w")).toBeInstanceOf(NilValue);
     expectToBeNumber(result.globalVar("a"), 1);
@@ -59,7 +59,7 @@ test("vm visibility scope", () => {
     b = a
   end
   `;
-  const result = new VMBuilder().build().execute(lua);
+  const result = new VMBuilder().build().executeOnce(lua);
   expectToBeNumber(result.globalVar("a"), 10);
   expectToBeNumber(result.globalVar("b"), 30);
 });
@@ -69,7 +69,7 @@ test("swap", () => {
   a,b,c = 1,2,3
   a,b,c = b,c,a
   `;
-  const result = new VMBuilder().build().execute(lua);
+  const result = new VMBuilder().build().executeOnce(lua);
   expectToBeNumber(result.globalVar("a"), 2);
   expectToBeNumber(result.globalVar("b"), 3);
   expectToBeNumber(result.globalVar("c"), 1);
@@ -82,7 +82,7 @@ test("not implemented feature", () => {
     `;
     let exception;
     try {
-      new VMBuilder().build().execute(lua);
+      new VMBuilder().build().executeOnce(lua);
     } catch (e) {
       exception = e;
     }
@@ -146,7 +146,7 @@ test("calling non function causes RuntimeError", () => {
   `;
   let exception;
   try {
-    new VMBuilder().build().execute(lua);
+    new VMBuilder().build().executeOnce(lua);
   } catch (e) {
     exception = e;
   }

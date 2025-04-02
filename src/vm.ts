@@ -14,7 +14,7 @@ class VM {
         return new ExecutionThread();
     }
 
-    execute(lua: string): ExecutionResult {
+    executeOnce(lua: string): ExecutionResult {
         const thread = this.newThread();
         return thread.execute(lua);
     }
