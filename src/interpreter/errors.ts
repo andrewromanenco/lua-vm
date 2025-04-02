@@ -3,7 +3,6 @@ import { ParserRuleContext } from "antlr4/src/antlr4/context/ParserRuleContext";
 class VMError extends Error {
     constructor(message: string) {
         super(message);
-        this.name = "VM Error";
     }
 }
 
