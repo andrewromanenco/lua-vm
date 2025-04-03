@@ -329,7 +329,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_and = (ctx: Exp_andContext): Value => {
-        throw new NotYetImplemented("and", ctx);
+        const left = ctx.exp(0).accept(this);
+        const right = ctx.exp(1).accept(this);
+        return BooleanValue.from(isTrue(left) && isTrue(right));
     };
 
     visitExp_string = (ctx: Exp_stringContext): Value => {
@@ -339,6 +341,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     visitExp_arithmetic_high = (ctx: Exp_arithmetic_highContext): Value => {
         const left = ctx.exp(0).accept(this);
         const right = ctx.exp(1).accept(this);
+
         if (!(left instanceof NumberValue)) {
             throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
         }
@@ -434,7 +437,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_or = (ctx: Exp_orContext): Value => {
-        throw new NotYetImplemented("or", ctx);
+        const left = ctx.exp(0).accept(this);
+        const right = ctx.exp(1).accept(this);
+        return BooleanValue.from(isTrue(left) || isTrue(right));
     };
 
     visitExp_false = (ctx: Exp_falseContext): Value => {

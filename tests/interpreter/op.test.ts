@@ -188,3 +188,43 @@ test("number and string raise error", () => {
     expect((exception as RuntimeError).message)
       .toBe("Runtime error: (line: 4, col: 8): Right expression not a String - NumberValue");
 });
+
+test("logical AND and OR", ()=>{
+  const lua = `
+      t1 = 0
+      t2 = true
+      t3 = "some string"
+      t4 = 100
+      f1 = false
+      f2 = nil
+      and_a = t1 and t4
+      and_b = t3 and true
+      and_c = true and false
+      and_d = f2 and t2
+      and_e = f1 and t2
+      and_f = f2 and t4
+
+      or_a = t1 or t4
+      or_b = t3 or true
+      or_c = true or false
+      or_d = f2 or t2
+      or_e = f1 or t2
+      or_f = f2 or t4
+      or_g = f1 or f2
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeBool(result.globalVar("and_a"), true);
+  expectToBeBool(result.globalVar("and_b"), true);
+  expectToBeBool(result.globalVar("and_c"), false);
+  expectToBeBool(result.globalVar("and_d"), false);
+  expectToBeBool(result.globalVar("and_e"), false);
+  expectToBeBool(result.globalVar("and_f"), false);
+
+  expectToBeBool(result.globalVar("or_a"), true);
+  expectToBeBool(result.globalVar("or_b"), true);
+  expectToBeBool(result.globalVar("or_c"), true);
+  expectToBeBool(result.globalVar("or_d"), true);
+  expectToBeBool(result.globalVar("or_e"), true);
+  expectToBeBool(result.globalVar("or_f"), true);
+  expectToBeBool(result.globalVar("or_g"), false);
+});
