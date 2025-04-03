@@ -1,5 +1,6 @@
 import VMBuilder from "@src/vm";
 import { expectToBeBool } from "./test_utils";
+import { RuntimeError } from "@src/interpreter/errors";
 
 test("relations", ()=>{
     const lua = `
@@ -47,4 +48,77 @@ test("relations", ()=>{
     expectToBeBool(result.globalVar("x4"), false);
     expectToBeBool(result.globalVar("x5"), true);
     expectToBeBool(result.globalVar("x6"), true);
+});
+
+test("relations", ()=>{
+    const lua = `
+        n1 = 10
+        n2 = 100
+        s1 = "abc"
+        s2 = "xyz"
+        a = n1 < n2
+        b = n2 < n1
+        c = s1 < s2
+        d = s2 < s1
+        x = n1 < n1
+        y = s1 < s1
+    `;
+    const result = new VMBuilder().build().executeOnce(lua);
+    expectToBeBool(result.globalVar("a"), true);
+    expectToBeBool(result.globalVar("b"), false);
+    expectToBeBool(result.globalVar("c"), true);
+    expectToBeBool(result.globalVar("d"), false);
+    expectToBeBool(result.globalVar("x"), false);
+    expectToBeBool(result.globalVar("y"), false);
+});
+
+test("only strings and numbers are supported", () => {
+    const lua = `
+    a = true
+    b = 10
+    c = a < b
+    `
+    let exception;
+    try {
+      new VMBuilder().build().executeOnce(lua);
+    } catch (e) {
+      exception = e;
+    }
+    expect(exception).toBeInstanceOf(RuntimeError);
+    expect((exception as RuntimeError).message)
+      .toBe("Runtime error: (line: 4, col: 8): Can't compare type BooleanValue");
+});
+
+test("number and string raise error", () => {
+    const lua = `
+    a = 20
+    b = "abc"
+    c = a < b
+    `
+    let exception;
+    try {
+      new VMBuilder().build().executeOnce(lua);
+    } catch (e) {
+      exception = e;
+    }
+    expect(exception).toBeInstanceOf(RuntimeError);
+    expect((exception as RuntimeError).message)
+      .toBe("Runtime error: (line: 4, col: 8): Right expression not a Number - StringValue");
+});
+
+  test("string and number raise error", () => {
+    const lua = `
+    a = "abc"
+    b = 10
+    c = a < b
+    `
+    let exception;
+    try {
+      new VMBuilder().build().executeOnce(lua);
+    } catch (e) {
+      exception = e;
+    }
+    expect(exception).toBeInstanceOf(RuntimeError);
+    expect((exception as RuntimeError).message)
+      .toBe("Runtime error: (line: 4, col: 8): Right expression not a String - NumberValue");
 });

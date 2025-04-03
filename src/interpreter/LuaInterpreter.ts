@@ -360,15 +360,27 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (ctx.SQEQ()) {
             return BooleanValue.from(!this.compare_ee(left, right).boolean);
         }
-        if ((left instanceof NumberValue) && (right instanceof NumberValue)) {
-            const l = (left as NumberValue).number;
-            const r = (right as NumberValue).number;
-            if (ctx.LT()) return BooleanValue.from(l < r);
-            if (ctx.EE()) return BooleanValue.from(l == r);
-            throw new NotYetImplemented("OP Not Implemented", ctx);
+        if (ctx.LT()) {
+            return this.compare_lt(left, right, ctx);
         }
         throw new NotYetImplemented("compare for non numbers", ctx);
     };
+
+    private compare_lt(left: Value, right: Value, ctx: Exp_relContext): BooleanValue {
+        if (left instanceof NumberValue) {
+            if (!(right instanceof NumberValue)) {
+                throw new RuntimeError(`Right expression not a Number - ${right.constructor.name}`, ctx);
+            }
+            return BooleanValue.from((left as NumberValue).number < (right as NumberValue).number);
+        } else if (left instanceof StringValue) {
+            if (!(right instanceof StringValue)) {
+                throw new RuntimeError(`Right expression not a String - ${right.constructor.name}`, ctx);
+            }
+            return BooleanValue.from((left as StringValue).string < (right as StringValue).string);
+        } else {
+            throw new RuntimeError(`Can't compare type ${left.constructor.name}`, ctx);
+        }
+    }
 
     private compare_ee(left: Value, right: Value): BooleanValue {
         if (left.constructor != right.constructor) {
