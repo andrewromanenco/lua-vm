@@ -171,6 +171,22 @@ test("calling non function causes RuntimeError", () => {
     .toBe("Runtime error: (line: 3, col: 2): Non function is called");
 });
 
+test("continue causes RuntimeError", () => {
+  const lua = `
+  a  = 1
+  continue
+  `;
+  let exception;
+  try {
+    new VMBuilder().build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(NotYetImplemented);
+  expect((exception as NotYetImplemented).message)
+    .toBe("Feature not yet implemented(line: 3, col: 2): continue is not supported in Lua");
+});
+
 test("function with multiple return", () => {
   const lua = `
   function f()
