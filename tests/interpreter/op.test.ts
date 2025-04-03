@@ -2,7 +2,7 @@ import VMBuilder from "@src/vm";
 import { expectToBeBool } from "./test_utils";
 import { RuntimeError } from "@src/interpreter/errors";
 
-test("relations", ()=>{
+test("equals", ()=>{
     const lua = `
         function f(a, b, c)
           return a == b, a ~= b, a == nil, a ~= nil, a == a, a == c
@@ -50,7 +50,7 @@ test("relations", ()=>{
     expectToBeBool(result.globalVar("x6"), true);
 });
 
-test("relations", ()=>{
+test("LT", ()=>{
     const lua = `
         n1 = 10
         n2 = 100
@@ -70,6 +70,72 @@ test("relations", ()=>{
     expectToBeBool(result.globalVar("d"), false);
     expectToBeBool(result.globalVar("x"), false);
     expectToBeBool(result.globalVar("y"), false);
+});
+
+test("LT", ()=>{
+  const lua = `
+      n1 = 10
+      n2 = 100
+      s1 = "abc"
+      s2 = "xyz"
+      a = n1 <= n2
+      b = n2 <= n1
+      c = s1 <= s2
+      d = s2 <= s1
+      x = n1 <= n1
+      y = s1 <= s1
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeBool(result.globalVar("a"), true);
+  expectToBeBool(result.globalVar("b"), false);
+  expectToBeBool(result.globalVar("c"), true);
+  expectToBeBool(result.globalVar("d"), false);
+  expectToBeBool(result.globalVar("x"), true);
+  expectToBeBool(result.globalVar("y"), true);
+});
+
+test("GT", ()=>{
+  const lua = `
+      n2 = 10
+      n1 = 100
+      s2 = "abc"
+      s1 = "xyz"
+      a = n1 > n2
+      b = n2 > n1
+      c = s1 > s2
+      d = s2 > s1
+      x = n1 > n1
+      y = s1 > s1
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeBool(result.globalVar("a"), true);
+  expectToBeBool(result.globalVar("b"), false);
+  expectToBeBool(result.globalVar("c"), true);
+  expectToBeBool(result.globalVar("d"), false);
+  expectToBeBool(result.globalVar("x"), false);
+  expectToBeBool(result.globalVar("y"), false);
+});
+
+test("GE", ()=>{
+const lua = `
+    n2 = 10
+    n1 = 100
+    s2 = "abc"
+    s1 = "xyz"
+    a = n1 >= n2
+    b = n2 >= n1
+    c = s1 >= s2
+    d = s2 >= s1
+    x = n1 >= n1
+    y = s1 >= s1
+`;
+const result = new VMBuilder().build().executeOnce(lua);
+expectToBeBool(result.globalVar("a"), true);
+expectToBeBool(result.globalVar("b"), false);
+expectToBeBool(result.globalVar("c"), true);
+expectToBeBool(result.globalVar("d"), false);
+expectToBeBool(result.globalVar("x"), true);
+expectToBeBool(result.globalVar("y"), true);
 });
 
 test("only strings and numbers are supported", () => {

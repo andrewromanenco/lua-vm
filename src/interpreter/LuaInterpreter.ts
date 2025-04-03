@@ -364,22 +364,35 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             return BooleanValue.from(!this.compare_ee(left, right).boolean);
         }
         if (ctx.LT()) {
-            return this.compare_lt(left, right, ctx);
+            return this.compare_lt(left, right, ctx, false);
+        }
+        if (ctx.LE()) {
+            return this.compare_lt(left, right, ctx, true);
+        }
+        if (ctx.GT()) {
+            return this.compare_lt(right, left, ctx, false);
+        }
+        if (ctx.GE()) {
+            return this.compare_lt(right, left, ctx, true);
         }
         throw new NotYetImplemented("compare for non numbers", ctx);
     };
 
-    private compare_lt(left: Value, right: Value, ctx: Exp_relContext): BooleanValue {
+    private compare_lt(left: Value, right: Value, ctx: Exp_relContext, le: boolean): BooleanValue {
         if (left instanceof NumberValue) {
             if (!(right instanceof NumberValue)) {
                 throw new RuntimeError(`Right expression not a Number - ${right.constructor.name}`, ctx);
             }
-            return BooleanValue.from((left as NumberValue).number < (right as NumberValue).number);
+            const less = (left as NumberValue).number < (right as NumberValue).number;
+            const eq = (left as NumberValue).number == (right as NumberValue).number;
+            return BooleanValue.from(less || (le && eq));
         } else if (left instanceof StringValue) {
             if (!(right instanceof StringValue)) {
                 throw new RuntimeError(`Right expression not a String - ${right.constructor.name}`, ctx);
             }
-            return BooleanValue.from((left as StringValue).string < (right as StringValue).string);
+            const less = (left as StringValue).string < (right as StringValue).string;
+            const eq = (left as StringValue).string == (right as StringValue).string;
+            return BooleanValue.from(less || (le && eq));
         } else {
             throw new RuntimeError(`Can't compare type ${left.constructor.name}`, ctx);
         }
