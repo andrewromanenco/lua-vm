@@ -48,3 +48,24 @@ test("for with numbers; body has access to for var", () => {
     expectToBeNil(result.globalVar("i"));
     expectToBeNumber(result.globalVar("sum"), 1 + 3 + 5 + 7 + 9);
 });
+
+test("generic FOR loop", () => {
+    const lua = `
+    function iter(state, controlVar)
+      if controlVar == state then
+        return nil
+      else
+        return controlVar + 1
+      end
+    end
+    function iter_builder()
+      return iter, 5, 0
+    end
+    sum = 0
+    for i in iter_builder() do
+      sum = sum + i
+    end
+    `;
+    const result = new VMBuilder().build().executeOnce(lua);
+    expectToBeNumber(result.globalVar("sum"), 1 + 2 + 3 + 4 + 5);
+});

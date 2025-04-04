@@ -4,7 +4,6 @@ import {
 
 Stat_labelContext,
 Stat_gotoContext,
-Stat_for_listContext,
 Stat_local_functionContext,
 AttribContext,
 LabelContext,
@@ -44,7 +43,6 @@ const interpreter = new LuaInterpreter();
 const contexts = [
     { method: "visitStat_label", context: Stat_labelContext },
     { method: "visitStat_goto", context: Stat_gotoContext },
-    { method: "visitStat_for_list", context: Stat_for_listContext },
     { method: "visitStat_local_function", context: Stat_local_functionContext },
     { method: "visitAttrib", context: AttribContext },
     { method: "visitLabel", context: LabelContext },

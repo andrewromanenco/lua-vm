@@ -258,7 +258,30 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_for_list = (ctx: Stat_for_listContext): Value => {
-        throw new NotYetImplemented("for list", ctx);
+        const names = ctx.namelist().accept(this) as InternalListValue;
+        const expressions = flattenList(ctx.explist().accept(this));
+        const block = ctx.block();
+        const iteratorFunction = expressions.getValueOrNil(1);
+        const state = expressions.getValueOrNil(2);
+        let controlVariable = expressions.getValueOrNil(3);
+        if (!(iteratorFunction instanceof FunctionValue) && !(iteratorFunction instanceof ExtFunction)) {
+            throw new RuntimeError("Iterator is not a function", ctx);
+        }
+        do {
+            const iterationResult = flattenList(this.exec_function(
+                iteratorFunction, new InternalListValue([state, controlVariable])));
+            controlVariable = iterationResult.getValueOrNil(1);
+            if (controlVariable instanceof NilValue) return new NilValue();
+            this.scoped(() => {
+                for (let i = 1; i <= names.size(); i++) {
+                    this.currentScope.setLocal(names.getValueOrNil(i), iterationResult.getValueOrNil(i));
+                }
+                if (BreakStmt.breakCalled(() => {block.accept(this);})) {
+                    return new NilValue();
+                }
+                return new NilValue();
+            });
+        } while(true);
     };
 
     visitStat_function = (ctx: Stat_functionContext): Value => {
@@ -584,6 +607,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     private exec_ext_function(f: ExtFunction, args: InternalListValue): Value {
         const list_args = flattenList(args);
         return f.run(list_args);
+    }
+
+    private exec_function(f:FunctionValue|ExtFunction, args: InternalListValue): Value {
+        return f instanceof FunctionValue ?
+            this.exec_lua_function(f as FunctionValue, args) :
+            this.exec_ext_function(f as ExtFunction, args);
     }
 
     visitFcall_name = (ctx: Fcall_nameContext): Value => {
