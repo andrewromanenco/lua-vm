@@ -82,7 +82,7 @@ import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
 import { NotYetImplemented, RuntimeError } from "./errors";
 import BreakStmt from "./BreakStmt";
-import { isFalse, isTrue, unpack } from "./utils";
+import { firstValue, flattenList, isFalse, isTrue } from "./utils";
 import ExtFunction from "./ExtFunction";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
@@ -142,8 +142,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_assing_vars = (ctx: Stat_assing_varsContext): Value => {
-        const names = ctx.varlist().accept(this) as InternalListValue;
-        const values = ctx.explist().accept(this) as InternalListValue;
+        const names = flattenList(ctx.varlist().accept(this));
+        const values = flattenList(ctx.explist().accept(this));
         for (let i = 1; i <= names.size(); i++) {
             const name = names.get(i);
             const value = values.getValueOrNil(i);
@@ -173,14 +173,14 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_while = (ctx: Stat_whileContext): Value => {
-        let exp = ctx.exp().accept(this);
+        let exp = firstValue(ctx.exp().accept(this));
         while (isTrue(exp)) {
             if (BreakStmt.breakCalled(()=>{
                     ctx.block().accept(this);
                 })) {
                 return new NilValue();
             }
-            exp = ctx.exp().accept(this);
+            exp = firstValue(ctx.exp().accept(this));
         }
         return new NilValue();
     };
@@ -195,7 +195,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
                 if (breaked) {
                     break;
                 }
-                exp = ctx.exp().accept(this);
+                exp = firstValue(ctx.exp().accept(this));
             } while (isFalse(exp));
             return new NilValue();
         });
@@ -203,7 +203,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitStat_if = (ctx: Stat_ifContext): Value => {
         for (let i = 0; i < ctx.exp_list().length; i++) {
-            let expValue = unpack(ctx.exp_list()[i].accept(this));
+            let expValue = firstValue(ctx.exp_list()[i].accept(this));
             if (isFalse(expValue)) {
                 continue;
             }
@@ -242,9 +242,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
-        const names = ctx.attnamelist().accept(this) as InternalListValue;
+        const names = flattenList(ctx.attnamelist().accept(this));
         const exps = ctx.explist() ?
-            ctx.explist().accept(this) as InternalListValue : new InternalListValue([]);
+            flattenList(ctx.explist().accept(this)) : new InternalListValue([]);
         for (let i = 1; i <= names.size(); i++) {
             this.currentScope.setLocal(
                 names.get(i),
@@ -270,10 +270,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (ctx.RETURN()) {
             const resultList: Value[] = [];
             if (ctx.explist()) {
-                const values = ctx.explist().accept(this);
-                if (!(values instanceof InternalListValue)) {
-                    throw new Error("Should never happen");
-                }
+                const values = flattenList(ctx.explist().accept(this));
                 const list = values as InternalListValue;
                 for (let i = 1; i <= list.size(); i++) {
                     resultList.push(list.get(i));
@@ -309,15 +306,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitExplist = (ctx: ExplistContext): Value => {
         const values = ctx.exp_list().map(exp => exp.accept(this));
-        const result: Value[] = []
-        values.forEach(v => {
-            if (v instanceof InternalListValue) {
-                (v as InternalListValue).list.forEach(item => result.push(item));
-            } else {
-                result.push(v);
-            }
-        });
-        return new InternalListValue(result);
+        return new InternalListValue(values);
     };
 
     visitExp_true = (ctx: Exp_trueContext): Value => {
@@ -329,8 +318,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_and = (ctx: Exp_andContext): Value => {
-        const left = ctx.exp(0).accept(this);
-        const right = ctx.exp(1).accept(this);
+        const left = firstValue(ctx.exp(0).accept(this));
+        const right = firstValue(ctx.exp(1).accept(this));
         return BooleanValue.from(isTrue(left) && isTrue(right));
     };
 
@@ -339,8 +328,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_arithmetic_high = (ctx: Exp_arithmetic_highContext): Value => {
-        const left = ctx.exp(0).accept(this);
-        const right = ctx.exp(1).accept(this);
+        const left = firstValue(ctx.exp(0).accept(this));
+        const right = firstValue(ctx.exp(1).accept(this));
 
         if (!(left instanceof NumberValue)) {
             throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
@@ -358,8 +347,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_rel = (ctx: Exp_relContext): Value => {
-        const left = ctx.exp(0).accept(this);
-        const right = ctx.exp(1).accept(this);
+        const left = firstValue(ctx.exp(0).accept(this));
+        const right = firstValue(ctx.exp(1).accept(this));
         if (ctx.EE()) {
             return this.compare_ee(left, right);
         }
@@ -426,7 +415,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitExp_unary = (ctx: Exp_unaryContext): Value => {
         if (ctx.MINUS()) {
-            const exp = ctx.exp().accept(this);
+            const exp = firstValue(ctx.exp().accept(this));
             if (exp instanceof NumberValue) {
                 return new NumberValue(-1*(exp as NumberValue).number);
             } else {
@@ -437,8 +426,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_or = (ctx: Exp_orContext): Value => {
-        const left = ctx.exp(0).accept(this);
-        const right = ctx.exp(1).accept(this);
+        const left = firstValue(ctx.exp(0).accept(this));
+        const right = firstValue(ctx.exp(1).accept(this));
         return BooleanValue.from(isTrue(left) || isTrue(right));
     };
 
@@ -467,8 +456,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): Value => {
-        const left = ctx.exp(0).accept(this);
-        const right = ctx.exp(1).accept(this);
+        const left = firstValue(ctx.exp(0).accept(this));
+        const right = firstValue(ctx.exp(1).accept(this));
         if (!(left instanceof NumberValue)) {
             throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
         }
@@ -567,7 +556,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitArgs_exp_list = (ctx: Args_exp_listContext): Value => {
         if (ctx.explist()) {
-            return ctx.explist().accept(this);
+            return flattenList(ctx.explist().accept(this));
         } else {
             return new InternalListValue([]);
         }

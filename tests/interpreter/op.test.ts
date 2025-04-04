@@ -1,5 +1,5 @@
 import VMBuilder from "@src/vm";
-import { expectToBeBool } from "./test_utils";
+import { expectToBeBool, expectToBeNil, expectToBeNumber } from "./test_utils";
 import { RuntimeError } from "@src/interpreter/errors";
 
 test("equals", ()=>{
@@ -227,4 +227,67 @@ test("logical AND and OR", ()=>{
   expectToBeBool(result.globalVar("or_e"), true);
   expectToBeBool(result.globalVar("or_f"), true);
   expectToBeBool(result.globalVar("or_g"), false);
+});
+
+test("multires expressions", ()=>{
+  const lua = `
+      function f()
+        return 100, 101, 102;
+      end
+      a1, a2, a3 = 1, f(), 3
+      b1, b2, b3 = 1, f()
+      c1 = f()
+      d1, d2, d3, d4 = f()
+      function f2()
+      end
+      e1,e2 = f2(), 42
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeNumber(result.globalVar("a1"), 1);
+  expectToBeNumber(result.globalVar("a2"), 100);
+  expectToBeNumber(result.globalVar("a3"), 3);
+
+  expectToBeNumber(result.globalVar("b1"), 1);
+  expectToBeNumber(result.globalVar("b2"), 100);
+  expectToBeNumber(result.globalVar("b3"), 101);
+
+  expectToBeNumber(result.globalVar("c1"), 100);
+
+  expectToBeNumber(result.globalVar("d1"), 100);
+  expectToBeNumber(result.globalVar("d2"), 101);
+  expectToBeNumber(result.globalVar("d3"), 102);
+  expectToBeNil(result.globalVar("d4"));
+
+  expectToBeNil(result.globalVar("e1"));
+  expectToBeNumber(result.globalVar("e2"), 42);
+});
+
+test("multires expressions with functions", ()=>{
+  const lua = `
+      function f()
+          return 1,2
+      end
+
+      function fa()
+          return f(), f()
+      end
+
+      function fb()
+          return 10, f()
+      end
+      a1, a2, a3, a4, a5 = 100, fa()
+      b1, b2, b3, b4, b5 = 100, fb()
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeNumber(result.globalVar("a1"), 100);
+  expectToBeNumber(result.globalVar("a2"), 1);
+  expectToBeNumber(result.globalVar("a3"), 1);
+  expectToBeNumber(result.globalVar("a4"), 2);
+  expectToBeNil(result.globalVar("a5"));
+
+  expectToBeNumber(result.globalVar("b1"), 100);
+  expectToBeNumber(result.globalVar("b2"), 10);
+  expectToBeNumber(result.globalVar("b3"), 1);
+  expectToBeNumber(result.globalVar("b4"), 2);
+  expectToBeNil(result.globalVar("b5"));
 });
