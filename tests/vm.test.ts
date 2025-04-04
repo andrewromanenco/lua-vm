@@ -152,7 +152,7 @@ test("calling nil causes RuntimeError", () => {
   }
   expect(exception).toBeInstanceOf(RuntimeError);
   expect((exception as RuntimeError).message)
-    .toBe("Runtime error: (line: 3, col: 2): Non function is called");
+    .toBe("Runtime error: (line: 3, col: 2): Can't execute non-function: NilValue");
 });
 
 test("calling non function causes RuntimeError", () => {
@@ -168,7 +168,7 @@ test("calling non function causes RuntimeError", () => {
   }
   expect(exception).toBeInstanceOf(RuntimeError);
   expect((exception as RuntimeError).message)
-    .toBe("Runtime error: (line: 3, col: 2): Non function is called");
+    .toBe("Runtime error: (line: 3, col: 2): Can't execute non-function: NumberValue");
 });
 
 test("continue causes RuntimeError", () => {

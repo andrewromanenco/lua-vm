@@ -567,6 +567,25 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return ctx.exp(0).accept(this);
     };
 
+    private exec_lua_function(f: FunctionValue, args: InternalListValue): Value {
+        const list_params = (f as FunctionValue).params() as InternalListValue;
+        const list_args = flattenList(args);
+        return this.scoped(() => {
+            for (let i = 1; i <= list_params.size(); i++) {
+                this.currentScope.setLocal(list_params.get(i), list_args.getValueOrNil(i));
+            }
+            const result = ReturnStmt.executeReturnable(() => {
+                return (f as FunctionValue).body().accept(this);
+            });
+            return result;
+        });
+    }
+
+    private exec_ext_function(f: ExtFunction, args: InternalListValue): Value {
+        const list_args = flattenList(args);
+        return f.run(list_args);
+    }
+
     visitFcall_name = (ctx: Fcall_nameContext): Value => {
         if (ctx.exp_list().length > 0) {
             throw new NotYetImplemented("invocation", ctx);
@@ -575,21 +594,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const fun = this.currentScope.get(StringValue.from(fname));
         const list_args = ctx.args().accept(this) as InternalListValue;
         if (fun instanceof ExtFunction) {
-            return (fun as ExtFunction).run(list_args);
+            return this.exec_ext_function(fun as ExtFunction, list_args);
+        } else if (fun instanceof FunctionValue) {
+            return this.exec_lua_function(fun as FunctionValue, list_args);
+        } else {
+            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
         }
-        if (!(fun instanceof FunctionValue)) {
-            throw new RuntimeError("Non function is called", ctx);
-        }
-        const list_params = (fun as FunctionValue).params() as InternalListValue;
-        return this.scoped(() => {
-            for (let i = 1; i <= list_params.size(); i++) {
-                this.currentScope.setLocal(list_params.get(i), list_args.getValueOrNil(i));
-            }
-            let result = ReturnStmt.executeReturnable(() => {
-                return (fun as FunctionValue).body().accept(this);
-            });
-            return result;
-        });
     };
 
     visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
