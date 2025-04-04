@@ -218,7 +218,43 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_for_var = (ctx: Stat_for_varContext): Value => {
-        throw new NotYetImplemented("for exp", ctx);
+        const varName = StringValue.from(ctx.NAME().getText());
+        const initValue = firstValue(ctx.exp(0).accept(this))
+        const limit = firstValue(ctx.exp(1).accept(this))
+        const step = ctx.exp_list().length == 3 ? firstValue(ctx.exp(2).accept(this)) : NumberValue.from(1)
+        if (!(initValue instanceof NumberValue)) {
+            throw new RuntimeError("init value is not a number", ctx);
+        }
+        if (!(limit instanceof NumberValue)) {
+            throw new RuntimeError("limit value is not a number", ctx);
+        }
+        if (!(step instanceof NumberValue)) {
+            throw new RuntimeError("step is not a number", ctx);
+        }
+        if (step.number == 0) {
+            throw new RuntimeError("step is Zero", ctx);
+        }
+        let n = limit.number;
+        const s = step.number;
+        const block = ctx.block();
+        return this.scoped(() => {
+            let i = initValue.number;
+            while ((s > 0)? i <= n: i >= n) {
+                this.currentScope.setLocal(varName, NumberValue.from(i));
+                if (BreakStmt.breakCalled(() => {
+                    block.accept(this);
+                })) {
+                    break;
+                }
+                const afterBodyI = this.currentScope.get(varName);
+                if (!(afterBodyI instanceof NumberValue)) {
+                    throw new RuntimeError("FOR loop variable is not a number any more (changed in loop body)", ctx);
+                }
+                i = (afterBodyI as NumberValue).number;
+                i += s;
+            }
+            return new NilValue();
+        });
     };
 
     visitStat_for_list = (ctx: Stat_for_listContext): Value => {
