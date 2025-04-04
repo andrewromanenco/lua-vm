@@ -29,9 +29,31 @@ function isTrue(value: Value): boolean {
     return !isFalse(value);
 }
 
-function unpack(value: Value) {
-    return value instanceof InternalListValue ?
-        (value as InternalListValue).getValueOrNil(1) : value;
+function firstValue(value: Value): Value {
+    return flattenList(value).getValueOrNil(1);
 }
 
-export { make_parser, executeWithInterpreter, isFalse, isTrue, unpack };
+function flattenList(value: Value): InternalListValue {
+    if (value instanceof InternalListValue) {
+        const list = (value as InternalListValue);
+        const result: Value[] = [];
+        for (let i = 1; i < list.size(); i++) {
+            if (list.get(i) instanceof InternalListValue) {
+                result.push((list.get(i) as InternalListValue).getValueOrNil(1));
+            } else {
+                result.push(list.get(i));
+            }
+        }
+        if (list.get(list.size()) instanceof InternalListValue) {
+            const lastList = flattenList(list.get(list.size())) as InternalListValue;
+            result.push(...lastList.asList());
+        } else {
+            result.push(list.getValueOrNil(list.size()));
+        }
+        return new InternalListValue(result);
+    } else {
+        return new InternalListValue([value]);
+    }
+}
+
+export { make_parser, executeWithInterpreter, isFalse, isTrue, firstValue, flattenList };
