@@ -1,5 +1,5 @@
 import VMBuilder from "@src/vm";
-import { expectToBeBool, expectToBeNil, expectToBeNumber } from "./test_utils";
+import { expectToBeBool, expectToBeNil, expectToBeNumber, expectToBeString } from "./test_utils";
 import { RuntimeError } from "@src/interpreter/errors";
 
 test("equals", ()=>{
@@ -290,4 +290,23 @@ test("multires expressions with functions", ()=>{
   expectToBeNumber(result.globalVar("b3"), 1);
   expectToBeNumber(result.globalVar("b4"), 2);
   expectToBeNil(result.globalVar("b5"));
+});
+
+test("concat", ()=>{
+  const lua = `
+      n1 = 10
+      n2 = 20
+      s1 = "str1"
+      s2 = "str2"
+      t = true
+      a = s1 .. s2 .. n1
+      b = n1 .. n2
+      c = t .. s1
+      d = non_existing .. 10
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeString(result.globalVar("a"), "str1str210");
+  expectToBeString(result.globalVar("b"), "1020");
+  expectToBeString(result.globalVar("c"), "truestr1");
+  expectToBeString(result.globalVar("d"), "nil10");
 });

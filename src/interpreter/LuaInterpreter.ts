@@ -448,8 +448,30 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_concat = (ctx: Exp_concatContext): Value => {
-        throw new NotYetImplemented("concat", ctx);
+        const left = firstValue(ctx.exp(0).accept(this));
+        const right = firstValue(ctx.exp(1).accept(this));
+        return StringValue.from(
+            this.valueToString(left)
+             + this.valueToString(right));
     };
+
+    private valueToString(value: Value):string {
+        if (value instanceof NilValue) {
+            return "nil";
+        } else if (value instanceof NumberValue) {
+            return (value as NumberValue).number.toString();
+        } else if (value instanceof StringValue) {
+            return (value as StringValue).string;
+        } else if (value instanceof BooleanValue){
+            return (value as BooleanValue).boolean.toString();
+        } else if (value instanceof TableValue){
+            return "table-support-tbd";
+        } else if (value instanceof FunctionValue){
+            return (value as FunctionValue).asIdString();
+        } else {
+            return "unkown_type";
+        }
+    }
 
     visitExp_vararg = (ctx: Exp_varargContext): Value => {
         throw new NotYetImplemented("vararg", ctx);
