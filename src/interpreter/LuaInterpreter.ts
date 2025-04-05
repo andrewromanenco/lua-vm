@@ -624,11 +624,30 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
-        if (ctx.NAME_list().length == 1) {
-            const name = StringValue.from(ctx.NAME(0).getText());
-            return this.currentScope.get(name);
+        const topName = ctx.NAME_list()[0].getText();
+        let value = this.currentScope.get(StringValue.from(topName));
+        let i = 1;
+        let expIndex = 0;
+        let nameIndex = 1;
+        while (i < ctx.getChildCount()) {
+            if (!(value instanceof TableValue)) {
+                throw new RuntimeError("not a table lookup", ctx);
+            }
+            const child = ctx.getChild(i);
+            const childText = child.getText();
+            if (childText === '.') {
+                value = (value as TableValue).get(
+                    StringValue.from(ctx.NAME_list()[nameIndex].getText()));
+                    nameIndex++;
+                    i += 2;
+            } else {
+                const exp = ctx.exp(expIndex).accept(this);
+                expIndex ++;
+                i += 3;
+                value = (value as TableValue).get(exp);
+            }
         }
-        throw new NotYetImplemented("prefix", ctx);
+        return value;
     };
 
     visitPrefixexp_function_call = (ctx: Prefixexp_function_callContext): Value => {

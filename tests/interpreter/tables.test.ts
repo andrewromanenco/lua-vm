@@ -1,11 +1,15 @@
 import VMBuilder from "@src/vm";
-import { expectToBeNumber } from "./test_utils";
-import { TableValue } from "@src/interpreter/types";
+import { expectToBeNil, expectToBeNumber, expectToBeString } from "./test_utils";
+import { NumberValue, StringValue, TableValue } from "@src/interpreter/types";
 
-test("empty table init", () => {
+test("table init and look up", () => {
     const lua = `
-    t = {}
+    t = {key = "value"}
     l = #t
+    nil_value1 = t.no_suck_key1
+    nil_value2 = t["no_suck_key2"]
+    kv1 = t.key
+    kv2 = t["key"]
     return t, l
     `;
     const result = new VMBuilder().build().executeOnce(lua);
@@ -13,7 +17,11 @@ test("empty table init", () => {
     const returnList = result.returnValueAsList();
     expect(returnList.length).toBe(2);
     expect(returnList[0]).toBeInstanceOf(TableValue);
-    expectToBeNumber(returnList[1], 0);
+    expectToBeNumber(returnList[1], 1);
+    expectToBeNil(result.globalVar("nil_value1"));
+    expectToBeNil(result.globalVar("nil_value2"));
+    expectToBeString(result.globalVar("kv1"), "value");
+    expectToBeString(result.globalVar("kv2"), "value");
 });
 
 test("tables init and size", () => {
@@ -21,7 +29,7 @@ test("tables init and size", () => {
     function f() 
       return "ff"
     end
-    t = {"a", "b", named = "value", [f()] = "f-value", "c"}
+    t = {"a", 10, named = "value", [f()] = "f-value", "c"}
     l = #t
     return t, l
     `;
@@ -30,4 +38,11 @@ test("tables init and size", () => {
     const returnList = result.returnValueAsList();
     expect(returnList.length).toBe(2);
     expectToBeNumber(returnList[1], 5);
+    expect(result.globalVar("t")).toBeInstanceOf(TableValue);
+    const table = result.globalVar("t") as TableValue;
+    expectToBeString(table.get(NumberValue.from(1)), "a");
+    expectToBeNumber(table.get(NumberValue.from(2)), 10);
+    expectToBeString(table.get(NumberValue.from(3)), "c");
+    expectToBeString(table.get(StringValue.from("named")), "value");
+    expectToBeString(table.get(StringValue.from("ff")), "f-value");
 });

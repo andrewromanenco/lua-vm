@@ -63,6 +63,7 @@ class TableValue extends Value {
     }
 
     set(key: Value, value: Value): void {
+        if (key instanceof NilValue) return;
         this._table.set(key.asIdString(), value);
     }
 
@@ -198,7 +199,7 @@ class InternalPairValue extends Value {
     }
 
     get right(): Value {
-        return this._left;
+        return this._right;
     }
 
     asIdString(): string {
