@@ -75,7 +75,8 @@ import {
     Number_hex_floatContext,
     String_stringContext,
     String_charstringContext,
-    String_longstringContext
+    String_longstringContext,
+    ExpContext
 } from "../parser/LuaParser";
 import { BooleanValue, FunctionValue, InternalListValue, InternalPairValue, InternalVar, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
@@ -84,6 +85,7 @@ import { NotYetImplemented, RuntimeError } from "./errors";
 import BreakStmt from "./BreakStmt";
 import { firstValue, flattenList, isFalse, isTrue } from "./utils";
 import ExtFunction from "./ExtFunction";
+import { ParserRuleContext, TerminalNode } from "antlr4";
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
@@ -666,10 +668,14 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitPrefixexp_function_call = (ctx: Prefixexp_function_callContext): Value => {
-        if (ctx.NAME_list().length > 0) {
-            throw new NotYetImplemented("prefix function", ctx);
-        }
-        return ctx.functioncall().accept(this);
+        const value = this.walkExpAndName(
+            ctx.functioncall().accept(this),
+            ctx.exp_list(), ctx.NAME_list(),
+            1,
+            0,
+            0,
+            ctx);
+        return value;
     };
 
     visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
@@ -705,20 +711,55 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     }
 
     visitFcall_name = (ctx: Fcall_nameContext): Value => {
-        if (ctx.exp_list().length > 0) {
-            throw new NotYetImplemented("invocation", ctx);
-        }
         const fname = ctx.NAME(0).getText();
-        const fun = this.currentScope.get(StringValue.from(fname));
+        const value = this.walkExpAndName(
+            this.currentScope.get(StringValue.from(fname)),
+            ctx.exp_list(), ctx.NAME_list(),
+            1,
+            0,
+            1,
+            ctx
+        );
         const list_args = ctx.args().accept(this) as InternalListValue;
-        if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, list_args);
-        } else if (fun instanceof FunctionValue) {
-            return this.exec_lua_function(fun as FunctionValue, list_args);
+        if (value instanceof ExtFunction) {
+            return this.exec_ext_function(value as ExtFunction, list_args);
+        } else if (value instanceof FunctionValue) {
+            return this.exec_lua_function(value as FunctionValue, list_args);
         } else {
-            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
+            throw new RuntimeError(`Can't execute non-function: ${value.constructor.name}`, ctx);
         }
     };
+
+    private walkExpAndName(
+        value: Value,
+        exps: ExpContext[], names: TerminalNode[],
+        startChildIndex: number,
+        expIndex: number,
+        nameIndex: number,
+        ctx: ParserRuleContext): Value {
+        let i = startChildIndex;
+        while ((i < ctx.getChildCount())
+                &&((expIndex < exps.length)|| (nameIndex < names.length))) {
+            value = firstValue(value);
+            if (!(value instanceof TableValue)) {
+                throw new RuntimeError(`got ${value.constructor.name} instead of table`, ctx);
+            }
+            const child = ctx.getChild(i);
+            const childText = child.getText();
+            if (childText === '.') {
+                value = (value as TableValue).get(
+                    StringValue.from(names[nameIndex].getText()));
+                    nameIndex++;
+                    i += 2;
+            } else {
+                const exp = exps[expIndex].accept(this);
+                expIndex ++;
+                i += 3;
+                value = (value as TableValue).get(exp);
+            }
+        }
+        return value;
+    }
 
     visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
         throw new NotYetImplemented("fcall", ctx);

@@ -69,3 +69,30 @@ test("tables setter", () => {
     expectToBeString(result.globalVar("k1"), "new_value1");
     expectToBeString(result.globalVar("k2"), "new_value2");
 });
+
+test("double table test", () => {
+    const lua = `
+    t1 = {name1 = "value1"}
+    t2 = {}
+    t2.x = t1
+    t2.x.v = 100
+    return t2.x.name1, t1.v
+    `;
+    const result = new VMBuilder().build().executeOnce(lua);
+    expect(result.hasReturnValue()).toBeTruthy();
+    expectToBeString(result.returnValueAsList()[0], "value1");
+    expectToBeNumber(result.returnValueAsList()[1], 100);
+});
+
+test("table with function call", () => {
+    const lua = `
+    function f()
+        return {"a", "b", "c"}
+    end
+    t = {f = f}
+    return t.f()[2]
+    `;
+    const result = new VMBuilder().build().executeOnce(lua);
+    expect(result.hasReturnValue()).toBeTruthy();
+    expectToBeString(result.returnValueAsList()[0], "b");
+});
