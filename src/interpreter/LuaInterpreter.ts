@@ -772,15 +772,33 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitNumber_hex = (ctx: Number_hexContext): Value => {
-        throw new NotYetImplemented("hex", ctx);;
+        const hex = ctx.HEX().getText();
+        const number = parseInt(hex.substring(2), 16);
+        return NumberValue.from(number);
     };
 
     visitNumber_float = (ctx: Number_floatContext): Value => {
-        throw new NotYetImplemented("float", ctx);
+        const floatAsString = ctx.FLOAT().getText();
+        const number = parseFloat(floatAsString);
+        return NumberValue.from(number);
     };
 
     visitNumber_hex_float = (ctx: Number_hex_floatContext): Value => {
-        throw new NotYetImplemented("hex loat", ctx);
+        const str = ctx.HEX_FLOAT().getText();
+        const match = str.match(/^0x([0-9a-fA-F]+)?(?:\.([0-9a-fA-F]*))?p([+-]?\d+)$/);
+        if (!match) {
+            throw new Error(`Invalid Lua hex float: ${str}`);
+        }
+        const [_, intPart = "0", fracPart = "", exponentStr] = match;
+        const exponent = parseInt(exponentStr, 10);
+        const intValue = parseInt(intPart, 16);
+        let fracValue = 0;
+        for (let i = 0; i < fracPart.length; i++) {
+            const digit = parseInt(fracPart[i], 16);
+            fracValue += digit / Math.pow(16, i + 1);
+        }
+        const total = (intValue + fracValue) * Math.pow(2, exponent);
+        return NumberValue.from(total);
     };
 
     visitString_string = (ctx: String_stringContext): Value => {
@@ -789,10 +807,19 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitString_charstring = (ctx: String_charstringContext): Value => {
-        throw new NotYetImplemented("char string", ctx);
+        const text = ctx.CHARSTRING().getText();
+        return StringValue.from(text.substring(1, text.length - 1));
     };
 
     visitString_longstring = (ctx: String_longstringContext): Value => {
-        throw new NotYetImplemented("long string", ctx);
+        const text = ctx.LONGSTRING().getText();
+        let i = 0;
+        let j = text.length-1;
+        while ((i < j) && (text[i] === '[' || text[i] === '=') &&
+            ((text[i] == '[' && text[j] == ']')|| (text[i] == text[j]))) {
+            i++;
+            j--;
+        }
+        return StringValue.from(text.substring(i, j+1));
     };
 }

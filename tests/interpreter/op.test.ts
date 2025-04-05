@@ -359,3 +359,26 @@ test("bitwise ops", ()=>{
   expectToBeNumber(result.globalVar("vL"), 24);
   expectToBeNumber(result.globalVar("nt"), -7);
 });
+
+test("misc ops", ()=>{
+  const lua = `
+      long_string = [=[one
+two]=]
+      s1 = "s1 string"
+      s2 = 's2 string'
+      s3 = "1\n2"
+      flt = 1.25
+      hx = 0xA
+      hxFloat = 0x1.8p0
+      hxFloat2 = 0x1D.A8p0
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeString(result.globalVar("long_string"), "one\ntwo");
+  expectToBeString(result.globalVar("s1"), "s1 string");
+  expectToBeString(result.globalVar("s2"), "s2 string");
+  expectToBeString(result.globalVar("s3"), "1\n2");
+  expectToBeNumber(result.globalVar("flt"), 1.25);
+  expectToBeNumber(result.globalVar("hx"), 10);
+  expectToBeNumber(result.globalVar("hxFloat"), 1.5);
+  expectToBeNumber(result.globalVar("hxFloat2"), 29.65625);
+});

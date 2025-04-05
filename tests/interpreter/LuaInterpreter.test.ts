@@ -28,11 +28,6 @@ Field_exp_expContext,
 Field_name_expContext,
 Field_expContext,
 FieldsepContext,
-Number_hexContext,
-Number_floatContext,
-Number_hex_floatContext,
-String_charstringContext,
-String_longstringContext
 } from "@src/parser/LuaParser";
 
 describe("LuaInterpreter", () => {
@@ -65,11 +60,6 @@ const contexts = [
     { method: "visitField_name_exp", context: Field_name_expContext },
     { method: "visitField_exp", context: Field_expContext },
     { method: "visitFieldsep", context: FieldsepContext },
-    { method: "visitNumber_hex", context: Number_hexContext },
-    { method: "visitNumber_float", context: Number_floatContext },
-    { method: "visitNumber_hex_float", context: Number_hex_floatContext },
-    { method: "visitString_charstring", context: String_charstringContext },
-    { method: "visitString_longstring", context: String_longstringContext }
 ];
 
 contexts.forEach(({ method, context }) => {
