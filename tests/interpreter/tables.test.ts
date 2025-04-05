@@ -1,6 +1,6 @@
 import VMBuilder from "@src/vm";
 import { expectToBeNil, expectToBeNumber, expectToBeString } from "./test_utils";
-import { NumberValue, StringValue, TableValue } from "@src/interpreter/types";
+import { FunctionValue, NumberValue, StringValue, TableValue } from "@src/interpreter/types";
 
 test("table init and look up", () => {
     const lua = `
@@ -90,9 +90,24 @@ test("table with function call", () => {
         return {"a", "b", "c"}
     end
     t = {f = f}
-    return t.f()[2]
+    return t.f()[2], (f())[3]
     `;
     const result = new VMBuilder().build().executeOnce(lua);
     expect(result.hasReturnValue()).toBeTruthy();
     expectToBeString(result.returnValueAsList()[0], "b");
+    expectToBeString(result.returnValueAsList()[1], "c");
+});
+
+test("init function to table", () => {
+    const lua = `
+    t = {}
+    t.f = function (a)
+        return a*a
+    end
+    return t.f, t.f(10)
+    `;
+    const result = new VMBuilder().build().executeOnce(lua);
+    expect(result.hasReturnValue()).toBeTruthy();
+    expect(result.returnValueAsList()[0]).toBeInstanceOf(FunctionValue);
+    expectToBeNumber(result.returnValueAsList()[1], 100);
 });

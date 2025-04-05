@@ -291,10 +291,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             throw new Error("Only simple function names are supported");
         }
         const name = StringValue.from(ctx.funcname().NAME(0).getText());
-        const parameters = ctx.funcbody().parlist().accept(this);
-        const block = ctx.funcbody().block();
-        const f = new FunctionValue(parameters as InternalListValue, block);
-        this.currentScope.set(name, f);
+        const fun = ctx.funcbody().accept(this) as FunctionValue;
+        this.currentScope.set(name, fun);
         return new NilValue();
     };
 
@@ -610,7 +608,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_function_def = (ctx: Exp_function_defContext): Value => {
-        throw new NotYetImplemented("funct def", ctx);
+        return ctx.functiondef().accept(this);
     };
 
     visitExp_nil = (ctx: Exp_nilContext): Value => {
@@ -642,29 +640,13 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
         const topName = ctx.NAME_list()[0].getText();
-        let value = this.currentScope.get(StringValue.from(topName));
-        let i = 1;
-        let expIndex = 0;
-        let nameIndex = 1;
-        while (i < ctx.getChildCount()) {
-            if (!(value instanceof TableValue)) {
-                throw new RuntimeError("not a table lookup", ctx);
-            }
-            const child = ctx.getChild(i);
-            const childText = child.getText();
-            if (childText === '.') {
-                value = (value as TableValue).get(
-                    StringValue.from(ctx.NAME_list()[nameIndex].getText()));
-                    nameIndex++;
-                    i += 2;
-            } else {
-                const exp = ctx.exp(expIndex).accept(this);
-                expIndex ++;
-                i += 3;
-                value = (value as TableValue).get(exp);
-            }
-        }
-        return value;
+        return this.walkExpAndName(
+            this.currentScope.get(StringValue.from(topName)),
+            ctx.exp_list(), ctx.NAME_list(),
+            1,
+            0,
+            1,
+            ctx);
     };
 
     visitPrefixexp_function_call = (ctx: Prefixexp_function_callContext): Value => {
@@ -679,10 +661,14 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
-        if (ctx.exp_list.length > 1) {
-            throw new NotYetImplemented("this operation", ctx);
-        }
-        return ctx.exp(0).accept(this);
+        const f = ctx.exp(0).accept(this);
+        return this.walkExpAndName(
+            f,
+            ctx.exp_list(), ctx.NAME_list(),
+            3,
+            1,
+            0,
+            ctx);
     };
 
     private exec_lua_function(f: FunctionValue, args: InternalListValue): Value {
@@ -798,11 +784,13 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitFunctiondef = (ctx: FunctiondefContext): Value => {
-        throw new NotYetImplemented("fdef", ctx);
+        return ctx.funcbody().accept(this);
     };
 
     visitFuncbody = (ctx: FuncbodyContext): Value => {
-        throw new NotYetImplemented("fbody", ctx);
+        const parameters = ctx.parlist().accept(this);
+        const block = ctx.block();
+        return new FunctionValue(parameters as InternalListValue, block);
     };
 
     visitParlist_namellist = (ctx: Parlist_namellistContext): Value => {
