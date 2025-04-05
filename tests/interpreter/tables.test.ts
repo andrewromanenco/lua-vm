@@ -46,3 +46,26 @@ test("tables init and size", () => {
     expectToBeString(table.get(StringValue.from("named")), "value");
     expectToBeString(table.get(StringValue.from("ff")), "f-value");
 });
+
+test("tables setter", () => {
+    const lua = `
+    t = {name1 = "value1"}
+    n1 = t.name1
+    n2 = t['name1']
+    t.new_key1 = "new_value1"
+    t['new_key2'] = "new_value2"
+    k1 = t['new_key1']
+    k2 = t.new_key2
+    t.name1 = "value-updated"
+    `;
+    const result = new VMBuilder().build().executeOnce(lua);
+    expect(result.hasReturnValue()).toBeFalsy();
+    const table = result.globalVar("t") as TableValue;
+    expectToBeString(table.get(StringValue.from("name1")), "value-updated");
+    expectToBeString(table.get(StringValue.from("new_key1")), "new_value1");
+    expectToBeString(table.get(StringValue.from("new_key2")), "new_value2");
+    expectToBeString(result.globalVar("n1"), "value1");
+    expectToBeString(result.globalVar("n2"), "value1");
+    expectToBeString(result.globalVar("k1"), "new_value1");
+    expectToBeString(result.globalVar("k2"), "new_value2");
+});

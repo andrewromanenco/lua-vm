@@ -207,6 +207,23 @@ class InternalPairValue extends Value {
     }
 }
 
+class InternalVar extends Value {
+    private f: (value: Value) => void;
+
+    constructor(f: (value: Value) => void) {
+        super();
+        this.f = f;
+    }
+
+    set(value: Value): void {
+        this.f(value);
+    }
+
+    asIdString(): string {
+        throw new Error("Method not implemented.");
+    }
+}
+
 export {
     Value,
     NilValue,
@@ -216,5 +233,6 @@ export {
     TableValue,
     FunctionValue,
     InternalListValue,
-    InternalPairValue
+    InternalPairValue,
+    InternalVar
 };

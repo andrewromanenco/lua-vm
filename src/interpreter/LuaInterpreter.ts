@@ -77,7 +77,7 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "../parser/LuaParser";
-import { BooleanValue, FunctionValue, InternalListValue, InternalPairValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
+import { BooleanValue, FunctionValue, InternalListValue, InternalPairValue, InternalVar, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
 import { NotYetImplemented, RuntimeError } from "./errors";
@@ -142,12 +142,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_assing_vars = (ctx: Stat_assing_varsContext): Value => {
-        const names = flattenList(ctx.varlist().accept(this));
+        const vars = flattenList(ctx.varlist().accept(this));
         const values = flattenList(ctx.explist().accept(this));
-        for (let i = 1; i <= names.size(); i++) {
-            const name = names.get(i);
-            const value = values.getValueOrNil(i);
-            this.currentScope.set(name , value);
+        for (let i = 1; i <= vars.size(); i++) {
+            (vars.get(i) as InternalVar).set(
+                values.getValueOrNil(i)
+            );
         }
         return new NilValue();
     };
@@ -616,11 +616,26 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitVar_name = (ctx: Var_nameContext): Value => {
-        return StringValue.from(ctx.NAME().getText());
+        const varName = ctx.NAME().getText();
+        return new InternalVar((v) => {
+            this.currentScope.set(
+                StringValue.from(varName),
+                v
+            );
+        });
     };
 
     visitVar_exp = (ctx: Var_expContext): Value => {
-        throw new NotYetImplemented("var exp", ctx);
+        const top = ctx.prefixexp().accept(this);
+        if (!(top instanceof TableValue)) {
+            throw new RuntimeError(`Table expected, got ${top.constructor.name}`, ctx);
+        }
+        const key = ctx.NAME()?
+            StringValue.from(ctx.NAME().getText()) :
+            firstValue(ctx.exp().accept(this));
+        return new InternalVar((v) => {
+            (top as TableValue).set(key, v)
+        });
     };
 
     visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
