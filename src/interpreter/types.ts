@@ -171,6 +171,41 @@ class InternalListValue extends Value {
     }
 }
 
+class InternalPairValue extends Value {
+    private readonly _left: Value;
+    private readonly _right: Value;
+
+    static from(left: Value, right: Value): InternalPairValue {
+        return new InternalPairValue(left, right);
+    }
+
+    static fromRight(right: Value): InternalPairValue {
+        return new InternalPairValue(new NilValue(), right);
+    }
+
+    private constructor(left: Value, right: Value) {
+        super();
+        this._left = left;
+        this._right = right;
+    }
+
+    get left(): Value {
+        return this._left;
+    }
+
+    get isLeftNil(): boolean {
+        return this._left instanceof NilValue;
+    }
+
+    get right(): Value {
+        return this._left;
+    }
+
+    asIdString(): string {
+        throw new Error("Method not implemented.");
+    }
+}
+
 export {
     Value,
     NilValue,
@@ -180,4 +215,5 @@ export {
     TableValue,
     FunctionValue,
     InternalListValue,
+    InternalPairValue
 };

@@ -5174,6 +5174,9 @@ export class FieldContext extends ParserRuleContext {
 	public override copyFrom(ctx: FieldContext): void {
 		super.copyFrom(ctx);
 	}
+	public accept<Result>(visitor: LuaParserVisitor<Result>): Result {
+		throw new Error("not implemented");
+	}
 }
 export class Field_exp_expContext extends FieldContext {
 	constructor(parser: LuaParser, ctx: FieldContext) {

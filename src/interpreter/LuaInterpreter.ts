@@ -77,7 +77,7 @@ import {
     String_charstringContext,
     String_longstringContext
 } from "../parser/LuaParser";
-import { BooleanValue, FunctionValue, InternalListValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
+import { BooleanValue, FunctionValue, InternalListValue, InternalPairValue, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
 import { NotYetImplemented, RuntimeError } from "./errors";
@@ -497,7 +497,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     }
 
     visitStat_table_construnctor = (ctx: Stat_table_construnctorContext): Value => {
-        throw new NotYetImplemented("table constructor", ctx);
+        return ctx.tableconstructor().accept(this);
     };
 
     visitExp_unary = (ctx: Exp_unaryContext): Value => {
@@ -513,8 +513,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         } else if (ctx.POUND()) {
             if (exp instanceof StringValue) {
                 return NumberValue.from((exp as StringValue).string.length);
+            } else if (exp instanceof TableValue) {
+                return NumberValue.from((exp as TableValue).size());
             } else {
-                throw new RuntimeError(`expecting string, but got ${exp.constructor.name}`, ctx);
+                throw new RuntimeError(`expecting string or table, but got ${exp.constructor.name}`, ctx);
             }
         } else if (ctx.SQUIG()) {
             if (exp instanceof NumberValue) {
@@ -744,23 +746,44 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitTableconstructor = (ctx: TableconstructorContext): Value => {
-        throw new NotYetImplemented("table constructor", ctx);
+        if (ctx.fieldlist()) {
+            return ctx.fieldlist().accept(this);
+        } else {
+            return new TableValue();
+        }
     };
 
     visitFieldlist = (ctx: FieldlistContext): Value => {
-        throw new NotYetImplemented("filed list", ctx);
+        const result = new TableValue();
+        let index = 1;
+        ctx.field_list().forEach(f => {
+            const field = f.accept(this) as InternalPairValue;
+            if (field.isLeftNil) {
+                result.set(NumberValue.from(index), firstValue(field.right));
+                index++;
+            } else {
+                result.set(firstValue(field.left), firstValue(field.right));
+            }
+        });
+        return result;
     };
 
     visitField_exp_exp = (ctx: Field_exp_expContext): Value => {
-        throw new NotYetImplemented("field exp", ctx);
+        return InternalPairValue.from(
+            firstValue(ctx.exp(0).accept(this)),
+            firstValue(ctx.exp(1).accept(this))
+        );
     };
 
     visitField_name_exp = (ctx: Field_name_expContext): Value => {
-        throw new NotYetImplemented("field name", ctx);
+        return InternalPairValue.from(
+            StringValue.from(ctx.NAME().getText()),
+            firstValue(ctx.exp().accept(this))
+        );
     };
 
     visitField_exp = (ctx: Field_expContext): Value => {
-        throw new NotYetImplemented("field exp", ctx);
+        return InternalPairValue.fromRight(ctx.exp().accept(this));
     };
 
     visitFieldsep = (ctx: FieldsepContext): Value => {
