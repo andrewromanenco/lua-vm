@@ -310,3 +310,23 @@ test("concat", ()=>{
   expectToBeString(result.globalVar("c"), "truestr1");
   expectToBeString(result.globalVar("d"), "nil10");
 });
+
+test("concat", ()=>{
+  const lua = `
+      a = 100
+      b = 70
+      mn = b - a
+      d1 = a/2
+      d2 = 4/8
+      md = 102 % a
+      fl = 15//10
+      ex = 2 ^ 4
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeNumber(result.globalVar("mn"), -30);
+  expectToBeNumber(result.globalVar("d1"), 50);
+  expectToBeNumber(result.globalVar("d2"), 0.5);
+  expectToBeNumber(result.globalVar("md"), 2);
+  expectToBeNumber(result.globalVar("fl"), 1);
+  expectToBeNumber(result.globalVar("ex"), 16);
+});

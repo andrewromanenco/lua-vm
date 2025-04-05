@@ -396,13 +396,20 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (!(right instanceof NumberValue)) {
             throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
         }
+        const l = (left as NumberValue).number;
+        const r = (right as NumberValue).number;
         if (ctx.STAR()) {
-            return new NumberValue((left as NumberValue).number * (right as NumberValue).number)
+            return new NumberValue(l*r);
+        } else if (ctx.SLASH()) {
+            return new NumberValue(l/r);
+        } else if (ctx.SLASH()) {
+            return new NumberValue(l/r);
+        } else if (ctx.PER()) {
+            return new NumberValue(l%r);
+        } else if (ctx.SS()) {
+            return new NumberValue(Math.floor(l/r));
         }
-        if (ctx.SLASH()) {
-            return new NumberValue((left as NumberValue).number / (right as NumberValue).number)
-        }
-        throw new NotYetImplemented("operation", ctx);
+        throw new NotYetImplemented("will never happen", ctx);
     };
 
     visitExp_rel = (ctx: Exp_relContext): Value => {
@@ -499,7 +506,18 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_exponent = (ctx: Exp_exponentContext): Value => {
-        throw new NotYetImplemented("exponent", ctx);
+        const left = firstValue(ctx.exp(0).accept(this));
+        const right = firstValue(ctx.exp(1).accept(this));
+
+        if (!(left instanceof NumberValue)) {
+            throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
+        }
+        if (!(right instanceof NumberValue)) {
+            throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
+        }
+        const l = (left as NumberValue).number;
+        const r = (right as NumberValue).number;
+        return new NumberValue(Math.pow(l, r));
     };
 
     visitExp_number = (ctx: Exp_numberContext): Value => {
