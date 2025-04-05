@@ -311,7 +311,7 @@ test("concat", ()=>{
   expectToBeString(result.globalVar("d"), "nil10");
 });
 
-test("concat", ()=>{
+test("various ops", ()=>{
   const lua = `
       a = 100
       b = 70
@@ -338,4 +338,24 @@ test("concat", ()=>{
   expectToBeBool(result.globalVar("notf"), true);
   expectToBeNumber(result.globalVar("l"), 3);
   expectToBeNumber(result.globalVar("xr"), -11);
+});
+
+test("bitwise ops", ()=>{
+  const lua = `
+      a = 6
+      b = 2
+      vAnd = a & b
+      vOr = a | b
+      vXor = a ~ b
+      vR = a >> b
+      vL = a << b
+      nt = ~ a
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeNumber(result.globalVar("vAnd"), 2);
+  expectToBeNumber(result.globalVar("vOr"), 6);
+  expectToBeNumber(result.globalVar("vXor"), 4);
+  expectToBeNumber(result.globalVar("vR"), 1);
+  expectToBeNumber(result.globalVar("vL"), 24);
+  expectToBeNumber(result.globalVar("nt"), -7);
 });

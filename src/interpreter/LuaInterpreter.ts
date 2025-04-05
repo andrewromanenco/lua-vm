@@ -373,7 +373,28 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_bits = (ctx: Exp_bitsContext): Value => {
-        throw new NotYetImplemented("bits", ctx);
+        const left = firstValue(ctx.exp(0).accept(this));
+        const right = firstValue(ctx.exp(1).accept(this));
+
+        if (!(left instanceof NumberValue)) {
+            throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
+        }
+        if (!(right instanceof NumberValue)) {
+            throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
+        }
+        const l = (left as NumberValue).number;
+        const r = (right as NumberValue).number;
+        if (ctx.AMP()) {
+            return NumberValue.from(l & r);
+        } else if (ctx.PIPE()) {
+            return NumberValue.from(l | r);
+        } else if (ctx.SQUIG()) {
+            return NumberValue.from(l ^ r);
+        } else if (ctx.GG()) {
+            return NumberValue.from(l >> r);
+        } else {
+            return NumberValue.from(l << r);
+        }
     };
 
     visitExp_and = (ctx: Exp_andContext): Value => {
