@@ -321,6 +321,11 @@ test("concat", ()=>{
       md = 102 % a
       fl = 15//10
       ex = 2 ^ 4
+      nott = not a
+      f = false
+      notf = not f
+      l = #"123"
+      xr = ~10
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expectToBeNumber(result.globalVar("mn"), -30);
@@ -329,4 +334,8 @@ test("concat", ()=>{
   expectToBeNumber(result.globalVar("md"), 2);
   expectToBeNumber(result.globalVar("fl"), 1);
   expectToBeNumber(result.globalVar("ex"), 16);
+  expectToBeBool(result.globalVar("nott"), false);
+  expectToBeBool(result.globalVar("notf"), true);
+  expectToBeNumber(result.globalVar("l"), 3);
+  expectToBeNumber(result.globalVar("xr"), -11);
 });

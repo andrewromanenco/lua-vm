@@ -480,15 +480,29 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitExp_unary = (ctx: Exp_unaryContext): Value => {
+        const exp = firstValue(ctx.exp().accept(this));
         if (ctx.MINUS()) {
-            const exp = firstValue(ctx.exp().accept(this));
             if (exp instanceof NumberValue) {
                 return new NumberValue(-1*(exp as NumberValue).number);
             } else {
-                new NotYetImplemented(`minus unary only supported for number, got ${exp.constructor.name}`, ctx);
+                throw new RuntimeError(`expecting number, but got ${exp.constructor.name}`, ctx);
+            }
+        } else if (ctx.NOT()) {
+            return BooleanValue.from(!isTrue(exp));
+        } else if (ctx.POUND()) {
+            if (exp instanceof StringValue) {
+                return NumberValue.from((exp as StringValue).string.length);
+            } else {
+                throw new RuntimeError(`expecting string, but got ${exp.constructor.name}`, ctx);
+            }
+        } else if (ctx.SQUIG()) {
+            if (exp instanceof NumberValue) {
+                return NumberValue.from(~(exp as NumberValue).number);
+            } else {
+                throw new RuntimeError(`expecting number, but got ${exp.constructor.name}`, ctx);
             }
         }
-        throw new NotYetImplemented("this unary", ctx);
+        throw new NotYetImplemented("will never happen", ctx);
     };
 
     visitExp_or = (ctx: Exp_orContext): Value => {
