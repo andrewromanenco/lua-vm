@@ -935,15 +935,29 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     visitFieldlist = (ctx: FieldlistContext): Value => {
         const result = new TableValue();
         let index = 1;
-        ctx.field_list().forEach(f => {
+        for (let i = 0; i < ctx.field_list().length; i++) {
+            const f = ctx.field_list()[i];
             const field = f.accept(this) as InternalPairValue;
             if (field.isLeftNil) {
-                result.set(NumberValue.from(index), firstValue(field.right));
-                index++;
+                if (i == ctx.field_list().length - 1) {
+                    if (field.right instanceof InternalListValue) {
+                        const list = flattenList(field.right).asList();
+                        list.forEach(v => {
+                            result.set(NumberValue.from(index), firstValue(v));
+                            index++;
+                        });
+                    } else {
+                        result.set(NumberValue.from(index), firstValue(field.right));
+                        index++;
+                    }
+                } else {
+                    result.set(NumberValue.from(index), firstValue(field.right));
+                    index++;
+                }
             } else {
                 result.set(firstValue(field.left), firstValue(field.right));
             }
-        });
+        }
         return result;
     };
 

@@ -457,3 +457,27 @@ test("local function", () => {
   expect(result.hasReturnValue()).toBeTruthy();
   expectToBeString(result.returnValueAsList()[0], "gg");
 });
+
+test("var inits", () => {
+  const lua = `
+  function f()
+    return "a", "b", "c"
+  end
+  x,y,z = (f())
+  list3 = {f()}
+  list2 = {f(), 5}
+  list4 = {1, 2, f()}
+  return x,y,z, #list3, list3[2], #list2, list2[2], #list4, list4[5]
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expectToBeString(result.returnValueAsList()[0], "a");
+  expectToBeString(result.returnValueAsList()[1], "b");
+  expectToBeString(result.returnValueAsList()[2], "c");
+  expectToBeNumber(result.returnValueAsList()[3], 3);
+  expectToBeString(result.returnValueAsList()[4], "b");
+  expectToBeNumber(result.returnValueAsList()[5], 2);
+  expectToBeNumber(result.returnValueAsList()[6], 5);
+  expectToBeNumber(result.returnValueAsList()[7], 5);
+  expectToBeString(result.returnValueAsList()[8], "c");
+});
