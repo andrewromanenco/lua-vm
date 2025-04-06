@@ -120,7 +120,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     }
 
     visitStart_ = (ctx: Start_Context): Value => {
-        return ctx.chunk().accept(this);
+        try {
+            return ctx.chunk().accept(this);
+        } catch (error) {
+            if (error instanceof BreakStmt) {
+                throw new RuntimeError("Break called outside of a loop", (error as BreakStmt).ctx);
+            } else {
+                throw error;
+            }
+        }
     };
 
     visitChunk = (ctx: ChunkContext): Value => {
@@ -163,7 +171,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_break = (ctx: Stat_breakContext): Value => {
-        throw new BreakStmt();
+        throw new BreakStmt(ctx);
     };
 
     visitStat_goto = (ctx: Stat_gotoContext): Value => {

@@ -482,7 +482,7 @@ test("var inits", () => {
   expectToBeString(result.returnValueAsList()[8], "c");
 });
 
-test.only("varargs", () => {
+test("varargs", () => {
   const lua = `
   function f(n, ...)
     list = {...}

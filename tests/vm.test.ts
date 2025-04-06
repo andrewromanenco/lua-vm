@@ -199,3 +199,23 @@ test("function with multiple return", () => {
   expectToBeNumber(result.globalVar("b"), 12);
   expectToBeNumber(result.globalVar("c"), 13);
 });
+
+test("break outside of loop", () => {
+  const lua = `
+  a = 1
+  do
+  break
+  end
+  b = 2
+  `;
+  let exception;
+  try {
+    new VMBuilder().build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(RuntimeError);
+  expect((exception as RuntimeError).message)
+    .toBe("Runtime error: (line: 4, col: 2): Break called outside of a loop");
+  
+});
