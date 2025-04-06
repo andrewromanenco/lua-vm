@@ -1,18 +1,36 @@
-import { CharStreams, CommonTokenStream } from "antlr4";
+import { CharStreams, CommonTokenStream, ErrorListener, RecognitionException, Recognizer } from "antlr4";
 import LuaLexer from "../parser/LuaLexer";
 import LuaParser from "../parser/LuaParser";
 import LuaInterpreter from "./LuaInterpreter";
 import { BooleanValue, InternalListValue, NilValue, Value } from "./types";
+import { LuaLangError } from "./errors";
 
-function make_parser(lua_code: string): LuaParser {
-    const charStream = CharStreams.fromString(lua_code);
-    const lexer = new LuaLexer(charStream);
-    const tokenStream = new CommonTokenStream(lexer);
-    return new LuaParser(tokenStream);
+class ThrowErrorListener<T> extends ErrorListener<T> {
+
+    syntaxError(recognizer: Recognizer<T>, offendingSymbol: T, line: number, column: number, msg: string, e: RecognitionException | undefined): void {
+        throw new LuaLangError(`${msg} at (line: ${line} / col: ${column})`);
+    }
+
 }
 
-function executeWithInterpreter(lua_code: string, interpreter: LuaInterpreter): Value {
-    const parser = make_parser(lua_code);
+function make_parser(lua_code: string, showAntlrError: boolean = true): LuaParser {
+    const charStream = CharStreams.fromString(lua_code);
+    const lexer = new LuaLexer(charStream);
+    if (!showAntlrError) {
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new ThrowErrorListener());
+    }
+    const tokenStream = new CommonTokenStream(lexer);
+    const parser = new LuaParser(tokenStream);
+    if (!showAntlrError) {
+        parser.removeErrorListeners();
+        parser.addErrorListener(new ThrowErrorListener());
+    }
+    return parser;
+}
+
+function executeWithInterpreter(lua_code: string, interpreter: LuaInterpreter, showAntlrError: boolean = true): Value {
+    const parser = make_parser(lua_code, showAntlrError);
     const start = parser.start_();
     return start.accept(interpreter);
 }

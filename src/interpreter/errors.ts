@@ -28,4 +28,10 @@ class RuntimeError extends VMError {
     }
 }
 
-export { NotYetImplemented, RuntimeError };
+class LuaLangError extends VMError {
+    constructor(message:string) {
+        super(message);
+    }
+}
+
+export { NotYetImplemented, RuntimeError, LuaLangError };

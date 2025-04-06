@@ -2,7 +2,7 @@ import { NumberValue, StringValue, Value } from "@src/interpreter/types";
 import VMBuilder from "@src/vm";
 import { expectToBeNumber } from "./interpreter/test_utils";
 import ExtFunction from "@src/interpreter/ExtFunction";
-import { RuntimeError } from "@src/interpreter/errors";
+import { LuaLangError, RuntimeError } from "@src/interpreter/errors";
 
 test("call external fucntion", () => {
     const lua = `
@@ -59,4 +59,23 @@ test("external function errors", () => {
     expect(exception).toBeInstanceOf(RuntimeError);
     expect((exception as RuntimeError).message)
         .toBe("Runtime error: (line: 5, col: 8): Error in external function \"add\"");
+});
+
+test("bad lua code", () => {
+    const lua = `
+    a = 1
+    function f():
+        return 1
+    end
+    b = f()
+    `;
+    let exception;
+    try {
+        new VMBuilder().build().executeOnce(lua);
+    } catch (e) {
+        exception = e;
+    }
+    expect(exception).toBeInstanceOf(LuaLangError);
+    expect((exception as LuaLangError).message)
+        .toBe("mismatched input ':' expecting 'end' at (line: 3 / col: 16)");
 });

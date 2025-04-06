@@ -33,7 +33,7 @@ class ExecutionThread {
         this.vars.forEach((v, k) => {
             this.interpreter.setVar(k, v);
         });
-        const result = executeWithInterpreter(lua, this.interpreter);
+        const result = executeWithInterpreter(lua, this.interpreter, false);
         return new ExecutionResult(
             result,
             this.interpreter.getAllGlobalVars()
