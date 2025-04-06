@@ -403,10 +403,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const right = firstValue(ctx.exp(1).accept(this));
 
         if (!(left instanceof NumberValue)) {
-            throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
+            throw new RuntimeError(`Expected NumberValue, but got ${left.constructor.name}`, ctx);
         }
         if (!(right instanceof NumberValue)) {
-            throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
+            throw new RuntimeError(`Expected NumberValue, but got ${right.constructor.name}`, ctx);
         }
         const l = (left as NumberValue).number;
         const r = (right as NumberValue).number;
@@ -438,10 +438,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const right = firstValue(ctx.exp(1).accept(this));
 
         if (!(left instanceof NumberValue)) {
-            throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
+            throw new RuntimeError(`Expected NumberValue, but got ${left.constructor.name}`, ctx);
         }
         if (!(right instanceof NumberValue)) {
-            throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
+            throw new RuntimeError(`Expected NumberValue, but got ${right.constructor.name}`, ctx);
         }
         const l = (left as NumberValue).number;
         const r = (right as NumberValue).number;
@@ -573,10 +573,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const right = firstValue(ctx.exp(1).accept(this));
 
         if (!(left instanceof NumberValue)) {
-            throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
+            throw new RuntimeError(`Expected NumberValue, but got ${left.constructor.name}`, ctx);
         }
         if (!(right instanceof NumberValue)) {
-            throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
+            throw new RuntimeError(`Expected NumberValue, but got ${right.constructor.name}`, ctx);
         }
         const l = (left as NumberValue).number;
         const r = (right as NumberValue).number;
@@ -630,10 +630,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const left = firstValue(ctx.exp(0).accept(this));
         const right = firstValue(ctx.exp(1).accept(this));
         if (!(left instanceof NumberValue)) {
-            throw new Error(`Expected NumberValue, but got ${left.constructor.name}`);
+            throw new RuntimeError(`Expected NumberValue, but got ${left.constructor.name}`, ctx);
         }
         if (!(right instanceof NumberValue)) {
-            throw new Error(`Expected NumberValue, but got ${right.constructor.name}`);
+            throw new RuntimeError(`Expected NumberValue, but got ${right.constructor.name}`, ctx);
         }
         if (ctx.PLUS()) {
             return new NumberValue((left as NumberValue).number + (right as NumberValue).number)
@@ -1033,7 +1033,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const str = ctx.HEX_FLOAT().getText();
         const match = str.match(/^0x([0-9a-fA-F]+)?(?:\.([0-9a-fA-F]*))?p([+-]?\d+)$/);
         if (!match) {
-            throw new Error(`Invalid Lua hex float: ${str}`);
+            throw new RuntimeError(`Invalid Lua hex float: ${str}`, ctx);
         }
         const [_, intPart = "0", fracPart = "", exponentStr] = match;
         const exponent = parseInt(exponentStr, 10);
