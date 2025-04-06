@@ -737,34 +737,132 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
                     StringValue.from(names[nameIndex].getText()));
                     nameIndex++;
                     i += 2;
-            } else {
+            } else if (childText === '['){
                 const exp = exps[expIndex].accept(this);
                 expIndex ++;
                 i += 3;
                 value = (value as TableValue).get(exp);
+            } else {
+                break;
             }
         }
         return value;
     }
 
     visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
-        throw new NotYetImplemented("fcall", ctx);
+        const table = firstValue(this.walkExpAndName(
+            this.currentScope.get(StringValue.from(ctx.NAME(0).getText())),
+            ctx.exp_list(), ctx.NAME_list(),
+            1,
+            0,
+            1,
+            ctx
+        ));
+        if (!(table instanceof TableValue)) {
+            throw new RuntimeError(`expect table for ":", got ${table.constructor.name}`, ctx);
+        }
+        const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
+        const fun = (table as TableValue).get(StringValue.from(fName));
+        const list_args = (ctx.args().accept(this) as InternalListValue).asList();
+        list_args.unshift(table)
+        const args = new InternalListValue(list_args);
+        if (fun instanceof ExtFunction) {
+            return this.exec_ext_function(fun as ExtFunction, args);
+        } else if (fun instanceof FunctionValue) {
+            return this.exec_lua_function(fun as FunctionValue, args);
+        } else {
+            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
+        }
     };
 
     visitFcall_function_call = (ctx: Fcall_function_callContext): Value => {
-        throw new NotYetImplemented("fcall", ctx);
+        const fun = firstValue(this.walkExpAndName(
+            ctx.functioncall().accept(this),
+            ctx.exp_list(), ctx.NAME_list(),
+            1,
+            0,
+            0,
+            ctx
+        ));
+        const list_args = ctx.args().accept(this) as InternalListValue;
+        if (fun instanceof ExtFunction) {
+            return this.exec_ext_function(fun as ExtFunction, list_args);
+        } else if (fun instanceof FunctionValue) {
+            return this.exec_lua_function(fun as FunctionValue, list_args);
+        } else {
+            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
+        }
     };
 
     visitFcall_exp = (ctx: Fcall_expContext): Value => {
-        throw new NotYetImplemented("fcall", ctx);
+        const fun = firstValue(this.walkExpAndName(
+            ctx.exp(0).accept(this),
+            ctx.exp_list(), ctx.NAME_list(),
+            3,
+            1,
+            0,
+            ctx
+        ));
+        const list_args = ctx.args().accept(this) as InternalListValue;
+        if (fun instanceof ExtFunction) {
+            return this.exec_ext_function(fun as ExtFunction, list_args);
+        } else if (fun instanceof FunctionValue) {
+            return this.exec_lua_function(fun as FunctionValue, list_args);
+        } else {
+            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
+        }
     };
 
     visitFcall_exp_ext = (ctx: Fcall_exp_extContext): Value => {
-        throw new NotYetImplemented("fcall", ctx);
+        const table = firstValue(this.walkExpAndName(
+            firstValue(ctx.exp(0).accept(this)),
+            ctx.exp_list(), ctx.NAME_list(),
+            3,
+            1,
+            0,
+            ctx
+        ));
+        if (!(table instanceof TableValue)) {
+            throw new RuntimeError(`expect table for ":", got ${table.constructor.name}`, ctx);
+        }
+        const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
+        const fun = (table as TableValue).get(StringValue.from(fName));
+        const list_args = (ctx.args().accept(this) as InternalListValue).asList();
+        list_args.unshift(table)
+        const args = new InternalListValue(list_args);
+        if (fun instanceof ExtFunction) {
+            return this.exec_ext_function(fun as ExtFunction, args);
+        } else if (fun instanceof FunctionValue) {
+            return this.exec_lua_function(fun as FunctionValue, args);
+        } else {
+            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
+        }
     };
 
     visitFcall_function_call_ext = (ctx: Fcall_function_call_extContext): Value => {
-        throw new NotYetImplemented("fcall", ctx);
+        const table = firstValue(this.walkExpAndName(
+            firstValue(ctx.functioncall().accept(this)),
+            ctx.exp_list(), ctx.NAME_list(),
+            1,
+            0,
+            0,
+            ctx
+        ));
+        if (!(table instanceof TableValue)) {
+            throw new RuntimeError(`expect table for ":", got ${table.constructor.name}`, ctx);
+        }
+        const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
+        const fun = (table as TableValue).get(StringValue.from(fName));
+        const list_args = (ctx.args().accept(this) as InternalListValue).asList();
+        list_args.unshift(table)
+        const args = new InternalListValue(list_args);
+        if (fun instanceof ExtFunction) {
+            return this.exec_ext_function(fun as ExtFunction, args);
+        } else if (fun instanceof FunctionValue) {
+            return this.exec_lua_function(fun as FunctionValue, args);
+        } else {
+            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
+        }
     };
 
     visitArgs_exp_list = (ctx: Args_exp_listContext): Value => {

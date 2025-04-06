@@ -382,3 +382,32 @@ two]=]
   expectToBeNumber(result.globalVar("hxFloat"), 1.5);
   expectToBeNumber(result.globalVar("hxFloat2"), 29.65625);
 });
+
+test("various function calls", ()=>{
+  const lua = `
+      f = function (x)
+        return x*x
+      end
+      g = function()
+        return f
+      end
+      function t()
+        return {f}
+      end
+      s = {m = 2}
+      s.f = function(self, x)
+        return x*self.m
+      end
+      function d()
+        return {FF = s}
+      end
+    return g()(3), (t())[1](4), s:f(4), d().FF:f(10), (d())["FF"]:f(10)
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expectToBeNumber(result.returnValueAsList()[0], 9);
+  expectToBeNumber(result.returnValueAsList()[1], 16);
+  expectToBeNumber(result.returnValueAsList()[2], 8);
+  expectToBeNumber(result.returnValueAsList()[3], 20);
+  expectToBeNumber(result.returnValueAsList()[4], 20);
+});
