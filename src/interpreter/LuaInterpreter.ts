@@ -294,7 +294,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_local_function = (ctx: Stat_local_functionContext): Value => {
-        throw new NotYetImplemented("local function", ctx);
+        const name = StringValue.from(ctx.NAME().getText());
+        const fun = ctx.funcbody().accept(this);
+        this.currentScope.setLocal(name, fun);
+        return new NilValue();
     };
 
     visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {

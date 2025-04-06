@@ -439,3 +439,21 @@ test("various function args", ()=>{
   expectToBeNumber(result.returnValueAsList()[1], 123);
   expectToBeNumber(result.returnValueAsList()[2], 321);
 });
+
+test("local function", () => {
+  const lua = `
+  function f()
+    return "ff"
+  end
+  do
+      local function f()
+          return "gg"
+      end
+      x = f()
+  end
+  return x
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expectToBeString(result.returnValueAsList()[0], "gg");
+});
