@@ -496,3 +496,13 @@ test("varargs", () => {
   expectToBeString(result.returnValueAsList()[1], "b");
   expectToBeString(result.returnValueAsList()[2], "c");
 });
+
+test("varargs", () => {
+  const lua = `
+  t = { a = { b = { c = "nested" } } }
+  return t.a.b.c
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expectToBeString(result.returnValueAsList()[0], "nested");
+});
