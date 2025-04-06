@@ -59,16 +59,25 @@ class StringValue extends Value {
 class TableValue extends Value {
 
     private readonly uuid = crypto.randomUUID();
-    private readonly _table: Map<String, Value> = new Map();
+    // ref to key mapped to [key, value]
+    private readonly _table: Map<String, Value[]> = new Map();
 
     get(key: Value): Value {
         const value = this._table.get(key.asIdString());
-        return value? value : new NilValue;
+        return value? value[1] : new NilValue;
+    }
+
+    getKeys(): Value[] {
+        const keys: Value[] = [];
+        this._table.forEach((value, _key) => {
+            keys.push(value[0]);
+        });
+        return keys;
     }
 
     set(key: Value, value: Value): void {
         if (key instanceof NilValue) return;
-        this._table.set(key.asIdString(), value);
+        this._table.set(key.asIdString(), [key, value]);
     }
 
     hasKey(key: Value): boolean {
