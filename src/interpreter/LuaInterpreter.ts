@@ -279,7 +279,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         }
         do {
             const iterationResult = flattenList(this.exec_function(
-                iteratorFunction, new InternalListValue([state, controlVariable])));
+                iteratorFunction, new InternalListValue([state, controlVariable]), ctx));
             controlVariable = iterationResult.getValueOrNil(1);
             if (controlVariable instanceof NilValue) return new NilValue();
             this.scoped(() => {
@@ -732,15 +732,15 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         });
     }
 
-    private exec_ext_function(f: ExtFunction, args: InternalListValue): Value {
+    private exec_ext_function(f: ExtFunction, args: InternalListValue, ctx: ParserRuleContext): Value {
         const list_args = flattenList(args);
-        return f.run(list_args);
+        return f.run(list_args, ctx);
     }
 
-    private exec_function(f:FunctionValue|ExtFunction, args: InternalListValue): Value {
+    private exec_function(f:FunctionValue|ExtFunction, args: InternalListValue, ctx: ParserRuleContext): Value {
         return f instanceof FunctionValue ?
             this.exec_lua_function(f as FunctionValue, args) :
-            this.exec_ext_function(f as ExtFunction, args);
+            this.exec_ext_function(f as ExtFunction, args, ctx);
     }
 
     visitFcall_name = (ctx: Fcall_nameContext): Value => {
@@ -755,7 +755,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         );
         const list_args = ctx.args().accept(this) as InternalListValue;
         if (value instanceof ExtFunction) {
-            return this.exec_ext_function(value as ExtFunction, list_args);
+            return this.exec_ext_function(value as ExtFunction, list_args, ctx);
         } else if (value instanceof FunctionValue) {
             return this.exec_lua_function(value as FunctionValue, list_args);
         } else {
@@ -814,7 +814,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         list_args.unshift(table)
         const args = new InternalListValue(list_args);
         if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, args);
+            return this.exec_ext_function(fun as ExtFunction, args, ctx);
         } else if (fun instanceof FunctionValue) {
             return this.exec_lua_function(fun as FunctionValue, args);
         } else {
@@ -833,7 +833,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         ));
         const list_args = ctx.args().accept(this) as InternalListValue;
         if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, list_args);
+            return this.exec_ext_function(fun as ExtFunction, list_args, ctx);
         } else if (fun instanceof FunctionValue) {
             return this.exec_lua_function(fun as FunctionValue, list_args);
         } else {
@@ -852,7 +852,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         ));
         const list_args = ctx.args().accept(this) as InternalListValue;
         if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, list_args);
+            return this.exec_ext_function(fun as ExtFunction, list_args, ctx);
         } else if (fun instanceof FunctionValue) {
             return this.exec_lua_function(fun as FunctionValue, list_args);
         } else {
@@ -878,7 +878,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         list_args.unshift(table)
         const args = new InternalListValue(list_args);
         if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, args);
+            return this.exec_ext_function(fun as ExtFunction, args, ctx);
         } else if (fun instanceof FunctionValue) {
             return this.exec_lua_function(fun as FunctionValue, args);
         } else {
@@ -904,7 +904,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         list_args.unshift(table)
         const args = new InternalListValue(list_args);
         if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, args);
+            return this.exec_ext_function(fun as ExtFunction, args, ctx);
         } else if (fun instanceof FunctionValue) {
             return this.exec_lua_function(fun as FunctionValue, args);
         } else {

@@ -1,21 +1,30 @@
+import { ParserRuleContext } from "antlr4";
+import { RuntimeError } from "./errors";
 import { InternalListValue, Value } from "./types";
 
 export default class ExtFunction extends Value {
     private readonly uuid: string;
     private readonly f: (args: Value[]) => Value[];
+    private readonly name: string;
 
-    static of(f: (args: Value[]) => Value[]):ExtFunction {
-        return new ExtFunction(f);
+    static of(f: (args: Value[]) => Value[], name: string = ""):ExtFunction {
+        return new ExtFunction(f, name.length > 0 ? name: f.name);
     }
 
-    private constructor(f: (args: Value[]) => Value[]) {
+    private constructor(f: (args: Value[]) => Value[], name: string) {
         super();
         this.uuid = crypto.randomUUID();
         this.f = f;
+        this.name = name;
     }
 
-    run(args: InternalListValue): InternalListValue {
-        return new InternalListValue((this.f(args.asList())));
+    run(args: InternalListValue, ctx: ParserRuleContext): InternalListValue {
+        try {
+            return new InternalListValue((this.f(args.asList())));
+        } catch (error) {
+            throw new RuntimeError(`Error in external function "${this.name}"`,
+                ctx, error as Error);
+        }
     }
 
     asIdString(): string {
