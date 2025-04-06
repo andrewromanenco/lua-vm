@@ -889,11 +889,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitArgs_table_constructor = (ctx: Args_table_constructorContext): Value => {
-        throw new NotYetImplemented("table constructor", ctx);
+        return ctx.tableconstructor().accept(this);
     };
 
     visitArgs_string = (ctx: Args_stringContext): Value => {
-        throw new NotYetImplemented("string", ctx);
+        return new InternalListValue([ctx.string_().accept(this)]);
     };
 
     visitFunctiondef = (ctx: FunctiondefContext): Value => {

@@ -421,3 +421,21 @@ test("various function calls", ()=>{
   expectToBeNumber(result.returnValueAsList()[5], 41);
   expectToBeNumber(result.returnValueAsList()[6], 42);
 });
+
+test("various function args", ()=>{
+  const lua = `
+      f = function (x)
+        return x .. '.suffix'
+      end
+      ff = f "xyz"
+      function g(t)
+        return t.key
+      end
+      return f "xyz", g({key = 123}), g {key = 321}
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expectToBeString(result.returnValueAsList()[0], "xyz.suffix");
+  expectToBeNumber(result.returnValueAsList()[1], 123);
+  expectToBeNumber(result.returnValueAsList()[2], 321);
+});
