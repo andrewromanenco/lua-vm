@@ -1,7 +1,7 @@
 import { InternalListValue, Value } from "./types";
 
 export default class ExtFunction extends Value {
-    private readonly id: string;
+    private readonly uuid: string;
     private readonly f: (args: Value[]) => Value[];
 
     static of(f: (args: Value[]) => Value[]):ExtFunction {
@@ -10,7 +10,7 @@ export default class ExtFunction extends Value {
 
     private constructor(f: (args: Value[]) => Value[]) {
         super();
-        this.id = crypto.randomUUID();
+        this.uuid = crypto.randomUUID();
         this.f = f;
     }
 
@@ -19,6 +19,6 @@ export default class ExtFunction extends Value {
     }
 
     asIdString(): string {
-        return `extfunction:${this.id}`;
+        return `extFun:${this.uuid}`;
     }
 }

@@ -13,6 +13,7 @@ class NilValue extends Value {
 }
 
 class NumberValue extends Value {
+    private static readonly uuid = "a189a0cc-c7c9-4300-9f71-305029698356";
     private readonly _number: number;
 
     static from(number: number): NumberValue {
@@ -29,11 +30,12 @@ class NumberValue extends Value {
     }
 
     asIdString(): string {
-        return `number:${this._number}`;
+        return `num:${NumberValue.uuid}:${this._number}`;
     }
 }
 
 class StringValue extends Value {
+    private static readonly uuid = "a189a0cc-c7c9-4300-9f71-305029698357";
     private readonly _str: string;
 
     static from(str: string): StringValue {
@@ -50,11 +52,13 @@ class StringValue extends Value {
     }
 
     asIdString(): string {
-        return `string:${this._str}`;
+        return `str:${StringValue.uuid}:${this._str}`;
     }
 }
 
 class TableValue extends Value {
+
+    private readonly uuid = crypto.randomUUID();
     private readonly _table: Map<String, Value> = new Map();
 
     get(key: Value): Value {
@@ -72,7 +76,7 @@ class TableValue extends Value {
     }
 
     asIdString(): string {
-        throw new Error("Not yet implemented");
+        return `table:${this.uuid}`;
     }
 
     size(): number {
@@ -81,7 +85,7 @@ class TableValue extends Value {
 }
 
 class BooleanValue extends Value {
-
+    private static readonly uuid = "a189a0cc-c7c9-4300-9f71-305029698358";
     private readonly value: boolean;
 
     static true(): BooleanValue {
@@ -106,18 +110,18 @@ class BooleanValue extends Value {
     }
 
     asIdString(): string {
-        return `boolean:${this.value}`;
+        return `bool:${BooleanValue.uuid}:${this.value}`;
     }
 }
 
 class FunctionValue extends Value {
-    private readonly id: string;
+    private readonly uuid: string;
     private readonly parameters: InternalListValue;
     private readonly block: BlockContext
 
     constructor(parameters: InternalListValue, block: BlockContext) {
         super();
-        this.id = crypto.randomUUID();
+        this.uuid = crypto.randomUUID();
         this.parameters = parameters;
         this.block = block;
     }
@@ -131,7 +135,7 @@ class FunctionValue extends Value {
     }
 
     asIdString(): string {
-        return `function:${this.id}`;
+        return `fun:${this.uuid}`;
     }
 }
 
