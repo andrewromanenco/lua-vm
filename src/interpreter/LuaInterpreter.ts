@@ -287,12 +287,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_function = (ctx: Stat_functionContext): Value => {
-        if (ctx.funcname().NAME_list().length != 1) {
-            throw new Error("Only simple function names are supported");
-        }
-        const name = StringValue.from(ctx.funcname().NAME(0).getText());
+        const v = ctx.funcname().accept(this) as InternalVar;
         const fun = ctx.funcbody().accept(this) as FunctionValue;
-        this.currentScope.set(name, fun);
+        v.set(fun);
         return new NilValue();
     };
 
@@ -348,7 +345,25 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitFuncname = (ctx: FuncnameContext): Value => {
-        throw new NotYetImplemented("function name", ctx);
+        const name = StringValue.from(ctx.NAME(0).getText());
+        if (ctx.NAME_list().length == 1) {
+            return new InternalVar((v) => this.currentScope.set(
+                name,
+                v
+            ));
+        }
+        let table = this.currentScope.get(name);
+        if (!(table instanceof TableValue)) {
+            throw new RuntimeError(`expecting table, got ${table.constructor.name}`, ctx);
+        }
+        for (let i = 1; i < ctx.NAME_list().length - 1; i++) {
+            table = (table as TableValue).get(StringValue.from(ctx.NAME(i).getText()));
+            if (!(table instanceof TableValue)) {
+                throw new RuntimeError(`got ${table.constructor.name} instead of table` ,ctx);
+            }
+        }
+        const lastName = StringValue.from(ctx.NAME_list()[ctx.NAME_list().length - 1].getText());
+        return new InternalVar((v) => table.set(lastName, v));
     };
 
     visitVarlist = (ctx: VarlistContext): Value => {

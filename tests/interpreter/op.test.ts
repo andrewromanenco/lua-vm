@@ -1,6 +1,7 @@
 import VMBuilder from "@src/vm";
 import { expectToBeBool, expectToBeNil, expectToBeNumber, expectToBeString } from "./test_utils";
 import { RuntimeError } from "@src/interpreter/errors";
+import { StringValue, TableValue } from "@src/interpreter/types";
 
 test("equals", ()=>{
     const lua = `
@@ -401,7 +402,14 @@ test("various function calls", ()=>{
       function d()
         return {FF = s}
       end
-    return g()(3), (t())[1](4), s:f(4), d().FF:f(10), (d())["FF"]:f(10)
+      s2 = {s = s}
+      function s2.s.f1 (a)
+          return 41
+      end
+      function s2.s:f2 (a)
+          return 42
+      end
+    return g()(3), (t())[1](4), s:f(4), d().FF:f(10), (d())["FF"]:f(10), s2.s.f1(), s2.s:f2()
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expect(result.hasReturnValue()).toBeTruthy();
@@ -410,4 +418,6 @@ test("various function calls", ()=>{
   expectToBeNumber(result.returnValueAsList()[2], 8);
   expectToBeNumber(result.returnValueAsList()[3], 20);
   expectToBeNumber(result.returnValueAsList()[4], 20);
+  expectToBeNumber(result.returnValueAsList()[5], 41);
+  expectToBeNumber(result.returnValueAsList()[6], 42);
 });
