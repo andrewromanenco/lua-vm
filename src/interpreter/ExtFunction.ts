@@ -30,4 +30,8 @@ export default class ExtFunction extends Value {
     asIdString(): string {
         return `extFun:${this.uuid}`;
     }
+
+    toString(): string {
+        return `extFun:${this.name}:${this.uuid}`;
+    }
 }

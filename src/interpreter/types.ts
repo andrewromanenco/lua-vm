@@ -3,11 +3,16 @@ import { BlockContext } from "../parser/LuaParser";
 abstract class Value {
 
     abstract asIdString(): string;
+    abstract toString(): string;
 }
 
 class NilValue extends Value {
 
     asIdString(): string {
+        return "nil";
+    }
+
+    toString(): string {
         return "nil";
     }
 }
@@ -32,6 +37,10 @@ class NumberValue extends Value {
     asIdString(): string {
         return `num:${NumberValue.uuid}:${this._number}`;
     }
+
+    toString(): string {
+        return this._number.toString();
+    }
 }
 
 class StringValue extends Value {
@@ -53,6 +62,10 @@ class StringValue extends Value {
 
     asIdString(): string {
         return `str:${StringValue.uuid}:${this._str}`;
+    }
+
+    toString(): string {
+        return this._str;
     }
 }
 
@@ -88,6 +101,10 @@ class TableValue extends Value {
         return `table:${this.uuid}`;
     }
 
+    toString(): string {
+        return this.asIdString();
+    }
+
     size(): number {
         return this._table.size;
     }
@@ -121,6 +138,10 @@ class BooleanValue extends Value {
     asIdString(): string {
         return `bool:${BooleanValue.uuid}:${this.value}`;
     }
+
+    toString(): string {
+        return this.value.toString();
+    }
 }
 
 class FunctionValue extends Value {
@@ -145,6 +166,10 @@ class FunctionValue extends Value {
 
     asIdString(): string {
         return `fun:${this.uuid}`;
+    }
+
+    toString(): string {
+        return this.asIdString();
     }
 }
 
@@ -183,6 +208,10 @@ class InternalListValue extends Value {
     asIdString(): string {
         throw new Error("Not implemented");
     }
+
+    toString(): string {
+        throw new Error("Not implemented");
+    }
 }
 
 class InternalPairValue extends Value {
@@ -218,6 +247,10 @@ class InternalPairValue extends Value {
     asIdString(): string {
         throw new Error("Method not implemented.");
     }
+
+    toString(): string {
+        throw new Error("Not implemented");
+    }
 }
 
 class InternalVar extends Value {
@@ -234,6 +267,10 @@ class InternalVar extends Value {
 
     asIdString(): string {
         throw new Error("Method not implemented.");
+    }
+
+    toString(): string {
+        throw new Error("Not implemented");
     }
 }
 
