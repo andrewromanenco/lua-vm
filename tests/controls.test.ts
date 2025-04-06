@@ -1,5 +1,5 @@
 import { BooleanValue, NilValue, StringValue } from "@src/interpreter/types";
-import VMBuilder from "@src/vm";
+import { VMBuilder } from "@src/vm";
 import { expectToBeNumber } from "./interpreter/test_utils";
 
 test("if", () => {

@@ -1,5 +1,5 @@
 import { NumberValue, StringValue, Value } from "@src/interpreter/types";
-import VMBuilder from "@src/vm";
+import { VMBuilder } from "@src/vm";
 import { expectToBeNumber } from "./interpreter/test_utils";
 import ExtFunction from "@src/interpreter/ExtFunction";
 import { LuaLangError, RuntimeError } from "@src/interpreter/errors";

@@ -1,10 +1,15 @@
 import LuaInterpreter from "./interpreter/LuaInterpreter";
 import { InternalListValue, StringValue, TableValue, Value } from "./interpreter/types";
 import { executeWithInterpreter } from "./interpreter/utils";
+import VMMarshaller from "./marshaller";
 
-export default class VMBuilder {
+class VMBuilder {
     build(): VM {
         return new VM();
+    }
+
+    buildWithMarshaller(): VMMarshaller {
+        return new VMMarshaller(this.build());
     }
 }
 
@@ -66,3 +71,5 @@ class ExecutionResult {
         return this.globalVars.get(StringValue.from(name));
     }
 }
+
+export { VMBuilder, VM }

@@ -1,5 +1,5 @@
 import { NilValue, NumberValue, StringValue } from "@src/interpreter/types";
-import VMBuilder from "@src/vm";
+import { VMBuilder } from "@src/vm";
 import { expectToBeNil, expectToBeNumber } from "./interpreter/test_utils";
 import { NotYetImplemented, RuntimeError } from "@src/interpreter/errors";
 

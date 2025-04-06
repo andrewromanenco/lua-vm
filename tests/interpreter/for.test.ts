@@ -1,4 +1,4 @@
-import VMBuilder from "@src/vm";
+import { VMBuilder } from "@src/vm";
 import { expectToBeNil, expectToBeNumber } from "./test_utils";
 
 test("for with numbers", () => {

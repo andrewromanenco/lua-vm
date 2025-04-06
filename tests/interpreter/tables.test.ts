@@ -1,4 +1,4 @@
-import VMBuilder from "@src/vm";
+import { VMBuilder } from "@src/vm";
 import { expectToBeNil, expectToBeNumber, expectToBeString } from "./test_utils";
 import { FunctionValue, NumberValue, StringValue, TableValue } from "@src/interpreter/types";
 
