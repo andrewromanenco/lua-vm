@@ -481,3 +481,18 @@ test("var inits", () => {
   expectToBeNumber(result.returnValueAsList()[7], 5);
   expectToBeString(result.returnValueAsList()[8], "c");
 });
+
+test.only("varargs", () => {
+  const lua = `
+  function f(n, ...)
+    list = {...}
+    return list[n]
+  end
+  return f(1, "a", "b", "c"), f(2, "a", "b", "c"), f(3, "a", "b", "c")
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expectToBeString(result.returnValueAsList()[0], "a");
+  expectToBeString(result.returnValueAsList()[1], "b");
+  expectToBeString(result.returnValueAsList()[2], "c");
+});

@@ -606,7 +606,16 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     }
 
     visitExp_vararg = (ctx: Exp_varargContext): Value => {
-        throw new NotYetImplemented("vararg", ctx);
+        const varargs = this.currentScope.get(StringValue.from("..."));
+        if (varargs instanceof NilValue) {
+            return new InternalListValue([]);
+        } else {
+            const list: Value[] = []
+            for (let i = 1; i <= (varargs as TableValue).size(); i++) {
+                list.push((varargs as TableValue).get(NumberValue.from(i)));
+            }
+            return new InternalListValue(list);
+        }
     };
 
     visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): Value => {
@@ -691,10 +700,22 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     private exec_lua_function(f: FunctionValue, args: InternalListValue): Value {
         const list_params = (f as FunctionValue).params() as InternalListValue;
+        const hasVarargs = (list_params.size() > 0) &&
+            ((list_params.get(list_params.size()) as StringValue).string === '...');
         const list_args = flattenList(args);
         return this.scoped(() => {
-            for (let i = 1; i <= list_params.size(); i++) {
+            let i = 1;
+            for (; i <= list_params.size() - (hasVarargs?1:0); i++) {
                 this.currentScope.setLocal(list_params.get(i), list_args.getValueOrNil(i));
+            }
+            if (hasVarargs) {
+                const table = new TableValue();
+                let index = 1;
+                for (; i <= list_args.size(); i++) {
+                    table.set(NumberValue.from(index), list_args.getValueOrNil(i));
+                    index++;
+                }
+                this.currentScope.setLocal(StringValue.from("..."), table);
             }
             const result = ReturnStmt.executeReturnable(() => {
                 return (f as FunctionValue).body().accept(this);
@@ -910,10 +931,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitParlist_namellist = (ctx: Parlist_namellistContext): Value => {
-        if (ctx.DDD()) {
-            throw new NotYetImplemented("...", ctx);
+        const names = (ctx.namelist().accept(this) as InternalListValue).asList();
+        if (ctx.COMMA()) {
+            names.push(StringValue.from("..."));
         }
-        return ctx.namelist().accept(this);
+        return new InternalListValue(names);
     };
 
     visitParlist_vararg = (ctx: Parlist_varargContext): Value => {
