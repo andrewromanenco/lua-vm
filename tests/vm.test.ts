@@ -88,7 +88,7 @@ test("not implemented feature", () => {
     }
     expect(exception).toBeInstanceOf(NotYetImplemented);
     expect((exception as NotYetImplemented).message)
-      .toBe("Feature not yet implemented(line: 3, col: 4): goto");
+      .toBe("[0000] Feature not yet implemented(line: 3, col: 4): goto");
 });
 
 test("injecting global variable", () => {
@@ -152,7 +152,7 @@ test("calling nil causes RuntimeError", () => {
   }
   expect(exception).toBeInstanceOf(RuntimeError);
   expect((exception as RuntimeError).message)
-    .toBe("Runtime error: (line: 3, col: 2): Can't execute non-function: NilValue");
+    .toBe("[0000] Runtime error: (line: 3, col: 2): Can't execute non-function: NilValue");
 });
 
 test("calling non function causes RuntimeError", () => {
@@ -168,7 +168,7 @@ test("calling non function causes RuntimeError", () => {
   }
   expect(exception).toBeInstanceOf(RuntimeError);
   expect((exception as RuntimeError).message)
-    .toBe("Runtime error: (line: 3, col: 2): Can't execute non-function: NumberValue");
+    .toBe("[0000] Runtime error: (line: 3, col: 2): Can't execute non-function: NumberValue");
 });
 
 test("continue causes RuntimeError", () => {
@@ -184,7 +184,7 @@ test("continue causes RuntimeError", () => {
   }
   expect(exception).toBeInstanceOf(NotYetImplemented);
   expect((exception as NotYetImplemented).message)
-    .toBe("Feature not yet implemented(line: 3, col: 2): continue is not supported in Lua");
+    .toBe("[0000] Feature not yet implemented(line: 3, col: 2): continue is not supported in Lua");
 });
 
 test("function with multiple return", () => {
@@ -216,6 +216,6 @@ test("break outside of loop", () => {
   }
   expect(exception).toBeInstanceOf(RuntimeError);
   expect((exception as RuntimeError).message)
-    .toBe("Runtime error: (line: 4, col: 2): Break called outside of a loop");
+    .toBe("[0000] Runtime error: (line: 4, col: 2): Break called outside of a loop");
   
 });

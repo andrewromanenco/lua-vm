@@ -1,25 +1,32 @@
 import { ParserRuleContext } from "antlr4/src/antlr4/context/ParserRuleContext";
 
 class VMError extends Error {
-    constructor(message: string) {
+    protected _errorCode: string;
+
+    constructor(message: string, errorCode: string = "0000") {
         super(message);
+        this._errorCode = errorCode;
+    }
+
+    get errorCode(): string {
+        return this._errorCode;
     }
 }
 
 class NotYetImplemented extends VMError {
-    constructor(feature: string, ctx: ParserRuleContext) {
+    constructor(feature: string, ctx: ParserRuleContext, errorCode: string = "0000") {
         const line = ctx && ctx.start? ctx.start.line : -1;
         const col = ctx && ctx.start? ctx.start.column : -1;
-        super(`Feature not yet implemented(line: ${line}, col: ${col}): ${feature}`);
+        super(`[${errorCode}] Feature not yet implemented(line: ${line}, col: ${col}): ${feature}`, errorCode);
     }
 }
 
 class RuntimeError extends VMError {
     private _cause: unknown|undefined;
-    constructor(message: string, ctx: ParserRuleContext) {
+    constructor(message: string, ctx: ParserRuleContext, errorCode: string = "0000") {
         const line = ctx && ctx.start? ctx.start.line : -1;
         const col = ctx && ctx.start? ctx.start.column : -1;
-        super(`Runtime error: (line: ${line}, col: ${col}): ${message}`);
+        super(`[${errorCode}] Runtime error: (line: ${line}, col: ${col}): ${message}`);
     }
 
     set cause(cause: unknown) {
@@ -32,8 +39,8 @@ class RuntimeError extends VMError {
 }
 
 class LuaLangError extends VMError {
-    constructor(message:string) {
-        super(message);
+    constructor(message: string, errorCode: string = "0000") {
+        super(`[${errorCode}] ${message}`, errorCode);
     }
 }
 
