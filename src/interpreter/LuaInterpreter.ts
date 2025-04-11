@@ -947,7 +947,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitParlist_vararg = (ctx: Parlist_varargContext): Value => {
-        throw new NotYetImplemented("varargs", ctx);
+        return new InternalListValue([StringValue.from("...")]);
     };
 
     visitParlist_none = (ctx: Parlist_noneContext): Value => {

@@ -497,7 +497,22 @@ test("varargs", () => {
   expectToBeString(result.returnValueAsList()[2], "c");
 });
 
-test("varargs", () => {
+test("varargs only", () => {
+  const lua = `
+  function f(...)
+    list = {...}
+    return list
+  end
+  return f("a", "b", "c")[1], f("a", "b", "c")[2], f("a", "b", "c")[3]
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expectToBeString(result.returnValueAsList()[0], "a");
+  expectToBeString(result.returnValueAsList()[1], "b");
+  expectToBeString(result.returnValueAsList()[2], "c");
+});
+
+test("nested dicts", () => {
   const lua = `
   t = { a = { b = { c = "nested" } } }
   return t.a.b.c
