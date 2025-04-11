@@ -15,16 +15,19 @@ class NotYetImplemented extends VMError {
 }
 
 class RuntimeError extends VMError {
-    private readonly _causeError?: unknown;
-    constructor(message: string, ctx: ParserRuleContext, causeError?: unknown) {
+    private _cause: unknown|undefined;
+    constructor(message: string, ctx: ParserRuleContext) {
         const line = ctx && ctx.start? ctx.start.line : -1;
         const col = ctx && ctx.start? ctx.start.column : -1;
         super(`Runtime error: (line: ${line}, col: ${col}): ${message}`);
-        this._causeError = causeError;
     }
 
-    get causeError(): unknown | undefined {
-        return this._causeError;
+    set cause(cause: unknown) {
+        this._cause = cause;
+    }
+
+    get cause(): unknown|undefined {
+        return this._cause;
     }
 }
 

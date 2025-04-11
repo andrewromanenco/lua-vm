@@ -59,7 +59,38 @@ test("external function errors", () => {
     expect(exception).toBeInstanceOf(RuntimeError);
     expect((exception as RuntimeError).message)
         .toBe("Runtime error: (line: 5, col: 8): Error in external function \"add\"");
+    expect((exception as RuntimeError).cause).toBeInstanceOf(Error);
 });
+
+test("external function errors with non Exception value", () => {
+    const lua = `
+    a = 1
+    b = 2
+    d = 10
+    c = f(a, b)
+    return c, d
+    `;
+
+    function add(_args: Value[]): Value[] {
+        throw 42;
+    }
+
+    const vm = new VMBuilder().build();
+    const thread = vm.newThread();
+    thread.setLuaVar(StringValue.from("f"), ExtFunction.of(add));
+
+    let exception;
+    try {
+        thread.execute(lua);
+    } catch (e) {
+        exception = e;
+    }
+    expect(exception).toBeInstanceOf(RuntimeError);
+    expect((exception as RuntimeError).message)
+        .toBe("Runtime error: (line: 5, col: 8): Error in external function \"add\"");
+    expect((exception as RuntimeError).cause).toBe(42);
+});
+
 
 test("bad lua code", () => {
     const lua = `

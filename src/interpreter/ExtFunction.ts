@@ -22,8 +22,9 @@ export default class ExtFunction extends Value {
         try {
             return new InternalListValue((this.f(args.asList())));
         } catch (error) {
-            throw new RuntimeError(`Error in external function "${this.name}"`,
-                ctx, error as Error);
+            const err = new RuntimeError(`Error in external function "${this.name}"`, ctx);
+            err.cause = error;
+            throw err;
         }
     }
 
