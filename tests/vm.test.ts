@@ -1,7 +1,7 @@
 import { NilValue, NumberValue, StringValue } from "@src/interpreter/types";
 import { VMBuilder } from "@src/vm";
 import { expectToBeNil, expectToBeNumber } from "./interpreter/test_utils";
-import { NotYetImplemented, RuntimeError } from "@src/interpreter/errors";
+import { LuaLangError, NotYetImplemented, RuntimeError } from "@src/interpreter/errors";
 
 test("vm execution", () => {
     const lua = `
@@ -218,4 +218,21 @@ test("break outside of loop", () => {
   expect((exception as RuntimeError).message)
     .toBe("[0000] Runtime error: (line: 4, col: 2): Break called outside of a loop");
   
+});
+
+test("incorrect lua code", () => {
+  const lua = `
+  x = 1
+  a == 1
+  y = 2
+  `;
+  let exception;
+  try {
+    new VMBuilder().build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(LuaLangError);
+  expect((exception as LuaLangError).message)
+    .toBe("Lua: no viable alternative at input 'a ==' at (line: 3, col: 4)");
 });

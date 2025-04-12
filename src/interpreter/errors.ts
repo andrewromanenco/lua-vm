@@ -40,7 +40,7 @@ class RuntimeError extends VMError {
 
 class LuaLangError extends VMError {
     constructor(message: string, errorCode: string = "0000") {
-        super(`[${errorCode}] ${message}`, errorCode);
+        super(`Lua: ${message}`, errorCode);
     }
 }
 

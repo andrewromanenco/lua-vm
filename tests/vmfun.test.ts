@@ -108,5 +108,5 @@ test("bad lua code", () => {
     }
     expect(exception).toBeInstanceOf(LuaLangError);
     expect((exception as LuaLangError).message)
-        .toBe("[0000] mismatched input ':' expecting 'end' at (line: 3 / col: 16)");
+        .toBe("Lua: mismatched input ':' expecting 'end' at (line: 3, col: 16)");
 });
