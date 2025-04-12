@@ -81,7 +81,7 @@ import {
 import { BooleanValue, FunctionValue, InternalListValue, InternalPairValue, InternalVar, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
 import ReturnStmt from "./ReturnStmt";
 import VisibilityScope from "./VisibilityScope";
-import { NotYetImplemented, RuntimeError } from "./errors";
+import { LuaLangError, NotYetImplemented, RuntimeError } from "./errors";
 import BreakStmt from "./BreakStmt";
 import { firstValue, flattenList, isFalse, isTrue } from "./utils";
 import ExtFunction from "./ExtFunction";
@@ -124,7 +124,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             return ctx.chunk().accept(this);
         } catch (error) {
             if (error instanceof BreakStmt) {
-                throw new RuntimeError("Break called outside of a loop", (error as BreakStmt).ctx);
+                const breakCtx = (error as BreakStmt).ctx;
+                const line = breakCtx && breakCtx.start? breakCtx.start.line : -1;
+                const col = breakCtx && breakCtx.start? breakCtx.start.column : -1;
+                throw new LuaLangError("Break called outside of a loop", line, col);
             } else {
                 throw error;
             }
@@ -167,7 +170,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_label = (ctx: Stat_labelContext): Value => {
-        throw new NotYetImplemented("label", ctx);
+        throw new NotYetImplemented("label", ctx, "N001");
     };
 
     visitStat_break = (ctx: Stat_breakContext): Value => {
@@ -175,7 +178,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitStat_goto = (ctx: Stat_gotoContext): Value => {
-        throw new NotYetImplemented("goto", ctx);
+        throw new NotYetImplemented("goto", ctx, "N001");
     };
 
     visitStat_do = (ctx: Stat_doContext): Value => {
@@ -330,7 +333,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitAttrib = (ctx: AttribContext): Value => {
-        throw new NotYetImplemented("attribute", ctx);
+        throw new NotYetImplemented("attribute", ctx, "N002");
     };
 
     visitRetstat = (ctx: RetstatContext): Value => {
@@ -345,14 +348,14 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
             }
             throw  ReturnStmt.withList(resultList);
         } else if (ctx.CONTINUE()) {
-            throw new NotYetImplemented("continue is not supported in Lua",ctx)
+            throw new NotYetImplemented("continue is not supported in Lua",ctx, "N003")
         } else {
             throw new RuntimeError("This 'break' should not happen; open an issue on GitHub", ctx);
         }
     };
 
     visitLabel = (ctx: LabelContext): Value => {
-        throw new NotYetImplemented("label", ctx);
+        throw new NotYetImplemented("label", ctx, "N001");
     };
 
     visitFuncname = (ctx: FuncnameContext): Value => {
@@ -456,7 +459,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         } else if (ctx.SS()) {
             return new NumberValue(Math.floor(l/r));
         }
-        throw new NotYetImplemented("will never happen", ctx);
+        throw new NotYetImplemented("will never happen", ctx, "N999");
     };
 
     visitExp_rel = (ctx: Exp_relContext): Value => {
@@ -480,7 +483,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (ctx.GE()) {
             return this.compare_lt(right, left, ctx, true);
         }
-        throw new NotYetImplemented("compare for non numbers", ctx);
+        throw new NotYetImplemented("compare for non numbers", ctx, "N999");
     };
 
     private compare_lt(left: Value, right: Value, ctx: Exp_relContext, le: boolean): BooleanValue {
@@ -551,7 +554,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
                 throw new RuntimeError(`expecting number, but got ${exp.constructor.name}`, ctx);
             }
         }
-        throw new NotYetImplemented("will never happen", ctx);
+        throw new NotYetImplemented("will never happen", ctx, "N999");
     };
 
     visitExp_or = (ctx: Exp_orContext): Value => {
@@ -1010,7 +1013,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     };
 
     visitFieldsep = (ctx: FieldsepContext): Value => {
-        throw new NotYetImplemented("field sep", ctx);
+        throw new NotYetImplemented("field sep", ctx, "N999");
     };
 
     visitNumber_int = (ctx: Number_intContext): Value => {

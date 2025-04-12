@@ -25,7 +25,7 @@ function luaToTs(value: Value): any {
         });
         return result;
     } else {
-        throw new RuntimeError(`No auto convertion for ${value.constructor.name}`, {} as ParserRuleContext);
+        throw new RuntimeError(`[J001] No auto convertion for ${value.constructor.name}`, {} as ParserRuleContext);
     }
 }
 

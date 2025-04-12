@@ -23,10 +23,10 @@ class NotYetImplemented extends VMError {
 
 class RuntimeError extends VMError {
     private _cause: unknown|undefined;
-    constructor(message: string, ctx: ParserRuleContext, errorCode: string = "0000") {
+    constructor(message: string, ctx: ParserRuleContext) {
         const line = ctx && ctx.start? ctx.start.line : -1;
         const col = ctx && ctx.start? ctx.start.column : -1;
-        super(`[${errorCode}] Runtime error: (line: ${line}, col: ${col}): ${message}`);
+        super(`Runtime error: (line: ${line}, col: ${col}): ${message}`);
     }
 
     set cause(cause: unknown) {
@@ -39,8 +39,8 @@ class RuntimeError extends VMError {
 }
 
 class LuaLangError extends VMError {
-    constructor(message: string, errorCode: string = "0000") {
-        super(`Lua: ${message}`, errorCode);
+    constructor(message: string, line: number, col: number) {
+        super(`Lua: ${message} (line: ${line}, col: ${col})`, );
     }
 }
 

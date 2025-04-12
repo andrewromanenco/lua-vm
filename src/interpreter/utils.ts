@@ -8,7 +8,7 @@ import { LuaLangError } from "./errors";
 class ThrowErrorListener<T> extends ErrorListener<T> {
 
     syntaxError(recognizer: Recognizer<T>, offendingSymbol: T, line: number, column: number, msg: string, e: RecognitionException | undefined): void {
-        throw new LuaLangError(`${msg} at (line: ${line}, col: ${column})`);
+        throw new LuaLangError(msg, line, column);
     }
 
 }
