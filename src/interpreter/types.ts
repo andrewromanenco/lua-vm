@@ -73,7 +73,7 @@ class TableValue extends Value {
 
     private readonly uuid = crypto.randomUUID();
     // ref to key mapped to [key, value]
-    private readonly _table: Map<String, Value[]> = new Map();
+    private readonly _table: Map<string, Value[]> = new Map<string, Value[]>();
 
     get(key: Value): Value {
         const value = this._table.get(key.asIdString());

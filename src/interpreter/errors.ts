@@ -3,7 +3,7 @@ import { ParserRuleContext } from "antlr4/src/antlr4/context/ParserRuleContext";
 class VMError extends Error {
     protected _errorCode: string;
 
-    constructor(message: string, errorCode: string = "0000") {
+    constructor(message: string, errorCode = "0000") {
         super(message);
         this._errorCode = errorCode;
     }
@@ -14,7 +14,7 @@ class VMError extends Error {
 }
 
 class NotYetImplemented extends VMError {
-    constructor(feature: string, ctx: ParserRuleContext, errorCode: string = "0000") {
+    constructor(feature: string, ctx: ParserRuleContext, errorCode = "0000") {
         const line = ctx && ctx.start? ctx.start.line : -1;
         const col = ctx && ctx.start? ctx.start.column : -1;
         super(`[${errorCode}] Feature not yet implemented(line: ${line}, col: ${col}): ${feature}`, errorCode);

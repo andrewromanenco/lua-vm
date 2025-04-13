@@ -14,7 +14,7 @@ function parse(luaCode: string): NumberValue {
 }
 
 test("42", () => {
-    
+    expect(parse("42").number).toBe(42);
 });
 
 test("-42", () => {

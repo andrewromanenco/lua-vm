@@ -18,7 +18,7 @@ function luaToTs(value: Value): any {
     } else if (value instanceof ExtFunction) {
         return (value as ExtFunction).toString();
     } else if (value instanceof TableValue) {
-        const result: { [key: string]: any } = {};
+        const result: Record<string, any> = {};
         const keys = (value as TableValue).getKeys();
         keys.forEach(k => {
             result[k.toString()] = luaToTs((value as TableValue).get(k));

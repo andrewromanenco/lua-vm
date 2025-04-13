@@ -26,7 +26,7 @@ class VM {
 }
 
 class ExecutionThread {
-    private readonly vars: Map<StringValue, Value> = new Map();
+    private readonly vars: Map<StringValue, Value> = new Map<StringValue, Value>();
     private readonly interpreter = new LuaInterpreter();
 
     setLuaVar(name: StringValue, value: Value): ExecutionThread {

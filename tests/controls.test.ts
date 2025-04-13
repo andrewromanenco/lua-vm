@@ -58,7 +58,7 @@ test("set various values", () => {
     expect(result.globalVar("d")).toBeInstanceOf(StringValue);
 
     expect((result.globalVar("b") as BooleanValue).boolean).toBeTruthy();
-    expect((result.globalVar("c") as BooleanValue).boolean).toBeFalsy;
+    expect((result.globalVar("c") as BooleanValue).boolean).toBeFalsy();
     expect((result.globalVar("d") as StringValue).string).toBe("string value");
 });
 

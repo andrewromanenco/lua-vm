@@ -7,7 +7,7 @@ class TestListener extends LuaParserListener {
 
     public callBackWasCalled = false;
 
-    enterExp_number = (ctx: Exp_numberContext): void => {
+    enterExp_number = (_ctx: Exp_numberContext): void => {
         this.callBackWasCalled = true;
     }
 

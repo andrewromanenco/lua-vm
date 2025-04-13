@@ -7,13 +7,13 @@ import { LuaLangError } from "./errors";
 
 class ThrowErrorListener<T> extends ErrorListener<T> {
 
-    syntaxError(recognizer: Recognizer<T>, offendingSymbol: T, line: number, column: number, msg: string, e: RecognitionException | undefined): void {
+    syntaxError(recognizer: Recognizer<T>, offendingSymbol: T, line: number, column: number, msg: string, _e: RecognitionException | undefined): void {
         throw new LuaLangError(msg, line, column);
     }
 
 }
 
-function make_parser(lua_code: string, showAntlrError: boolean = true): LuaParser {
+function make_parser(lua_code: string, showAntlrError = true): LuaParser {
     const charStream = CharStreams.fromString(lua_code);
     const lexer = new LuaLexer(charStream);
     if (!showAntlrError) {
@@ -29,7 +29,7 @@ function make_parser(lua_code: string, showAntlrError: boolean = true): LuaParse
     return parser;
 }
 
-function executeWithInterpreter(lua_code: string, interpreter: LuaInterpreter, showAntlrError: boolean = true): Value {
+function executeWithInterpreter(lua_code: string, interpreter: LuaInterpreter, showAntlrError = true): Value {
     const parser = make_parser(lua_code, showAntlrError);
     const start = parser.start_();
     return start.accept(interpreter);

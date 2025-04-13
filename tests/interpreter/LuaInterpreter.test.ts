@@ -20,7 +20,7 @@ const contexts = [
     { method: "visitFieldsep", context: FieldsepContext },
 ];
 
-contexts.forEach(({ method, context }) => {
+contexts.forEach(({ method, context }) => { // eslint-disable-line @typescript-eslint/no-unused-vars
     test(`${method} throws an error`, () => {
         const ctx = {} as unknown as InstanceType<typeof context>;
         expect(() => (interpreter as any)[method](ctx)).toThrow(NotYetImplemented);

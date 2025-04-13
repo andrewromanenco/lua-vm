@@ -150,7 +150,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         });
     };
 
-    visitStat_no_op = (ctx: Stat_no_opContext): Value => {
+    visitStat_no_op = (_ctx: Stat_no_opContext): Value => {
         return new NilValue();
     };
 
@@ -216,7 +216,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
 
     visitStat_if = (ctx: Stat_ifContext): Value => {
         for (let i = 0; i < ctx.exp_list().length; i++) {
-            let expValue = firstValue(ctx.exp_list()[i].accept(this));
+            const expValue = firstValue(ctx.exp_list()[i].accept(this));
             if (isFalse(expValue)) {
                 continue;
             }
@@ -247,7 +247,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         if (step.number == 0) {
             throw new RuntimeError("step is Zero", ctx);
         }
-        let n = limit.number;
+        const n = limit.number;
         const s = step.number;
         const block = ctx.block();
         return this.scoped(() => {
@@ -294,7 +294,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
                 }
                 return new NilValue();
             });
-        } while(true);
+        } while(true); // eslint-disable-line no-constant-condition
     };
 
     visitStat_function = (ctx: Stat_functionContext): Value => {
@@ -397,7 +397,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return new InternalListValue(values);
     };
 
-    visitExp_true = (ctx: Exp_trueContext): Value => {
+    visitExp_true = (_ctx: Exp_trueContext): Value => {
         return BooleanValue.true();
     };
 
@@ -450,8 +450,6 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         const r = (right as NumberValue).number;
         if (ctx.STAR()) {
             return new NumberValue(l*r);
-        } else if (ctx.SLASH()) {
-            return new NumberValue(l/r);
         } else if (ctx.SLASH()) {
             return new NumberValue(l/r);
         } else if (ctx.PER()) {
@@ -563,7 +561,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return BooleanValue.from(isTrue(left) || isTrue(right));
     };
 
-    visitExp_false = (ctx: Exp_falseContext): Value => {
+    visitExp_false = (_ctx: Exp_falseContext): Value => {
         return BooleanValue.false();
     };
 
@@ -616,7 +614,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         }
     }
 
-    visitExp_vararg = (ctx: Exp_varargContext): Value => {
+    visitExp_vararg = (_ctx: Exp_varargContext): Value => {
         const varargs = this.currentScope.get(StringValue.from("..."));
         if (varargs instanceof NilValue) {
             return new InternalListValue([]);
@@ -649,7 +647,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return ctx.functiondef().accept(this);
     };
 
-    visitExp_nil = (ctx: Exp_nilContext): Value => {
+    visitExp_nil = (_ctx: Exp_nilContext): Value => {
         return new NilValue();
     };
 
@@ -949,11 +947,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return new InternalListValue(names);
     };
 
-    visitParlist_vararg = (ctx: Parlist_varargContext): Value => {
+    visitParlist_vararg = (_ctx: Parlist_varargContext): Value => {
         return new InternalListValue([StringValue.from("...")]);
     };
 
-    visitParlist_none = (ctx: Parlist_noneContext): Value => {
+    visitParlist_none = (_ctx: Parlist_noneContext): Value => {
         return new InternalListValue([]);
     };
 

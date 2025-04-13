@@ -7,7 +7,7 @@ export default class ExtFunction extends Value {
     private readonly f: (args: Value[]) => Value[];
     private readonly name: string;
 
-    static of(f: (args: Value[]) => Value[], name: string = ""):ExtFunction {
+    static of(f: (args: Value[]) => Value[], name = ""):ExtFunction {
         return new ExtFunction(f, name.length > 0 ? name: f.name);
     }
 

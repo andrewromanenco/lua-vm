@@ -18,7 +18,10 @@ export default class VisibilityScope {
     }
 
     parent(): VisibilityScope {
-        return this._parent!;
+        if (this._parent === undefined) {
+            throw new Error("Parent scope is undefined.");
+        }
+        return this._parent;
     }
 
     hasParent(): boolean {
@@ -39,11 +42,11 @@ export default class VisibilityScope {
     }
 
     set(key: Value, value: Value): void {
-        let targetScope: VisibilityScope = this;
-        while (targetScope.hasParent() && !targetScope.has(key)) {
-            targetScope = targetScope.parent();
+        if (this.hasParent() && !this.has(key)) {
+            this.parent().set(key, value);
+        } else {
+            this.env.set(key, value);
         }
-        targetScope.env.set(key, value);
     }
 
     setLocal(key: Value, value: Value): void {
@@ -55,11 +58,7 @@ export default class VisibilityScope {
     }
 
     globalVars(): TableValue {
-        let targetScope: VisibilityScope = this;
-        while (targetScope.hasParent()) {
-            targetScope = targetScope.parent();
-        }
-        return targetScope.env;
+        return this.hasParent() ? this.parent().globalVars() : this.env;
     }
 
 }
