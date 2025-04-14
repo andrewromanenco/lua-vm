@@ -1,1072 +1,1259 @@
-import LuaParserVisitor from "../parser/LuaParserVisitor";
+import LuaParserVisitor from '../parser/LuaParserVisitor';
 import {
-    Start_Context,
-    ChunkContext,
-    BlockContext,
-    Stat_no_opContext,
-    Stat_assing_varsContext,
-    Stat_function_callContext,
-    Stat_labelContext,
-    Stat_breakContext,
-    Stat_gotoContext,
-    Stat_doContext,
-    Stat_whileContext,
-    Stat_repeatContext,
-    Stat_ifContext,
-    Stat_for_varContext,
-    Stat_for_listContext,
-    Stat_functionContext,
-    Stat_local_functionContext,
-    Stat_local_attnamelistContext,
-    AttnamelistContext,
-    AttribContext,
-    RetstatContext,
-    LabelContext,
-    FuncnameContext,
-    VarlistContext,
-    NamelistContext,
-    ExplistContext,
-    Exp_trueContext,
-    Exp_bitsContext,
-    Exp_andContext,
-    Exp_stringContext,
-    Exp_arithmetic_highContext,
-    Exp_relContext,
-    Stat_table_construnctorContext,
-    Exp_unaryContext,
-    Exp_orContext,
-    Exp_falseContext,
-    Stat_prefix_expContext,
-    Exp_exponentContext,
-    Exp_numberContext,
-    Exp_concatContext,
-    Exp_varargContext,
-    Exp_arithmetic_lowContext,
-    Exp_function_defContext,
-    Exp_nilContext,
-    Var_nameContext,
-    Var_expContext,
-    Prefixexp_nameContext,
-    Prefixexp_function_callContext,
-    Prefixexp_expContext,
-    Fcall_nameContext,
-    Fcall_name_extContext,
-    Fcall_function_callContext,
-    Fcall_expContext,
-    Fcall_exp_extContext,
-    Fcall_function_call_extContext,
-    Args_exp_listContext,
-    Args_table_constructorContext,
-    Args_stringContext,
-    FunctiondefContext,
-    FuncbodyContext,
-    Parlist_namellistContext,
-    Parlist_varargContext,
-    Parlist_noneContext,
-    TableconstructorContext,
-    FieldlistContext,
-    Field_exp_expContext,
-    Field_name_expContext,
-    Field_expContext,
-    FieldsepContext,
-    Number_intContext,
-    Number_hexContext,
-    Number_floatContext,
-    Number_hex_floatContext,
-    String_stringContext,
-    String_charstringContext,
-    String_longstringContext,
-    ExpContext
-} from "../parser/LuaParser";
-import { BooleanValue, FunctionValue, InternalListValue, InternalPairValue, InternalVar, NilValue, NumberValue, StringValue, TableValue, Value } from "./types";
-import ReturnStmt from "./ReturnStmt";
-import VisibilityScope from "./VisibilityScope";
-import { LuaLangError, NotYetImplemented, RuntimeError } from "./errors";
-import BreakStmt from "./BreakStmt";
-import { firstValue, flattenList, isFalse, isTrue } from "./utils";
-import ExtFunction from "./ExtFunction";
-import { ParserRuleContext, TerminalNode } from "antlr4";
+  Start_Context,
+  ChunkContext,
+  BlockContext,
+  Stat_no_opContext,
+  Stat_assing_varsContext,
+  Stat_function_callContext,
+  Stat_labelContext,
+  Stat_breakContext,
+  Stat_gotoContext,
+  Stat_doContext,
+  Stat_whileContext,
+  Stat_repeatContext,
+  Stat_ifContext,
+  Stat_for_varContext,
+  Stat_for_listContext,
+  Stat_functionContext,
+  Stat_local_functionContext,
+  Stat_local_attnamelistContext,
+  AttnamelistContext,
+  AttribContext,
+  RetstatContext,
+  LabelContext,
+  FuncnameContext,
+  VarlistContext,
+  NamelistContext,
+  ExplistContext,
+  Exp_trueContext,
+  Exp_bitsContext,
+  Exp_andContext,
+  Exp_stringContext,
+  Exp_arithmetic_highContext,
+  Exp_relContext,
+  Stat_table_construnctorContext,
+  Exp_unaryContext,
+  Exp_orContext,
+  Exp_falseContext,
+  Stat_prefix_expContext,
+  Exp_exponentContext,
+  Exp_numberContext,
+  Exp_concatContext,
+  Exp_varargContext,
+  Exp_arithmetic_lowContext,
+  Exp_function_defContext,
+  Exp_nilContext,
+  Var_nameContext,
+  Var_expContext,
+  Prefixexp_nameContext,
+  Prefixexp_function_callContext,
+  Prefixexp_expContext,
+  Fcall_nameContext,
+  Fcall_name_extContext,
+  Fcall_function_callContext,
+  Fcall_expContext,
+  Fcall_exp_extContext,
+  Fcall_function_call_extContext,
+  Args_exp_listContext,
+  Args_table_constructorContext,
+  Args_stringContext,
+  FunctiondefContext,
+  FuncbodyContext,
+  Parlist_namellistContext,
+  Parlist_varargContext,
+  Parlist_noneContext,
+  TableconstructorContext,
+  FieldlistContext,
+  Field_exp_expContext,
+  Field_name_expContext,
+  Field_expContext,
+  FieldsepContext,
+  Number_intContext,
+  Number_hexContext,
+  Number_floatContext,
+  Number_hex_floatContext,
+  String_stringContext,
+  String_charstringContext,
+  String_longstringContext,
+  ExpContext,
+} from '../parser/LuaParser';
+import {
+  BooleanValue,
+  FunctionValue,
+  InternalListValue,
+  InternalPairValue,
+  InternalVar,
+  NilValue,
+  NumberValue,
+  StringValue,
+  TableValue,
+  Value,
+} from './types';
+import ReturnStmt from './ReturnStmt';
+import VisibilityScope from './VisibilityScope';
+import { LuaLangError, NotYetImplemented, RuntimeError } from './errors';
+import BreakStmt from './BreakStmt';
+import { firstValue, flattenList, isFalse, isTrue } from './utils';
+import ExtFunction from './ExtFunction';
+import { ParserRuleContext, TerminalNode } from 'antlr4';
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
+  private currentScope: VisibilityScope;
 
-    private currentScope: VisibilityScope;
+  constructor() {
+    super();
+    this.currentScope = VisibilityScope.root();
+  }
 
-    constructor() {
-        super();
-        this.currentScope = VisibilityScope.root();
+  getAllGlobalVars(): TableValue {
+    return this.currentScope.globalVars();
+  }
+
+  getGlobalVar(key: Value): Value {
+    // this function is called after interpreter is done
+    // as a result, current scope is the global scope
+    return this.currentScope.get(key);
+  }
+
+  setVar(name: StringValue, value: Value): void {
+    this.currentScope.set(name, value);
+  }
+
+  scoped(f: () => Value): Value {
+    this.currentScope = VisibilityScope.childOf(this.currentScope);
+    try {
+      return f();
+    } finally {
+      this.currentScope = this.currentScope.parent();
     }
+  }
 
-    getAllGlobalVars(): TableValue {
-        return this.currentScope.globalVars();
+  visitStart_ = (ctx: Start_Context): Value => {
+    try {
+      return ctx.chunk().accept(this);
+    } catch (error) {
+      if (error instanceof BreakStmt) {
+        const breakCtx = (error as BreakStmt).ctx;
+        const line = breakCtx && breakCtx.start ? breakCtx.start.line : -1;
+        const col = breakCtx && breakCtx.start ? breakCtx.start.column : -1;
+        throw new LuaLangError('Break called outside of a loop', line, col);
+      } else {
+        throw error;
+      }
     }
+  };
 
-    getGlobalVar(key: Value): Value {
-        // this function is called after interpreter is done
-        // as a result, current scope is the global scope
-        return this.currentScope.get(key);
+  visitChunk = (ctx: ChunkContext): Value => {
+    return ReturnStmt.executeReturnable(() => {
+      return ctx.block().accept(this);
+    });
+  };
+
+  visitBlock = (ctx: BlockContext): Value => {
+    return this.scoped(() => {
+      ctx.stat_list().forEach(stat => stat.accept(this));
+      if (ctx.retstat()) {
+        ctx.retstat().accept(this);
+      }
+      return new NilValue();
+    });
+  };
+
+  visitStat_no_op = (_ctx: Stat_no_opContext): Value => {
+    return new NilValue();
+  };
+
+  visitStat_assing_vars = (ctx: Stat_assing_varsContext): Value => {
+    const vars = flattenList(ctx.varlist().accept(this));
+    const values = flattenList(ctx.explist().accept(this));
+    for (let i = 1; i <= vars.size(); i++) {
+      (vars.get(i) as InternalVar).set(values.getValueOrNil(i));
     }
+    return new NilValue();
+  };
 
-    setVar(name: StringValue, value: Value): void {
-        this.currentScope.set(name, value);
+  visitStat_function_call = (ctx: Stat_function_callContext): Value => {
+    return ctx.functioncall().accept(this);
+  };
+
+  visitStat_label = (ctx: Stat_labelContext): Value => {
+    throw new NotYetImplemented('label', ctx, 'N001');
+  };
+
+  visitStat_break = (ctx: Stat_breakContext): Value => {
+    throw new BreakStmt(ctx);
+  };
+
+  visitStat_goto = (ctx: Stat_gotoContext): Value => {
+    throw new NotYetImplemented('goto', ctx, 'N001');
+  };
+
+  visitStat_do = (ctx: Stat_doContext): Value => {
+    return ctx.block().accept(this);
+  };
+
+  visitStat_while = (ctx: Stat_whileContext): Value => {
+    let exp = firstValue(ctx.exp().accept(this));
+    while (isTrue(exp)) {
+      if (
+        BreakStmt.breakCalled(() => {
+          ctx.block().accept(this);
+        })
+      ) {
+        return new NilValue();
+      }
+      exp = firstValue(ctx.exp().accept(this));
     }
+    return new NilValue();
+  };
 
-    scoped(f:() => Value): Value {
-        this.currentScope = VisibilityScope.childOf(this.currentScope);
-        try {
-            return f();
-        } finally {
-            this.currentScope = this.currentScope.parent();
-        }
-    }
-
-    visitStart_ = (ctx: Start_Context): Value => {
-        try {
-            return ctx.chunk().accept(this);
-        } catch (error) {
-            if (error instanceof BreakStmt) {
-                const breakCtx = (error as BreakStmt).ctx;
-                const line = breakCtx && breakCtx.start? breakCtx.start.line : -1;
-                const col = breakCtx && breakCtx.start? breakCtx.start.column : -1;
-                throw new LuaLangError("Break called outside of a loop", line, col);
-            } else {
-                throw error;
-            }
-        }
-    };
-
-    visitChunk = (ctx: ChunkContext): Value => {
-        return ReturnStmt.executeReturnable(() => {
-            return ctx.block().accept(this);
+  visitStat_repeat = (ctx: Stat_repeatContext): Value => {
+    return this.scoped(() => {
+      let exp;
+      do {
+        const breaked = BreakStmt.breakCalled(() => {
+          ctx
+            .block()
+            .stat_list()
+            .forEach(stmt => stmt.accept(this));
         });
-    };
-
-    visitBlock = (ctx: BlockContext): Value => {
-        return this.scoped(() => {
-            ctx.stat_list().forEach(stat => stat.accept(this));
-            if (ctx.retstat()) {
-                ctx.retstat().accept(this);
-            }
-            return new NilValue;
-        });
-    };
-
-    visitStat_no_op = (_ctx: Stat_no_opContext): Value => {
-        return new NilValue();
-    };
-
-    visitStat_assing_vars = (ctx: Stat_assing_varsContext): Value => {
-        const vars = flattenList(ctx.varlist().accept(this));
-        const values = flattenList(ctx.explist().accept(this));
-        for (let i = 1; i <= vars.size(); i++) {
-            (vars.get(i) as InternalVar).set(
-                values.getValueOrNil(i)
-            );
+        if (breaked) {
+          break;
         }
-        return new NilValue();
-    };
+        exp = firstValue(ctx.exp().accept(this));
+      } while (isFalse(exp));
+      return new NilValue();
+    });
+  };
 
-    visitStat_function_call = (ctx: Stat_function_callContext): Value => {
-        return ctx.functioncall().accept(this);
-    };
+  visitStat_if = (ctx: Stat_ifContext): Value => {
+    for (let i = 0; i < ctx.exp_list().length; i++) {
+      const expValue = firstValue(ctx.exp_list()[i].accept(this));
+      if (isFalse(expValue)) {
+        continue;
+      }
+      return ctx.block_list()[i].accept(this);
+    }
+    if (ctx.ELSE()) {
+      const elseBlock = ctx.block_list()[ctx.block_list().length - 1];
+      return elseBlock.accept(this);
+    } else {
+      return new NilValue();
+    }
+  };
 
-    visitStat_label = (ctx: Stat_labelContext): Value => {
-        throw new NotYetImplemented("label", ctx, "N001");
-    };
-
-    visitStat_break = (ctx: Stat_breakContext): Value => {
-        throw new BreakStmt(ctx);
-    };
-
-    visitStat_goto = (ctx: Stat_gotoContext): Value => {
-        throw new NotYetImplemented("goto", ctx, "N001");
-    };
-
-    visitStat_do = (ctx: Stat_doContext): Value => {
-        return ctx.block().accept(this);
-    };
-
-    visitStat_while = (ctx: Stat_whileContext): Value => {
-        let exp = firstValue(ctx.exp().accept(this));
-        while (isTrue(exp)) {
-            if (BreakStmt.breakCalled(()=>{
-                    ctx.block().accept(this);
-                })) {
-                return new NilValue();
-            }
-            exp = firstValue(ctx.exp().accept(this));
+  visitStat_for_var = (ctx: Stat_for_varContext): Value => {
+    const varName = StringValue.from(ctx.NAME().getText());
+    const initValue = firstValue(ctx.exp(0).accept(this));
+    const limit = firstValue(ctx.exp(1).accept(this));
+    const step =
+      ctx.exp_list().length == 3
+        ? firstValue(ctx.exp(2).accept(this))
+        : NumberValue.from(1);
+    if (!(initValue instanceof NumberValue)) {
+      throw new RuntimeError('init value is not a number', ctx);
+    }
+    if (!(limit instanceof NumberValue)) {
+      throw new RuntimeError('limit value is not a number', ctx);
+    }
+    if (!(step instanceof NumberValue)) {
+      throw new RuntimeError('step is not a number', ctx);
+    }
+    if (step.number == 0) {
+      throw new RuntimeError('step is Zero', ctx);
+    }
+    const n = limit.number;
+    const s = step.number;
+    const block = ctx.block();
+    return this.scoped(() => {
+      let i = initValue.number;
+      while (s > 0 ? i <= n : i >= n) {
+        this.currentScope.setLocal(varName, NumberValue.from(i));
+        if (
+          BreakStmt.breakCalled(() => {
+            block.accept(this);
+          })
+        ) {
+          break;
         }
-        return new NilValue();
-    };
-
-    visitStat_repeat = (ctx: Stat_repeatContext): Value => {
-        return this.scoped(() => {
-            let exp;
-            do {
-                const breaked = BreakStmt.breakCalled(() => {
-                    ctx.block().stat_list().forEach(stmt => stmt.accept(this));
-                });
-                if (breaked) {
-                    break;
-                }
-                exp = firstValue(ctx.exp().accept(this));
-            } while (isFalse(exp));
-            return new NilValue();
-        });
-    };
-
-    visitStat_if = (ctx: Stat_ifContext): Value => {
-        for (let i = 0; i < ctx.exp_list().length; i++) {
-            const expValue = firstValue(ctx.exp_list()[i].accept(this));
-            if (isFalse(expValue)) {
-                continue;
-            }
-            return ctx.block_list()[i].accept(this);
+        const afterBodyI = this.currentScope.get(varName);
+        if (!(afterBodyI instanceof NumberValue)) {
+          throw new RuntimeError(
+            'FOR loop variable is not a number any more (changed in loop body)',
+            ctx
+          );
         }
-        if (ctx.ELSE()) {
-            const elseBlock = ctx.block_list()[ctx.block_list().length - 1];
-            return elseBlock.accept(this);
-        } else {
-            return new NilValue();
-        }
-    };
+        i = (afterBodyI as NumberValue).number;
+        i += s;
+      }
+      return new NilValue();
+    });
+  };
 
-    visitStat_for_var = (ctx: Stat_for_varContext): Value => {
-        const varName = StringValue.from(ctx.NAME().getText());
-        const initValue = firstValue(ctx.exp(0).accept(this))
-        const limit = firstValue(ctx.exp(1).accept(this))
-        const step = ctx.exp_list().length == 3 ? firstValue(ctx.exp(2).accept(this)) : NumberValue.from(1)
-        if (!(initValue instanceof NumberValue)) {
-            throw new RuntimeError("init value is not a number", ctx);
-        }
-        if (!(limit instanceof NumberValue)) {
-            throw new RuntimeError("limit value is not a number", ctx);
-        }
-        if (!(step instanceof NumberValue)) {
-            throw new RuntimeError("step is not a number", ctx);
-        }
-        if (step.number == 0) {
-            throw new RuntimeError("step is Zero", ctx);
-        }
-        const n = limit.number;
-        const s = step.number;
-        const block = ctx.block();
-        return this.scoped(() => {
-            let i = initValue.number;
-            while ((s > 0)? i <= n: i >= n) {
-                this.currentScope.setLocal(varName, NumberValue.from(i));
-                if (BreakStmt.breakCalled(() => {
-                    block.accept(this);
-                })) {
-                    break;
-                }
-                const afterBodyI = this.currentScope.get(varName);
-                if (!(afterBodyI instanceof NumberValue)) {
-                    throw new RuntimeError("FOR loop variable is not a number any more (changed in loop body)", ctx);
-                }
-                i = (afterBodyI as NumberValue).number;
-                i += s;
-            }
-            return new NilValue();
-        });
-    };
-
-    visitStat_for_list = (ctx: Stat_for_listContext): Value => {
-        const names = ctx.namelist().accept(this) as InternalListValue;
-        const expressions = flattenList(ctx.explist().accept(this));
-        const block = ctx.block();
-        const iteratorFunction = expressions.getValueOrNil(1);
-        const state = expressions.getValueOrNil(2);
-        let controlVariable = expressions.getValueOrNil(3);
-        if (!(iteratorFunction instanceof FunctionValue) && !(iteratorFunction instanceof ExtFunction)) {
-            throw new RuntimeError("Iterator is not a function", ctx);
-        }
-        do {
-            const iterationResult = flattenList(this.exec_function(
-                iteratorFunction, new InternalListValue([state, controlVariable]), ctx));
-            controlVariable = iterationResult.getValueOrNil(1);
-            if (controlVariable instanceof NilValue) return new NilValue();
-            this.scoped(() => {
-                for (let i = 1; i <= names.size(); i++) {
-                    this.currentScope.setLocal(names.getValueOrNil(i), iterationResult.getValueOrNil(i));
-                }
-                if (BreakStmt.breakCalled(() => {block.accept(this);})) {
-                    return new NilValue();
-                }
-                return new NilValue();
-            });
-        } while(true); // eslint-disable-line no-constant-condition
-    };
-
-    visitStat_function = (ctx: Stat_functionContext): Value => {
-        const v = ctx.funcname().accept(this) as InternalVar;
-        const fun = ctx.funcbody().accept(this) as FunctionValue;
-        v.set(fun);
-        return new NilValue();
-    };
-
-    visitStat_local_function = (ctx: Stat_local_functionContext): Value => {
-        const name = StringValue.from(ctx.NAME().getText());
-        const fun = ctx.funcbody().accept(this);
-        this.currentScope.setLocal(name, fun);
-        return new NilValue();
-    };
-
-    visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
-        const names = flattenList(ctx.attnamelist().accept(this));
-        const exps = ctx.explist() ?
-            flattenList(ctx.explist().accept(this)) : new InternalListValue([]);
+  visitStat_for_list = (ctx: Stat_for_listContext): Value => {
+    const names = ctx.namelist().accept(this) as InternalListValue;
+    const expressions = flattenList(ctx.explist().accept(this));
+    const block = ctx.block();
+    const iteratorFunction = expressions.getValueOrNil(1);
+    const state = expressions.getValueOrNil(2);
+    let controlVariable = expressions.getValueOrNil(3);
+    if (
+      !(iteratorFunction instanceof FunctionValue) &&
+      !(iteratorFunction instanceof ExtFunction)
+    ) {
+      throw new RuntimeError('Iterator is not a function', ctx);
+    }
+    do {
+      const iterationResult = flattenList(
+        this.exec_function(
+          iteratorFunction,
+          new InternalListValue([state, controlVariable]),
+          ctx
+        )
+      );
+      controlVariable = iterationResult.getValueOrNil(1);
+      if (controlVariable instanceof NilValue) return new NilValue();
+      this.scoped(() => {
         for (let i = 1; i <= names.size(); i++) {
-            this.currentScope.setLocal(
-                names.get(i),
-                exps.getValueOrNil(i)
-            );
+          this.currentScope.setLocal(
+            names.getValueOrNil(i),
+            iterationResult.getValueOrNil(i)
+          );
+        }
+        if (
+          BreakStmt.breakCalled(() => {
+            block.accept(this);
+          })
+        ) {
+          return new NilValue();
         }
         return new NilValue();
-    };
+      });
+    } while (true); // eslint-disable-line no-constant-condition
+  };
 
-    visitAttnamelist = (ctx: AttnamelistContext): Value => {
-        const result: Value[] = [];
-        ctx.NAME_list().forEach((name) => {
-            result.push(StringValue.from(name.getText()));
-        });
-        return new InternalListValue(result);
-    };
+  visitStat_function = (ctx: Stat_functionContext): Value => {
+    const v = ctx.funcname().accept(this) as InternalVar;
+    const fun = ctx.funcbody().accept(this) as FunctionValue;
+    v.set(fun);
+    return new NilValue();
+  };
 
-    visitAttrib = (ctx: AttribContext): Value => {
-        throw new NotYetImplemented("attribute", ctx, "N002");
-    };
+  visitStat_local_function = (ctx: Stat_local_functionContext): Value => {
+    const name = StringValue.from(ctx.NAME().getText());
+    const fun = ctx.funcbody().accept(this);
+    this.currentScope.setLocal(name, fun);
+    return new NilValue();
+  };
 
-    visitRetstat = (ctx: RetstatContext): Value => {
-        if (ctx.RETURN()) {
-            const resultList: Value[] = [];
-            if (ctx.explist()) {
-                const values = flattenList(ctx.explist().accept(this));
-                const list = values as InternalListValue;
-                for (let i = 1; i <= list.size(); i++) {
-                    resultList.push(list.get(i));
-                }
-            }
-            throw  ReturnStmt.withList(resultList);
-        } else if (ctx.CONTINUE()) {
-            throw new NotYetImplemented("continue is not supported in Lua",ctx, "N003")
-        } else {
-            throw new RuntimeError("This 'break' should not happen; open an issue on GitHub", ctx);
-        }
-    };
-
-    visitLabel = (ctx: LabelContext): Value => {
-        throw new NotYetImplemented("label", ctx, "N001");
-    };
-
-    visitFuncname = (ctx: FuncnameContext): Value => {
-        const name = StringValue.from(ctx.NAME(0).getText());
-        if (ctx.NAME_list().length == 1) {
-            return new InternalVar((v) => this.currentScope.set(
-                name,
-                v
-            ));
-        }
-        let table = this.currentScope.get(name);
-        if (!(table instanceof TableValue)) {
-            throw new RuntimeError(`expecting table, got ${table.constructor.name}`, ctx);
-        }
-        for (let i = 1; i < ctx.NAME_list().length - 1; i++) {
-            table = (table as TableValue).get(StringValue.from(ctx.NAME(i).getText()));
-            if (!(table instanceof TableValue)) {
-                throw new RuntimeError(`got ${table.constructor.name} instead of table` ,ctx);
-            }
-        }
-        const lastName = StringValue.from(ctx.NAME_list()[ctx.NAME_list().length - 1].getText());
-        return new InternalVar((v) => table.set(lastName, v));
-    };
-
-    visitVarlist = (ctx: VarlistContext): Value => {
-        const result: Value[] = []
-        ctx.var__list().forEach(v => result.push(v.accept(this)));
-        return new InternalListValue(result);
-    };
-
-    visitNamelist = (ctx: NamelistContext): Value => {
-        const result: Value[] = []
-        ctx.NAME_list().forEach(name => result.push(StringValue.from(name.getText())));
-        return new InternalListValue(result);
-    };
-
-    visitExplist = (ctx: ExplistContext): Value => {
-        const values = ctx.exp_list().map(exp => exp.accept(this));
-        return new InternalListValue(values);
-    };
-
-    visitExp_true = (_ctx: Exp_trueContext): Value => {
-        return BooleanValue.true();
-    };
-
-    visitExp_bits = (ctx: Exp_bitsContext): Value => {
-        const left = firstValue(ctx.exp(0).accept(this));
-        const right = firstValue(ctx.exp(1).accept(this));
-
-        if (!(left instanceof NumberValue)) {
-            throw new RuntimeError(`Expected NumberValue, but got ${left.constructor.name}`, ctx);
-        }
-        if (!(right instanceof NumberValue)) {
-            throw new RuntimeError(`Expected NumberValue, but got ${right.constructor.name}`, ctx);
-        }
-        const l = (left as NumberValue).number;
-        const r = (right as NumberValue).number;
-        if (ctx.AMP()) {
-            return NumberValue.from(l & r);
-        } else if (ctx.PIPE()) {
-            return NumberValue.from(l | r);
-        } else if (ctx.SQUIG()) {
-            return NumberValue.from(l ^ r);
-        } else if (ctx.GG()) {
-            return NumberValue.from(l >> r);
-        } else {
-            return NumberValue.from(l << r);
-        }
-    };
-
-    visitExp_and = (ctx: Exp_andContext): Value => {
-        const left = firstValue(ctx.exp(0).accept(this));
-        const right = firstValue(ctx.exp(1).accept(this));
-        return BooleanValue.from(isTrue(left) && isTrue(right));
-    };
-
-    visitExp_string = (ctx: Exp_stringContext): Value => {
-        return ctx.string_().accept(this);
-    };
-
-    visitExp_arithmetic_high = (ctx: Exp_arithmetic_highContext): Value => {
-        const left = firstValue(ctx.exp(0).accept(this));
-        const right = firstValue(ctx.exp(1).accept(this));
-
-        if (!(left instanceof NumberValue)) {
-            throw new RuntimeError(`Expected NumberValue, but got ${left.constructor.name}`, ctx);
-        }
-        if (!(right instanceof NumberValue)) {
-            throw new RuntimeError(`Expected NumberValue, but got ${right.constructor.name}`, ctx);
-        }
-        const l = (left as NumberValue).number;
-        const r = (right as NumberValue).number;
-        if (ctx.STAR()) {
-            return new NumberValue(l*r);
-        } else if (ctx.SLASH()) {
-            return new NumberValue(l/r);
-        } else if (ctx.PER()) {
-            return new NumberValue(l%r);
-        } else if (ctx.SS()) {
-            return new NumberValue(Math.floor(l/r));
-        }
-        throw new NotYetImplemented("will never happen", ctx, "N999");
-    };
-
-    visitExp_rel = (ctx: Exp_relContext): Value => {
-        const left = firstValue(ctx.exp(0).accept(this));
-        const right = firstValue(ctx.exp(1).accept(this));
-        if (ctx.EE()) {
-            return this.compare_ee(left, right);
-        }
-        if (ctx.SQEQ()) {
-            return BooleanValue.from(!this.compare_ee(left, right).boolean);
-        }
-        if (ctx.LT()) {
-            return this.compare_lt(left, right, ctx, false);
-        }
-        if (ctx.LE()) {
-            return this.compare_lt(left, right, ctx, true);
-        }
-        if (ctx.GT()) {
-            return this.compare_lt(right, left, ctx, false);
-        }
-        if (ctx.GE()) {
-            return this.compare_lt(right, left, ctx, true);
-        }
-        throw new NotYetImplemented("compare for non numbers", ctx, "N999");
-    };
-
-    private compare_lt(left: Value, right: Value, ctx: Exp_relContext, le: boolean): BooleanValue {
-        if (left instanceof NumberValue) {
-            if (!(right instanceof NumberValue)) {
-                throw new RuntimeError(`Right expression not a Number - ${right.constructor.name}`, ctx);
-            }
-            const less = (left as NumberValue).number < (right as NumberValue).number;
-            const eq = (left as NumberValue).number == (right as NumberValue).number;
-            return BooleanValue.from(less || (le && eq));
-        } else if (left instanceof StringValue) {
-            if (!(right instanceof StringValue)) {
-                throw new RuntimeError(`Right expression not a String - ${right.constructor.name}`, ctx);
-            }
-            const less = (left as StringValue).string < (right as StringValue).string;
-            const eq = (left as StringValue).string == (right as StringValue).string;
-            return BooleanValue.from(less || (le && eq));
-        } else {
-            throw new RuntimeError(`Can't compare type ${left.constructor.name}`, ctx);
-        }
+  visitStat_local_attnamelist = (ctx: Stat_local_attnamelistContext): Value => {
+    const names = flattenList(ctx.attnamelist().accept(this));
+    const exps = ctx.explist()
+      ? flattenList(ctx.explist().accept(this))
+      : new InternalListValue([]);
+    for (let i = 1; i <= names.size(); i++) {
+      this.currentScope.setLocal(names.get(i), exps.getValueOrNil(i));
     }
+    return new NilValue();
+  };
 
-    private compare_ee(left: Value, right: Value): BooleanValue {
-        if (left.constructor != right.constructor) {
-            return BooleanValue.false();
-        } else if ((left instanceof NumberValue)
-                    && ((left as NumberValue).number == (right as NumberValue).number)) {
-                        return BooleanValue.true();
-        } else if ((left instanceof StringValue)
-            && ((left as StringValue).string == (right as StringValue).string)) {
-                return BooleanValue.true();
-        } else if ((left instanceof BooleanValue)
-            && ((left as BooleanValue).boolean == (right as BooleanValue).boolean)) {
-                return BooleanValue.true();
-        } else if ((left instanceof NilValue) && (right instanceof NilValue)) {
-                return BooleanValue.true();
-        } else {
-            return BooleanValue.from(left == right);
+  visitAttnamelist = (ctx: AttnamelistContext): Value => {
+    const result: Value[] = [];
+    ctx.NAME_list().forEach(name => {
+      result.push(StringValue.from(name.getText()));
+    });
+    return new InternalListValue(result);
+  };
+
+  visitAttrib = (ctx: AttribContext): Value => {
+    throw new NotYetImplemented('attribute', ctx, 'N002');
+  };
+
+  visitRetstat = (ctx: RetstatContext): Value => {
+    if (ctx.RETURN()) {
+      const resultList: Value[] = [];
+      if (ctx.explist()) {
+        const values = flattenList(ctx.explist().accept(this));
+        const list = values as InternalListValue;
+        for (let i = 1; i <= list.size(); i++) {
+          resultList.push(list.get(i));
         }
+      }
+      throw ReturnStmt.withList(resultList);
+    } else if (ctx.CONTINUE()) {
+      throw new NotYetImplemented(
+        'continue is not supported in Lua',
+        ctx,
+        'N003'
+      );
+    } else {
+      throw new RuntimeError(
+        "This 'break' should not happen; open an issue on GitHub",
+        ctx
+      );
     }
+  };
 
-    visitStat_table_construnctor = (ctx: Stat_table_construnctorContext): Value => {
-        return ctx.tableconstructor().accept(this);
-    };
+  visitLabel = (ctx: LabelContext): Value => {
+    throw new NotYetImplemented('label', ctx, 'N001');
+  };
 
-    visitExp_unary = (ctx: Exp_unaryContext): Value => {
-        const exp = firstValue(ctx.exp().accept(this));
-        if (ctx.MINUS()) {
-            if (exp instanceof NumberValue) {
-                return new NumberValue(-1*(exp as NumberValue).number);
-            } else {
-                throw new RuntimeError(`expecting number, but got ${exp.constructor.name}`, ctx);
-            }
-        } else if (ctx.NOT()) {
-            return BooleanValue.from(!isTrue(exp));
-        } else if (ctx.POUND()) {
-            if (exp instanceof StringValue) {
-                return NumberValue.from((exp as StringValue).string.length);
-            } else if (exp instanceof TableValue) {
-                return NumberValue.from((exp as TableValue).size());
-            } else {
-                throw new RuntimeError(`expecting string or table, but got ${exp.constructor.name}`, ctx);
-            }
-        } else if (ctx.SQUIG()) {
-            if (exp instanceof NumberValue) {
-                return NumberValue.from(~(exp as NumberValue).number);
-            } else {
-                throw new RuntimeError(`expecting number, but got ${exp.constructor.name}`, ctx);
-            }
-        }
-        throw new NotYetImplemented("will never happen", ctx, "N999");
-    };
-
-    visitExp_or = (ctx: Exp_orContext): Value => {
-        const left = firstValue(ctx.exp(0).accept(this));
-        const right = firstValue(ctx.exp(1).accept(this));
-        return BooleanValue.from(isTrue(left) || isTrue(right));
-    };
-
-    visitExp_false = (_ctx: Exp_falseContext): Value => {
-        return BooleanValue.false();
-    };
-
-    visitStat_prefix_exp = (ctx: Stat_prefix_expContext): Value => {
-        return ctx.prefixexp().accept(this);
-    };
-
-    visitExp_exponent = (ctx: Exp_exponentContext): Value => {
-        const left = firstValue(ctx.exp(0).accept(this));
-        const right = firstValue(ctx.exp(1).accept(this));
-
-        if (!(left instanceof NumberValue)) {
-            throw new RuntimeError(`Expected NumberValue, but got ${left.constructor.name}`, ctx);
-        }
-        if (!(right instanceof NumberValue)) {
-            throw new RuntimeError(`Expected NumberValue, but got ${right.constructor.name}`, ctx);
-        }
-        const l = (left as NumberValue).number;
-        const r = (right as NumberValue).number;
-        return new NumberValue(Math.pow(l, r));
-    };
-
-    visitExp_number = (ctx: Exp_numberContext): Value => {
-        return ctx.number_().accept(this);
-    };
-
-    visitExp_concat = (ctx: Exp_concatContext): Value => {
-        const left = firstValue(ctx.exp(0).accept(this));
-        const right = firstValue(ctx.exp(1).accept(this));
-        return StringValue.from(
-            this.valueToString(left)
-             + this.valueToString(right));
-    };
-
-    private valueToString(value: Value):string {
-        if (value instanceof NilValue) {
-            return "nil";
-        } else if (value instanceof NumberValue) {
-            return (value as NumberValue).number.toString();
-        } else if (value instanceof StringValue) {
-            return (value as StringValue).string;
-        } else if (value instanceof BooleanValue){
-            return (value as BooleanValue).boolean.toString();
-        } else if (value instanceof TableValue){
-            return "table-support-tbd";
-        } else if (value instanceof FunctionValue){
-            return (value as FunctionValue).asIdString();
-        } else {
-            return "unkown_type";
-        }
+  visitFuncname = (ctx: FuncnameContext): Value => {
+    const name = StringValue.from(ctx.NAME(0).getText());
+    if (ctx.NAME_list().length == 1) {
+      return new InternalVar(v => this.currentScope.set(name, v));
     }
-
-    visitExp_vararg = (_ctx: Exp_varargContext): Value => {
-        const varargs = this.currentScope.get(StringValue.from("..."));
-        if (varargs instanceof NilValue) {
-            return new InternalListValue([]);
-        } else {
-            const list: Value[] = []
-            for (let i = 1; i <= (varargs as TableValue).size(); i++) {
-                list.push((varargs as TableValue).get(NumberValue.from(i)));
-            }
-            return new InternalListValue(list);
-        }
-    };
-
-    visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): Value => {
-        const left = firstValue(ctx.exp(0).accept(this));
-        const right = firstValue(ctx.exp(1).accept(this));
-        if (!(left instanceof NumberValue)) {
-            throw new RuntimeError(`Expected NumberValue, but got ${left.constructor.name}`, ctx);
-        }
-        if (!(right instanceof NumberValue)) {
-            throw new RuntimeError(`Expected NumberValue, but got ${right.constructor.name}`, ctx);
-        }
-        if (ctx.PLUS()) {
-            return new NumberValue((left as NumberValue).number + (right as NumberValue).number)
-        } else {
-            return new NumberValue((left as NumberValue).number - (right as NumberValue).number)
-        }
-    };
-
-    visitExp_function_def = (ctx: Exp_function_defContext): Value => {
-        return ctx.functiondef().accept(this);
-    };
-
-    visitExp_nil = (_ctx: Exp_nilContext): Value => {
-        return new NilValue();
-    };
-
-    visitVar_name = (ctx: Var_nameContext): Value => {
-        const varName = ctx.NAME().getText();
-        return new InternalVar((v) => {
-            this.currentScope.set(
-                StringValue.from(varName),
-                v
-            );
-        });
-    };
-
-    visitVar_exp = (ctx: Var_expContext): Value => {
-        const top = ctx.prefixexp().accept(this);
-        if (!(top instanceof TableValue)) {
-            throw new RuntimeError(`Table expected, got ${top.constructor.name}`, ctx);
-        }
-        const key = ctx.NAME()?
-            StringValue.from(ctx.NAME().getText()) :
-            firstValue(ctx.exp().accept(this));
-        return new InternalVar((v) => {
-            (top as TableValue).set(key, v)
-        });
-    };
-
-    visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
-        const topName = ctx.NAME_list()[0].getText();
-        return this.walkExpAndName(
-            this.currentScope.get(StringValue.from(topName)),
-            ctx.exp_list(), ctx.NAME_list(),
-            1,
-            0,
-            1,
-            ctx);
-    };
-
-    visitPrefixexp_function_call = (ctx: Prefixexp_function_callContext): Value => {
-        const value = this.walkExpAndName(
-            ctx.functioncall().accept(this),
-            ctx.exp_list(), ctx.NAME_list(),
-            1,
-            0,
-            0,
-            ctx);
-        return value;
-    };
-
-    visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
-        const f = ctx.exp(0).accept(this);
-        return this.walkExpAndName(
-            f,
-            ctx.exp_list(), ctx.NAME_list(),
-            3,
-            1,
-            0,
-            ctx);
-    };
-
-    private exec_lua_function(f: FunctionValue, args: InternalListValue): Value {
-        const list_params = (f as FunctionValue).params() as InternalListValue;
-        const hasVarargs = (list_params.size() > 0) &&
-            ((list_params.get(list_params.size()) as StringValue).string === '...');
-        const list_args = flattenList(args);
-        return this.scoped(() => {
-            let i = 1;
-            for (; i <= list_params.size() - (hasVarargs?1:0); i++) {
-                this.currentScope.setLocal(list_params.get(i), list_args.getValueOrNil(i));
-            }
-            if (hasVarargs) {
-                const table = new TableValue();
-                let index = 1;
-                for (; i <= list_args.size(); i++) {
-                    table.set(NumberValue.from(index), list_args.getValueOrNil(i));
-                    index++;
-                }
-                this.currentScope.setLocal(StringValue.from("..."), table);
-            }
-            const result = ReturnStmt.executeReturnable(() => {
-                return (f as FunctionValue).body().accept(this);
-            });
-            return result;
-        });
+    let table = this.currentScope.get(name);
+    if (!(table instanceof TableValue)) {
+      throw new RuntimeError(
+        `expecting table, got ${table.constructor.name}`,
+        ctx
+      );
     }
-
-    private exec_ext_function(f: ExtFunction, args: InternalListValue, ctx: ParserRuleContext): Value {
-        const list_args = flattenList(args);
-        return f.run(list_args, ctx);
-    }
-
-    private exec_function(f:FunctionValue|ExtFunction, args: InternalListValue, ctx: ParserRuleContext): Value {
-        return f instanceof FunctionValue ?
-            this.exec_lua_function(f as FunctionValue, args) :
-            this.exec_ext_function(f as ExtFunction, args, ctx);
-    }
-
-    visitFcall_name = (ctx: Fcall_nameContext): Value => {
-        const fname = ctx.NAME(0).getText();
-        const value = this.walkExpAndName(
-            this.currentScope.get(StringValue.from(fname)),
-            ctx.exp_list(), ctx.NAME_list(),
-            1,
-            0,
-            1,
-            ctx
+    for (let i = 1; i < ctx.NAME_list().length - 1; i++) {
+      table = (table as TableValue).get(
+        StringValue.from(ctx.NAME(i).getText())
+      );
+      if (!(table instanceof TableValue)) {
+        throw new RuntimeError(
+          `got ${table.constructor.name} instead of table`,
+          ctx
         );
-        const list_args = ctx.args().accept(this) as InternalListValue;
-        if (value instanceof ExtFunction) {
-            return this.exec_ext_function(value as ExtFunction, list_args, ctx);
-        } else if (value instanceof FunctionValue) {
-            return this.exec_lua_function(value as FunctionValue, list_args);
-        } else {
-            throw new RuntimeError(`Can't execute non-function: ${value.constructor.name}`, ctx);
-        }
-    };
-
-    private walkExpAndName(
-        value: Value,
-        exps: ExpContext[], names: TerminalNode[],
-        startChildIndex: number,
-        expIndex: number,
-        nameIndex: number,
-        ctx: ParserRuleContext): Value {
-        let i = startChildIndex;
-        while ((i < ctx.getChildCount())
-                &&((expIndex < exps.length)|| (nameIndex < names.length))) {
-            value = firstValue(value);
-            if (!(value instanceof TableValue)) {
-                throw new RuntimeError(`got ${value.constructor.name} instead of table`, ctx);
-            }
-            const child = ctx.getChild(i);
-            const childText = child.getText();
-            if (childText === '.') {
-                value = (value as TableValue).get(
-                    StringValue.from(names[nameIndex].getText()));
-                    nameIndex++;
-                    i += 2;
-            } else if (childText === '['){
-                const exp = exps[expIndex].accept(this);
-                expIndex ++;
-                i += 3;
-                value = (value as TableValue).get(exp);
-            } else {
-                break;
-            }
-        }
-        return value;
+      }
     }
+    const lastName = StringValue.from(
+      ctx.NAME_list()[ctx.NAME_list().length - 1].getText()
+    );
+    return new InternalVar(v => table.set(lastName, v));
+  };
 
-    visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
-        const table = firstValue(this.walkExpAndName(
-            this.currentScope.get(StringValue.from(ctx.NAME(0).getText())),
-            ctx.exp_list(), ctx.NAME_list(),
-            1,
-            0,
-            1,
-            ctx
-        ));
-        if (!(table instanceof TableValue)) {
-            throw new RuntimeError(`expect table for ":", got ${table.constructor.name}`, ctx);
-        }
-        const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
-        const fun = (table as TableValue).get(StringValue.from(fName));
-        const list_args = (ctx.args().accept(this) as InternalListValue).asList();
-        list_args.unshift(table)
-        const args = new InternalListValue(list_args);
-        if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, args, ctx);
-        } else if (fun instanceof FunctionValue) {
-            return this.exec_lua_function(fun as FunctionValue, args);
-        } else {
-            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
-        }
-    };
+  visitVarlist = (ctx: VarlistContext): Value => {
+    const result: Value[] = [];
+    ctx.var__list().forEach(v => result.push(v.accept(this)));
+    return new InternalListValue(result);
+  };
 
-    visitFcall_function_call = (ctx: Fcall_function_callContext): Value => {
-        const fun = firstValue(this.walkExpAndName(
-            ctx.functioncall().accept(this),
-            ctx.exp_list(), ctx.NAME_list(),
-            1,
-            0,
-            0,
-            ctx
-        ));
-        const list_args = ctx.args().accept(this) as InternalListValue;
-        if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, list_args, ctx);
-        } else if (fun instanceof FunctionValue) {
-            return this.exec_lua_function(fun as FunctionValue, list_args);
-        } else {
-            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
-        }
-    };
+  visitNamelist = (ctx: NamelistContext): Value => {
+    const result: Value[] = [];
+    ctx
+      .NAME_list()
+      .forEach(name => result.push(StringValue.from(name.getText())));
+    return new InternalListValue(result);
+  };
 
-    visitFcall_exp = (ctx: Fcall_expContext): Value => {
-        const fun = firstValue(this.walkExpAndName(
-            ctx.exp(0).accept(this),
-            ctx.exp_list(), ctx.NAME_list(),
-            3,
-            1,
-            0,
-            ctx
-        ));
-        const list_args = ctx.args().accept(this) as InternalListValue;
-        if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, list_args, ctx);
-        } else if (fun instanceof FunctionValue) {
-            return this.exec_lua_function(fun as FunctionValue, list_args);
-        } else {
-            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
-        }
-    };
+  visitExplist = (ctx: ExplistContext): Value => {
+    const values = ctx.exp_list().map(exp => exp.accept(this));
+    return new InternalListValue(values);
+  };
 
-    visitFcall_exp_ext = (ctx: Fcall_exp_extContext): Value => {
-        const table = firstValue(this.walkExpAndName(
-            firstValue(ctx.exp(0).accept(this)),
-            ctx.exp_list(), ctx.NAME_list(),
-            3,
-            1,
-            0,
-            ctx
-        ));
-        if (!(table instanceof TableValue)) {
-            throw new RuntimeError(`expect table for ":", got ${table.constructor.name}`, ctx);
-        }
-        const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
-        const fun = (table as TableValue).get(StringValue.from(fName));
-        const list_args = (ctx.args().accept(this) as InternalListValue).asList();
-        list_args.unshift(table)
-        const args = new InternalListValue(list_args);
-        if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, args, ctx);
-        } else if (fun instanceof FunctionValue) {
-            return this.exec_lua_function(fun as FunctionValue, args);
-        } else {
-            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
-        }
-    };
+  visitExp_true = (_ctx: Exp_trueContext): Value => {
+    return BooleanValue.true();
+  };
 
-    visitFcall_function_call_ext = (ctx: Fcall_function_call_extContext): Value => {
-        const table = firstValue(this.walkExpAndName(
-            firstValue(ctx.functioncall().accept(this)),
-            ctx.exp_list(), ctx.NAME_list(),
-            1,
-            0,
-            0,
-            ctx
-        ));
-        if (!(table instanceof TableValue)) {
-            throw new RuntimeError(`expect table for ":", got ${table.constructor.name}`, ctx);
-        }
-        const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
-        const fun = (table as TableValue).get(StringValue.from(fName));
-        const list_args = (ctx.args().accept(this) as InternalListValue).asList();
-        list_args.unshift(table)
-        const args = new InternalListValue(list_args);
-        if (fun instanceof ExtFunction) {
-            return this.exec_ext_function(fun as ExtFunction, args, ctx);
-        } else if (fun instanceof FunctionValue) {
-            return this.exec_lua_function(fun as FunctionValue, args);
-        } else {
-            throw new RuntimeError(`Can't execute non-function: ${fun.constructor.name}`, ctx);
-        }
-    };
+  visitExp_bits = (ctx: Exp_bitsContext): Value => {
+    const left = firstValue(ctx.exp(0).accept(this));
+    const right = firstValue(ctx.exp(1).accept(this));
 
-    visitArgs_exp_list = (ctx: Args_exp_listContext): Value => {
-        if (ctx.explist()) {
-            return flattenList(ctx.explist().accept(this));
-        } else {
-            return new InternalListValue([]);
-        }
-    };
+    if (!(left instanceof NumberValue)) {
+      throw new RuntimeError(
+        `Expected NumberValue, but got ${left.constructor.name}`,
+        ctx
+      );
+    }
+    if (!(right instanceof NumberValue)) {
+      throw new RuntimeError(
+        `Expected NumberValue, but got ${right.constructor.name}`,
+        ctx
+      );
+    }
+    const l = (left as NumberValue).number;
+    const r = (right as NumberValue).number;
+    if (ctx.AMP()) {
+      return NumberValue.from(l & r);
+    } else if (ctx.PIPE()) {
+      return NumberValue.from(l | r);
+    } else if (ctx.SQUIG()) {
+      return NumberValue.from(l ^ r);
+    } else if (ctx.GG()) {
+      return NumberValue.from(l >> r);
+    } else {
+      return NumberValue.from(l << r);
+    }
+  };
 
-    visitArgs_table_constructor = (ctx: Args_table_constructorContext): Value => {
-        return ctx.tableconstructor().accept(this);
-    };
+  visitExp_and = (ctx: Exp_andContext): Value => {
+    const left = firstValue(ctx.exp(0).accept(this));
+    const right = firstValue(ctx.exp(1).accept(this));
+    return BooleanValue.from(isTrue(left) && isTrue(right));
+  };
 
-    visitArgs_string = (ctx: Args_stringContext): Value => {
-        return new InternalListValue([ctx.string_().accept(this)]);
-    };
+  visitExp_string = (ctx: Exp_stringContext): Value => {
+    return ctx.string_().accept(this);
+  };
 
-    visitFunctiondef = (ctx: FunctiondefContext): Value => {
-        return ctx.funcbody().accept(this);
-    };
+  visitExp_arithmetic_high = (ctx: Exp_arithmetic_highContext): Value => {
+    const left = firstValue(ctx.exp(0).accept(this));
+    const right = firstValue(ctx.exp(1).accept(this));
 
-    visitFuncbody = (ctx: FuncbodyContext): Value => {
-        const parameters = ctx.parlist().accept(this);
-        const block = ctx.block();
-        return new FunctionValue(parameters as InternalListValue, block);
-    };
+    if (!(left instanceof NumberValue)) {
+      throw new RuntimeError(
+        `Expected NumberValue, but got ${left.constructor.name}`,
+        ctx
+      );
+    }
+    if (!(right instanceof NumberValue)) {
+      throw new RuntimeError(
+        `Expected NumberValue, but got ${right.constructor.name}`,
+        ctx
+      );
+    }
+    const l = (left as NumberValue).number;
+    const r = (right as NumberValue).number;
+    if (ctx.STAR()) {
+      return new NumberValue(l * r);
+    } else if (ctx.SLASH()) {
+      return new NumberValue(l / r);
+    } else if (ctx.PER()) {
+      return new NumberValue(l % r);
+    } else if (ctx.SS()) {
+      return new NumberValue(Math.floor(l / r));
+    }
+    throw new NotYetImplemented('will never happen', ctx, 'N999');
+  };
 
-    visitParlist_namellist = (ctx: Parlist_namellistContext): Value => {
-        const names = (ctx.namelist().accept(this) as InternalListValue).asList();
-        if (ctx.COMMA()) {
-            names.push(StringValue.from("..."));
-        }
-        return new InternalListValue(names);
-    };
+  visitExp_rel = (ctx: Exp_relContext): Value => {
+    const left = firstValue(ctx.exp(0).accept(this));
+    const right = firstValue(ctx.exp(1).accept(this));
+    if (ctx.EE()) {
+      return this.compare_ee(left, right);
+    }
+    if (ctx.SQEQ()) {
+      return BooleanValue.from(!this.compare_ee(left, right).boolean);
+    }
+    if (ctx.LT()) {
+      return this.compare_lt(left, right, ctx, false);
+    }
+    if (ctx.LE()) {
+      return this.compare_lt(left, right, ctx, true);
+    }
+    if (ctx.GT()) {
+      return this.compare_lt(right, left, ctx, false);
+    }
+    if (ctx.GE()) {
+      return this.compare_lt(right, left, ctx, true);
+    }
+    throw new NotYetImplemented('compare for non numbers', ctx, 'N999');
+  };
 
-    visitParlist_vararg = (_ctx: Parlist_varargContext): Value => {
-        return new InternalListValue([StringValue.from("...")]);
-    };
+  private compare_lt(
+    left: Value,
+    right: Value,
+    ctx: Exp_relContext,
+    le: boolean
+  ): BooleanValue {
+    if (left instanceof NumberValue) {
+      if (!(right instanceof NumberValue)) {
+        throw new RuntimeError(
+          `Right expression not a Number - ${right.constructor.name}`,
+          ctx
+        );
+      }
+      const less = (left as NumberValue).number < (right as NumberValue).number;
+      const eq = (left as NumberValue).number == (right as NumberValue).number;
+      return BooleanValue.from(less || (le && eq));
+    } else if (left instanceof StringValue) {
+      if (!(right instanceof StringValue)) {
+        throw new RuntimeError(
+          `Right expression not a String - ${right.constructor.name}`,
+          ctx
+        );
+      }
+      const less = (left as StringValue).string < (right as StringValue).string;
+      const eq = (left as StringValue).string == (right as StringValue).string;
+      return BooleanValue.from(less || (le && eq));
+    } else {
+      throw new RuntimeError(
+        `Can't compare type ${left.constructor.name}`,
+        ctx
+      );
+    }
+  }
 
-    visitParlist_none = (_ctx: Parlist_noneContext): Value => {
-        return new InternalListValue([]);
-    };
+  private compare_ee(left: Value, right: Value): BooleanValue {
+    if (left.constructor != right.constructor) {
+      return BooleanValue.false();
+    } else if (
+      left instanceof NumberValue &&
+      (left as NumberValue).number == (right as NumberValue).number
+    ) {
+      return BooleanValue.true();
+    } else if (
+      left instanceof StringValue &&
+      (left as StringValue).string == (right as StringValue).string
+    ) {
+      return BooleanValue.true();
+    } else if (
+      left instanceof BooleanValue &&
+      (left as BooleanValue).boolean == (right as BooleanValue).boolean
+    ) {
+      return BooleanValue.true();
+    } else if (left instanceof NilValue && right instanceof NilValue) {
+      return BooleanValue.true();
+    } else {
+      return BooleanValue.from(left == right);
+    }
+  }
 
-    visitTableconstructor = (ctx: TableconstructorContext): Value => {
-        if (ctx.fieldlist()) {
-            return ctx.fieldlist().accept(this);
-        } else {
-            return new TableValue();
-        }
-    };
+  visitStat_table_construnctor = (
+    ctx: Stat_table_construnctorContext
+  ): Value => {
+    return ctx.tableconstructor().accept(this);
+  };
 
-    visitFieldlist = (ctx: FieldlistContext): Value => {
-        const result = new TableValue();
+  visitExp_unary = (ctx: Exp_unaryContext): Value => {
+    const exp = firstValue(ctx.exp().accept(this));
+    if (ctx.MINUS()) {
+      if (exp instanceof NumberValue) {
+        return new NumberValue(-1 * (exp as NumberValue).number);
+      } else {
+        throw new RuntimeError(
+          `expecting number, but got ${exp.constructor.name}`,
+          ctx
+        );
+      }
+    } else if (ctx.NOT()) {
+      return BooleanValue.from(!isTrue(exp));
+    } else if (ctx.POUND()) {
+      if (exp instanceof StringValue) {
+        return NumberValue.from((exp as StringValue).string.length);
+      } else if (exp instanceof TableValue) {
+        return NumberValue.from((exp as TableValue).size());
+      } else {
+        throw new RuntimeError(
+          `expecting string or table, but got ${exp.constructor.name}`,
+          ctx
+        );
+      }
+    } else if (ctx.SQUIG()) {
+      if (exp instanceof NumberValue) {
+        return NumberValue.from(~(exp as NumberValue).number);
+      } else {
+        throw new RuntimeError(
+          `expecting number, but got ${exp.constructor.name}`,
+          ctx
+        );
+      }
+    }
+    throw new NotYetImplemented('will never happen', ctx, 'N999');
+  };
+
+  visitExp_or = (ctx: Exp_orContext): Value => {
+    const left = firstValue(ctx.exp(0).accept(this));
+    const right = firstValue(ctx.exp(1).accept(this));
+    return BooleanValue.from(isTrue(left) || isTrue(right));
+  };
+
+  visitExp_false = (_ctx: Exp_falseContext): Value => {
+    return BooleanValue.false();
+  };
+
+  visitStat_prefix_exp = (ctx: Stat_prefix_expContext): Value => {
+    return ctx.prefixexp().accept(this);
+  };
+
+  visitExp_exponent = (ctx: Exp_exponentContext): Value => {
+    const left = firstValue(ctx.exp(0).accept(this));
+    const right = firstValue(ctx.exp(1).accept(this));
+
+    if (!(left instanceof NumberValue)) {
+      throw new RuntimeError(
+        `Expected NumberValue, but got ${left.constructor.name}`,
+        ctx
+      );
+    }
+    if (!(right instanceof NumberValue)) {
+      throw new RuntimeError(
+        `Expected NumberValue, but got ${right.constructor.name}`,
+        ctx
+      );
+    }
+    const l = (left as NumberValue).number;
+    const r = (right as NumberValue).number;
+    return new NumberValue(Math.pow(l, r));
+  };
+
+  visitExp_number = (ctx: Exp_numberContext): Value => {
+    return ctx.number_().accept(this);
+  };
+
+  visitExp_concat = (ctx: Exp_concatContext): Value => {
+    const left = firstValue(ctx.exp(0).accept(this));
+    const right = firstValue(ctx.exp(1).accept(this));
+    return StringValue.from(
+      this.valueToString(left) + this.valueToString(right)
+    );
+  };
+
+  private valueToString(value: Value): string {
+    if (value instanceof NilValue) {
+      return 'nil';
+    } else if (value instanceof NumberValue) {
+      return (value as NumberValue).number.toString();
+    } else if (value instanceof StringValue) {
+      return (value as StringValue).string;
+    } else if (value instanceof BooleanValue) {
+      return (value as BooleanValue).boolean.toString();
+    } else if (value instanceof TableValue) {
+      return 'table-support-tbd';
+    } else if (value instanceof FunctionValue) {
+      return (value as FunctionValue).asIdString();
+    } else {
+      return 'unkown_type';
+    }
+  }
+
+  visitExp_vararg = (_ctx: Exp_varargContext): Value => {
+    const varargs = this.currentScope.get(StringValue.from('...'));
+    if (varargs instanceof NilValue) {
+      return new InternalListValue([]);
+    } else {
+      const list: Value[] = [];
+      for (let i = 1; i <= (varargs as TableValue).size(); i++) {
+        list.push((varargs as TableValue).get(NumberValue.from(i)));
+      }
+      return new InternalListValue(list);
+    }
+  };
+
+  visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): Value => {
+    const left = firstValue(ctx.exp(0).accept(this));
+    const right = firstValue(ctx.exp(1).accept(this));
+    if (!(left instanceof NumberValue)) {
+      throw new RuntimeError(
+        `Expected NumberValue, but got ${left.constructor.name}`,
+        ctx
+      );
+    }
+    if (!(right instanceof NumberValue)) {
+      throw new RuntimeError(
+        `Expected NumberValue, but got ${right.constructor.name}`,
+        ctx
+      );
+    }
+    if (ctx.PLUS()) {
+      return new NumberValue(
+        (left as NumberValue).number + (right as NumberValue).number
+      );
+    } else {
+      return new NumberValue(
+        (left as NumberValue).number - (right as NumberValue).number
+      );
+    }
+  };
+
+  visitExp_function_def = (ctx: Exp_function_defContext): Value => {
+    return ctx.functiondef().accept(this);
+  };
+
+  visitExp_nil = (_ctx: Exp_nilContext): Value => {
+    return new NilValue();
+  };
+
+  visitVar_name = (ctx: Var_nameContext): Value => {
+    const varName = ctx.NAME().getText();
+    return new InternalVar(v => {
+      this.currentScope.set(StringValue.from(varName), v);
+    });
+  };
+
+  visitVar_exp = (ctx: Var_expContext): Value => {
+    const top = ctx.prefixexp().accept(this);
+    if (!(top instanceof TableValue)) {
+      throw new RuntimeError(
+        `Table expected, got ${top.constructor.name}`,
+        ctx
+      );
+    }
+    const key = ctx.NAME()
+      ? StringValue.from(ctx.NAME().getText())
+      : firstValue(ctx.exp().accept(this));
+    return new InternalVar(v => {
+      (top as TableValue).set(key, v);
+    });
+  };
+
+  visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
+    const topName = ctx.NAME_list()[0].getText();
+    return this.walkExpAndName(
+      this.currentScope.get(StringValue.from(topName)),
+      ctx.exp_list(),
+      ctx.NAME_list(),
+      1,
+      0,
+      1,
+      ctx
+    );
+  };
+
+  visitPrefixexp_function_call = (
+    ctx: Prefixexp_function_callContext
+  ): Value => {
+    const value = this.walkExpAndName(
+      ctx.functioncall().accept(this),
+      ctx.exp_list(),
+      ctx.NAME_list(),
+      1,
+      0,
+      0,
+      ctx
+    );
+    return value;
+  };
+
+  visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
+    const f = ctx.exp(0).accept(this);
+    return this.walkExpAndName(
+      f,
+      ctx.exp_list(),
+      ctx.NAME_list(),
+      3,
+      1,
+      0,
+      ctx
+    );
+  };
+
+  private exec_lua_function(f: FunctionValue, args: InternalListValue): Value {
+    const list_params = (f as FunctionValue).params() as InternalListValue;
+    const hasVarargs =
+      list_params.size() > 0 &&
+      (list_params.get(list_params.size()) as StringValue).string === '...';
+    const list_args = flattenList(args);
+    return this.scoped(() => {
+      let i = 1;
+      for (; i <= list_params.size() - (hasVarargs ? 1 : 0); i++) {
+        this.currentScope.setLocal(
+          list_params.get(i),
+          list_args.getValueOrNil(i)
+        );
+      }
+      if (hasVarargs) {
+        const table = new TableValue();
         let index = 1;
-        for (let i = 0; i < ctx.field_list().length; i++) {
-            const f = ctx.field_list()[i];
-            const field = f.accept(this) as InternalPairValue;
-            if (field.isLeftNil) {
-                if (i == ctx.field_list().length - 1) {
-                    if (field.right instanceof InternalListValue) {
-                        const list = flattenList(field.right).asList();
-                        list.forEach(v => {
-                            result.set(NumberValue.from(index), firstValue(v));
-                            index++;
-                        });
-                    } else {
-                        result.set(NumberValue.from(index), firstValue(field.right));
-                        index++;
-                    }
-                } else {
-                    result.set(NumberValue.from(index), firstValue(field.right));
-                    index++;
-                }
-            } else {
-                result.set(firstValue(field.left), firstValue(field.right));
-            }
+        for (; i <= list_args.size(); i++) {
+          table.set(NumberValue.from(index), list_args.getValueOrNil(i));
+          index++;
         }
-        return result;
-    };
+        this.currentScope.setLocal(StringValue.from('...'), table);
+      }
+      const result = ReturnStmt.executeReturnable(() => {
+        return (f as FunctionValue).body().accept(this);
+      });
+      return result;
+    });
+  }
 
-    visitField_exp_exp = (ctx: Field_exp_expContext): Value => {
-        return InternalPairValue.from(
-            firstValue(ctx.exp(0).accept(this)),
-            firstValue(ctx.exp(1).accept(this))
+  private exec_ext_function(
+    f: ExtFunction,
+    args: InternalListValue,
+    ctx: ParserRuleContext
+  ): Value {
+    const list_args = flattenList(args);
+    return f.run(list_args, ctx);
+  }
+
+  private exec_function(
+    f: FunctionValue | ExtFunction,
+    args: InternalListValue,
+    ctx: ParserRuleContext
+  ): Value {
+    return f instanceof FunctionValue
+      ? this.exec_lua_function(f as FunctionValue, args)
+      : this.exec_ext_function(f as ExtFunction, args, ctx);
+  }
+
+  visitFcall_name = (ctx: Fcall_nameContext): Value => {
+    const fname = ctx.NAME(0).getText();
+    const value = this.walkExpAndName(
+      this.currentScope.get(StringValue.from(fname)),
+      ctx.exp_list(),
+      ctx.NAME_list(),
+      1,
+      0,
+      1,
+      ctx
+    );
+    const list_args = ctx.args().accept(this) as InternalListValue;
+    if (value instanceof ExtFunction) {
+      return this.exec_ext_function(value as ExtFunction, list_args, ctx);
+    } else if (value instanceof FunctionValue) {
+      return this.exec_lua_function(value as FunctionValue, list_args);
+    } else {
+      throw new RuntimeError(
+        `Can't execute non-function: ${value.constructor.name}`,
+        ctx
+      );
+    }
+  };
+
+  private walkExpAndName(
+    value: Value,
+    exps: ExpContext[],
+    names: TerminalNode[],
+    startChildIndex: number,
+    expIndex: number,
+    nameIndex: number,
+    ctx: ParserRuleContext
+  ): Value {
+    let i = startChildIndex;
+    while (
+      i < ctx.getChildCount() &&
+      (expIndex < exps.length || nameIndex < names.length)
+    ) {
+      value = firstValue(value);
+      if (!(value instanceof TableValue)) {
+        throw new RuntimeError(
+          `got ${value.constructor.name} instead of table`,
+          ctx
         );
-    };
-
-    visitField_name_exp = (ctx: Field_name_expContext): Value => {
-        return InternalPairValue.from(
-            StringValue.from(ctx.NAME().getText()),
-            firstValue(ctx.exp().accept(this))
+      }
+      const child = ctx.getChild(i);
+      const childText = child.getText();
+      if (childText === '.') {
+        value = (value as TableValue).get(
+          StringValue.from(names[nameIndex].getText())
         );
-    };
+        nameIndex++;
+        i += 2;
+      } else if (childText === '[') {
+        const exp = exps[expIndex].accept(this);
+        expIndex++;
+        i += 3;
+        value = (value as TableValue).get(exp);
+      } else {
+        break;
+      }
+    }
+    return value;
+  }
 
-    visitField_exp = (ctx: Field_expContext): Value => {
-        return InternalPairValue.fromRight(ctx.exp().accept(this));
-    };
+  visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
+    const table = firstValue(
+      this.walkExpAndName(
+        this.currentScope.get(StringValue.from(ctx.NAME(0).getText())),
+        ctx.exp_list(),
+        ctx.NAME_list(),
+        1,
+        0,
+        1,
+        ctx
+      )
+    );
+    if (!(table instanceof TableValue)) {
+      throw new RuntimeError(
+        `expect table for ":", got ${table.constructor.name}`,
+        ctx
+      );
+    }
+    const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
+    const fun = (table as TableValue).get(StringValue.from(fName));
+    const list_args = (ctx.args().accept(this) as InternalListValue).asList();
+    list_args.unshift(table);
+    const args = new InternalListValue(list_args);
+    if (fun instanceof ExtFunction) {
+      return this.exec_ext_function(fun as ExtFunction, args, ctx);
+    } else if (fun instanceof FunctionValue) {
+      return this.exec_lua_function(fun as FunctionValue, args);
+    } else {
+      throw new RuntimeError(
+        `Can't execute non-function: ${fun.constructor.name}`,
+        ctx
+      );
+    }
+  };
 
-    visitFieldsep = (ctx: FieldsepContext): Value => {
-        throw new NotYetImplemented("field sep", ctx, "N999");
-    };
+  visitFcall_function_call = (ctx: Fcall_function_callContext): Value => {
+    const fun = firstValue(
+      this.walkExpAndName(
+        ctx.functioncall().accept(this),
+        ctx.exp_list(),
+        ctx.NAME_list(),
+        1,
+        0,
+        0,
+        ctx
+      )
+    );
+    const list_args = ctx.args().accept(this) as InternalListValue;
+    if (fun instanceof ExtFunction) {
+      return this.exec_ext_function(fun as ExtFunction, list_args, ctx);
+    } else if (fun instanceof FunctionValue) {
+      return this.exec_lua_function(fun as FunctionValue, list_args);
+    } else {
+      throw new RuntimeError(
+        `Can't execute non-function: ${fun.constructor.name}`,
+        ctx
+      );
+    }
+  };
 
-    visitNumber_int = (ctx: Number_intContext): Value => {
-        return new NumberValue(parseInt(ctx.getText()));
-    };
+  visitFcall_exp = (ctx: Fcall_expContext): Value => {
+    const fun = firstValue(
+      this.walkExpAndName(
+        ctx.exp(0).accept(this),
+        ctx.exp_list(),
+        ctx.NAME_list(),
+        3,
+        1,
+        0,
+        ctx
+      )
+    );
+    const list_args = ctx.args().accept(this) as InternalListValue;
+    if (fun instanceof ExtFunction) {
+      return this.exec_ext_function(fun as ExtFunction, list_args, ctx);
+    } else if (fun instanceof FunctionValue) {
+      return this.exec_lua_function(fun as FunctionValue, list_args);
+    } else {
+      throw new RuntimeError(
+        `Can't execute non-function: ${fun.constructor.name}`,
+        ctx
+      );
+    }
+  };
 
-    visitNumber_hex = (ctx: Number_hexContext): Value => {
-        const hex = ctx.HEX().getText();
-        const number = parseInt(hex.substring(2), 16);
-        return NumberValue.from(number);
-    };
+  visitFcall_exp_ext = (ctx: Fcall_exp_extContext): Value => {
+    const table = firstValue(
+      this.walkExpAndName(
+        firstValue(ctx.exp(0).accept(this)),
+        ctx.exp_list(),
+        ctx.NAME_list(),
+        3,
+        1,
+        0,
+        ctx
+      )
+    );
+    if (!(table instanceof TableValue)) {
+      throw new RuntimeError(
+        `expect table for ":", got ${table.constructor.name}`,
+        ctx
+      );
+    }
+    const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
+    const fun = (table as TableValue).get(StringValue.from(fName));
+    const list_args = (ctx.args().accept(this) as InternalListValue).asList();
+    list_args.unshift(table);
+    const args = new InternalListValue(list_args);
+    if (fun instanceof ExtFunction) {
+      return this.exec_ext_function(fun as ExtFunction, args, ctx);
+    } else if (fun instanceof FunctionValue) {
+      return this.exec_lua_function(fun as FunctionValue, args);
+    } else {
+      throw new RuntimeError(
+        `Can't execute non-function: ${fun.constructor.name}`,
+        ctx
+      );
+    }
+  };
 
-    visitNumber_float = (ctx: Number_floatContext): Value => {
-        const floatAsString = ctx.FLOAT().getText();
-        const number = parseFloat(floatAsString);
-        return NumberValue.from(number);
-    };
+  visitFcall_function_call_ext = (
+    ctx: Fcall_function_call_extContext
+  ): Value => {
+    const table = firstValue(
+      this.walkExpAndName(
+        firstValue(ctx.functioncall().accept(this)),
+        ctx.exp_list(),
+        ctx.NAME_list(),
+        1,
+        0,
+        0,
+        ctx
+      )
+    );
+    if (!(table instanceof TableValue)) {
+      throw new RuntimeError(
+        `expect table for ":", got ${table.constructor.name}`,
+        ctx
+      );
+    }
+    const fName = ctx.NAME_list()[ctx.NAME_list().length - 1].getText();
+    const fun = (table as TableValue).get(StringValue.from(fName));
+    const list_args = (ctx.args().accept(this) as InternalListValue).asList();
+    list_args.unshift(table);
+    const args = new InternalListValue(list_args);
+    if (fun instanceof ExtFunction) {
+      return this.exec_ext_function(fun as ExtFunction, args, ctx);
+    } else if (fun instanceof FunctionValue) {
+      return this.exec_lua_function(fun as FunctionValue, args);
+    } else {
+      throw new RuntimeError(
+        `Can't execute non-function: ${fun.constructor.name}`,
+        ctx
+      );
+    }
+  };
 
-    visitNumber_hex_float = (ctx: Number_hex_floatContext): Value => {
-        const str = ctx.HEX_FLOAT().getText();
-        const match = str.match(/^0x([0-9a-fA-F]+)?(?:\.([0-9a-fA-F]*))?p([+-]?\d+)$/);
-        if (!match) {
-            throw new RuntimeError(`Invalid Lua hex float: ${str}`, ctx);
+  visitArgs_exp_list = (ctx: Args_exp_listContext): Value => {
+    if (ctx.explist()) {
+      return flattenList(ctx.explist().accept(this));
+    } else {
+      return new InternalListValue([]);
+    }
+  };
+
+  visitArgs_table_constructor = (ctx: Args_table_constructorContext): Value => {
+    return ctx.tableconstructor().accept(this);
+  };
+
+  visitArgs_string = (ctx: Args_stringContext): Value => {
+    return new InternalListValue([ctx.string_().accept(this)]);
+  };
+
+  visitFunctiondef = (ctx: FunctiondefContext): Value => {
+    return ctx.funcbody().accept(this);
+  };
+
+  visitFuncbody = (ctx: FuncbodyContext): Value => {
+    const parameters = ctx.parlist().accept(this);
+    const block = ctx.block();
+    return new FunctionValue(parameters as InternalListValue, block);
+  };
+
+  visitParlist_namellist = (ctx: Parlist_namellistContext): Value => {
+    const names = (ctx.namelist().accept(this) as InternalListValue).asList();
+    if (ctx.COMMA()) {
+      names.push(StringValue.from('...'));
+    }
+    return new InternalListValue(names);
+  };
+
+  visitParlist_vararg = (_ctx: Parlist_varargContext): Value => {
+    return new InternalListValue([StringValue.from('...')]);
+  };
+
+  visitParlist_none = (_ctx: Parlist_noneContext): Value => {
+    return new InternalListValue([]);
+  };
+
+  visitTableconstructor = (ctx: TableconstructorContext): Value => {
+    if (ctx.fieldlist()) {
+      return ctx.fieldlist().accept(this);
+    } else {
+      return new TableValue();
+    }
+  };
+
+  visitFieldlist = (ctx: FieldlistContext): Value => {
+    const result = new TableValue();
+    let index = 1;
+    for (let i = 0; i < ctx.field_list().length; i++) {
+      const f = ctx.field_list()[i];
+      const field = f.accept(this) as InternalPairValue;
+      if (field.isLeftNil) {
+        if (i == ctx.field_list().length - 1) {
+          if (field.right instanceof InternalListValue) {
+            const list = flattenList(field.right).asList();
+            list.forEach(v => {
+              result.set(NumberValue.from(index), firstValue(v));
+              index++;
+            });
+          } else {
+            result.set(NumberValue.from(index), firstValue(field.right));
+            index++;
+          }
+        } else {
+          result.set(NumberValue.from(index), firstValue(field.right));
+          index++;
         }
-        const [_, intPart = "0", fracPart = "", exponentStr] = match;
-        const exponent = parseInt(exponentStr, 10);
-        const intValue = parseInt(intPart, 16);
-        let fracValue = 0;
-        for (let i = 0; i < fracPart.length; i++) {
-            const digit = parseInt(fracPart[i], 16);
-            fracValue += digit / Math.pow(16, i + 1);
-        }
-        const total = (intValue + fracValue) * Math.pow(2, exponent);
-        return NumberValue.from(total);
-    };
+      } else {
+        result.set(firstValue(field.left), firstValue(field.right));
+      }
+    }
+    return result;
+  };
 
-    visitString_string = (ctx: String_stringContext): Value => {
-        const text = ctx.getText();
-        return StringValue.from(text.substring(1, text.length - 1));
-    };
+  visitField_exp_exp = (ctx: Field_exp_expContext): Value => {
+    return InternalPairValue.from(
+      firstValue(ctx.exp(0).accept(this)),
+      firstValue(ctx.exp(1).accept(this))
+    );
+  };
 
-    visitString_charstring = (ctx: String_charstringContext): Value => {
-        const text = ctx.CHARSTRING().getText();
-        return StringValue.from(text.substring(1, text.length - 1));
-    };
+  visitField_name_exp = (ctx: Field_name_expContext): Value => {
+    return InternalPairValue.from(
+      StringValue.from(ctx.NAME().getText()),
+      firstValue(ctx.exp().accept(this))
+    );
+  };
 
-    visitString_longstring = (ctx: String_longstringContext): Value => {
-        const text = ctx.LONGSTRING().getText();
-        let i = 0;
-        let j = text.length-1;
-        while ((i < j) && (text[i] === '[' || text[i] === '=') &&
-            ((text[i] == '[' && text[j] == ']')|| (text[i] == text[j]))) {
-            i++;
-            j--;
-        }
-        return StringValue.from(text.substring(i, j+1));
-    };
+  visitField_exp = (ctx: Field_expContext): Value => {
+    return InternalPairValue.fromRight(ctx.exp().accept(this));
+  };
+
+  visitFieldsep = (ctx: FieldsepContext): Value => {
+    throw new NotYetImplemented('field sep', ctx, 'N999');
+  };
+
+  visitNumber_int = (ctx: Number_intContext): Value => {
+    return new NumberValue(parseInt(ctx.getText()));
+  };
+
+  visitNumber_hex = (ctx: Number_hexContext): Value => {
+    const hex = ctx.HEX().getText();
+    const number = parseInt(hex.substring(2), 16);
+    return NumberValue.from(number);
+  };
+
+  visitNumber_float = (ctx: Number_floatContext): Value => {
+    const floatAsString = ctx.FLOAT().getText();
+    const number = parseFloat(floatAsString);
+    return NumberValue.from(number);
+  };
+
+  visitNumber_hex_float = (ctx: Number_hex_floatContext): Value => {
+    const str = ctx.HEX_FLOAT().getText();
+    const match = str.match(
+      /^0x([0-9a-fA-F]+)?(?:\.([0-9a-fA-F]*))?p([+-]?\d+)$/
+    );
+    if (!match) {
+      throw new RuntimeError(`Invalid Lua hex float: ${str}`, ctx);
+    }
+    const [_, intPart = '0', fracPart = '', exponentStr] = match;
+    const exponent = parseInt(exponentStr, 10);
+    const intValue = parseInt(intPart, 16);
+    let fracValue = 0;
+    for (let i = 0; i < fracPart.length; i++) {
+      const digit = parseInt(fracPart[i], 16);
+      fracValue += digit / Math.pow(16, i + 1);
+    }
+    const total = (intValue + fracValue) * Math.pow(2, exponent);
+    return NumberValue.from(total);
+  };
+
+  visitString_string = (ctx: String_stringContext): Value => {
+    const text = ctx.getText();
+    return StringValue.from(text.substring(1, text.length - 1));
+  };
+
+  visitString_charstring = (ctx: String_charstringContext): Value => {
+    const text = ctx.CHARSTRING().getText();
+    return StringValue.from(text.substring(1, text.length - 1));
+  };
+
+  visitString_longstring = (ctx: String_longstringContext): Value => {
+    const text = ctx.LONGSTRING().getText();
+    let i = 0;
+    let j = text.length - 1;
+    while (
+      i < j &&
+      (text[i] === '[' || text[i] === '=') &&
+      ((text[i] == '[' && text[j] == ']') || text[i] == text[j])
+    ) {
+      i++;
+      j--;
+    }
+    return StringValue.from(text.substring(i, j + 1));
+  };
 }

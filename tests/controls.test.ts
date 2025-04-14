@@ -1,9 +1,9 @@
-import { BooleanValue, NilValue, StringValue } from "@src/interpreter/types";
-import { VMBuilder } from "@src/vm";
-import { expectToBeNumber } from "./interpreter/test_utils";
+import { BooleanValue, NilValue, StringValue } from '@src/interpreter/types';
+import { VMBuilder } from '@src/vm';
+import { expectToBeNumber } from './interpreter/test_utils';
 
-test("if", () => {
-    const lua = `
+test('if', () => {
+  const lua = `
     a = 1
     b = 0
     while a < 4 do
@@ -19,15 +19,15 @@ test("if", () => {
       a = a + 1
     end
     `;
-    const vm = new VMBuilder().build();
-    const result = vm.executeOnce(lua);
-    expect(result.hasReturnValue()).toBeFalsy();
-    expectToBeNumber(result.globalVar("a"), 4);
-    expectToBeNumber(result.globalVar("b"),111);
+  const vm = new VMBuilder().build();
+  const result = vm.executeOnce(lua);
+  expect(result.hasReturnValue()).toBeFalsy();
+  expectToBeNumber(result.globalVar('a'), 4);
+  expectToBeNumber(result.globalVar('b'), 111);
 });
 
-test("repeat", () => {
-    const lua = `
+test('repeat', () => {
+  const lua = `
     a = 0
     b = 2
     repeat
@@ -35,35 +35,35 @@ test("repeat", () => {
       b = b * 2
     until a == 3
     `;
-    const vm = new VMBuilder().build();
-    const result = vm.executeOnce(lua);
-    expect(result.hasReturnValue()).toBeFalsy();
-    expectToBeNumber(result.globalVar("a"), 3);
-    expectToBeNumber(result.globalVar("b"), 16);
+  const vm = new VMBuilder().build();
+  const result = vm.executeOnce(lua);
+  expect(result.hasReturnValue()).toBeFalsy();
+  expectToBeNumber(result.globalVar('a'), 3);
+  expectToBeNumber(result.globalVar('b'), 16);
 });
 
-test("set various values", () => {
-    const lua = `
+test('set various values', () => {
+  const lua = `
     a = nil
     b = true
     c = false
     d = "string value"
     `;
-    const vm = new VMBuilder().build();
-    const result = vm.executeOnce(lua);
-    expect(result.hasReturnValue()).toBeFalsy();
-    expect(result.globalVar("a")).toBeInstanceOf(NilValue);
-    expect(result.globalVar("b")).toBeInstanceOf(BooleanValue);
-    expect(result.globalVar("c")).toBeInstanceOf(BooleanValue);
-    expect(result.globalVar("d")).toBeInstanceOf(StringValue);
+  const vm = new VMBuilder().build();
+  const result = vm.executeOnce(lua);
+  expect(result.hasReturnValue()).toBeFalsy();
+  expect(result.globalVar('a')).toBeInstanceOf(NilValue);
+  expect(result.globalVar('b')).toBeInstanceOf(BooleanValue);
+  expect(result.globalVar('c')).toBeInstanceOf(BooleanValue);
+  expect(result.globalVar('d')).toBeInstanceOf(StringValue);
 
-    expect((result.globalVar("b") as BooleanValue).boolean).toBeTruthy();
-    expect((result.globalVar("c") as BooleanValue).boolean).toBeFalsy();
-    expect((result.globalVar("d") as StringValue).string).toBe("string value");
+  expect((result.globalVar('b') as BooleanValue).boolean).toBeTruthy();
+  expect((result.globalVar('c') as BooleanValue).boolean).toBeFalsy();
+  expect((result.globalVar('d') as StringValue).string).toBe('string value');
 });
 
-test("break", () => {
-    const lua = `
+test('break', () => {
+  const lua = `
     a = 1
     b = 1
     while a < 5 do
@@ -79,17 +79,17 @@ test("break", () => {
         d = d + 1
     until c == 5
     `;
-    const vm = new VMBuilder().build();
-    const result = vm.executeOnce(lua);
-    expect(result.hasReturnValue()).toBeFalsy();
-    expectToBeNumber(result.globalVar("a"), 3);
-    expectToBeNumber(result.globalVar("b"), 2);
-    expectToBeNumber(result.globalVar("c"), 3);
-    expectToBeNumber(result.globalVar("d"), 2);
+  const vm = new VMBuilder().build();
+  const result = vm.executeOnce(lua);
+  expect(result.hasReturnValue()).toBeFalsy();
+  expectToBeNumber(result.globalVar('a'), 3);
+  expectToBeNumber(result.globalVar('b'), 2);
+  expectToBeNumber(result.globalVar('c'), 3);
+  expectToBeNumber(result.globalVar('d'), 2);
 });
 
-test("scope visibility for loops", () => {
-    const lua = `
+test('scope visibility for loops', () => {
+  const lua = `
     a = 1
     while a < 5 do
         a = a + 1
@@ -103,10 +103,10 @@ test("scope visibility for loops", () => {
         local c = b
     until c == 5
     `;
-    const vm = new VMBuilder().build();
-    const result = vm.executeOnce(lua);
-    expect(result.hasReturnValue()).toBeFalsy();
-    expectToBeNumber(result.globalVar("a"), 5);
-    expectToBeNumber(result.globalVar("b"), 5);
-    expectToBeNumber(result.globalVar("c"), 1);
+  const vm = new VMBuilder().build();
+  const result = vm.executeOnce(lua);
+  expect(result.hasReturnValue()).toBeFalsy();
+  expectToBeNumber(result.globalVar('a'), 5);
+  expectToBeNumber(result.globalVar('b'), 5);
+  expectToBeNumber(result.globalVar('c'), 1);
 });

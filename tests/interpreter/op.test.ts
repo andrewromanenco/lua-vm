@@ -1,9 +1,14 @@
-import { VMBuilder } from "@src/vm";
-import { expectToBeBool, expectToBeNil, expectToBeNumber, expectToBeString } from "./test_utils";
-import { RuntimeError } from "@src/interpreter/errors";
+import { VMBuilder } from '@src/vm';
+import {
+  expectToBeBool,
+  expectToBeNil,
+  expectToBeNumber,
+  expectToBeString,
+} from './test_utils';
+import { RuntimeError } from '@src/interpreter/errors';
 
-test("equals", ()=>{
-    const lua = `
+test('equals', () => {
+  const lua = `
         function f(a, b, c)
           return a == b, a ~= b, a == nil, a ~= nil, a == a, a == c
         end
@@ -13,45 +18,45 @@ test("equals", ()=>{
         b1, b2, b3, b4, b5, b6 = f(true, false, true)
         x1, x2, x3, x4, x5, x6 = f(nil, nil, nil)
     `;
-    const result = new VMBuilder().build().executeOnce(lua);
-    expectToBeBool(result.globalVar("n1"), false);
-    expectToBeBool(result.globalVar("n2"), true);
-    expectToBeBool(result.globalVar("n3"), false);
-    expectToBeBool(result.globalVar("n4"), true);
-    expectToBeBool(result.globalVar("n5"), true);
-    expectToBeBool(result.globalVar("n6"), true);
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeBool(result.globalVar('n1'), false);
+  expectToBeBool(result.globalVar('n2'), true);
+  expectToBeBool(result.globalVar('n3'), false);
+  expectToBeBool(result.globalVar('n4'), true);
+  expectToBeBool(result.globalVar('n5'), true);
+  expectToBeBool(result.globalVar('n6'), true);
 
-    expectToBeBool(result.globalVar("nn1"), true);
-    expectToBeBool(result.globalVar("nn2"), false);
-    expectToBeBool(result.globalVar("nn3"), false);
-    expectToBeBool(result.globalVar("nn4"), true);
-    expectToBeBool(result.globalVar("nn5"), true);
-    expectToBeBool(result.globalVar("nn6"), false);
+  expectToBeBool(result.globalVar('nn1'), true);
+  expectToBeBool(result.globalVar('nn2'), false);
+  expectToBeBool(result.globalVar('nn3'), false);
+  expectToBeBool(result.globalVar('nn4'), true);
+  expectToBeBool(result.globalVar('nn5'), true);
+  expectToBeBool(result.globalVar('nn6'), false);
 
-    expectToBeBool(result.globalVar("s1"), false);
-    expectToBeBool(result.globalVar("s2"), true);
-    expectToBeBool(result.globalVar("s3"), false);
-    expectToBeBool(result.globalVar("s4"), true);
-    expectToBeBool(result.globalVar("s5"), true);
-    expectToBeBool(result.globalVar("s6"), true);
+  expectToBeBool(result.globalVar('s1'), false);
+  expectToBeBool(result.globalVar('s2'), true);
+  expectToBeBool(result.globalVar('s3'), false);
+  expectToBeBool(result.globalVar('s4'), true);
+  expectToBeBool(result.globalVar('s5'), true);
+  expectToBeBool(result.globalVar('s6'), true);
 
-    expectToBeBool(result.globalVar("b1"), false);
-    expectToBeBool(result.globalVar("b2"), true);
-    expectToBeBool(result.globalVar("b3"), false);
-    expectToBeBool(result.globalVar("b4"), true);
-    expectToBeBool(result.globalVar("b5"), true);
-    expectToBeBool(result.globalVar("b6"), true);
+  expectToBeBool(result.globalVar('b1'), false);
+  expectToBeBool(result.globalVar('b2'), true);
+  expectToBeBool(result.globalVar('b3'), false);
+  expectToBeBool(result.globalVar('b4'), true);
+  expectToBeBool(result.globalVar('b5'), true);
+  expectToBeBool(result.globalVar('b6'), true);
 
-    expectToBeBool(result.globalVar("x1"), true);
-    expectToBeBool(result.globalVar("x2"), false);
-    expectToBeBool(result.globalVar("x3"), true);
-    expectToBeBool(result.globalVar("x4"), false);
-    expectToBeBool(result.globalVar("x5"), true);
-    expectToBeBool(result.globalVar("x6"), true);
+  expectToBeBool(result.globalVar('x1'), true);
+  expectToBeBool(result.globalVar('x2'), false);
+  expectToBeBool(result.globalVar('x3'), true);
+  expectToBeBool(result.globalVar('x4'), false);
+  expectToBeBool(result.globalVar('x5'), true);
+  expectToBeBool(result.globalVar('x6'), true);
 });
 
-test("LT", ()=>{
-    const lua = `
+test('LT', () => {
+  const lua = `
         n1 = 10
         n2 = 100
         s1 = "abc"
@@ -63,16 +68,16 @@ test("LT", ()=>{
         x = n1 < n1
         y = s1 < s1
     `;
-    const result = new VMBuilder().build().executeOnce(lua);
-    expectToBeBool(result.globalVar("a"), true);
-    expectToBeBool(result.globalVar("b"), false);
-    expectToBeBool(result.globalVar("c"), true);
-    expectToBeBool(result.globalVar("d"), false);
-    expectToBeBool(result.globalVar("x"), false);
-    expectToBeBool(result.globalVar("y"), false);
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeBool(result.globalVar('a'), true);
+  expectToBeBool(result.globalVar('b'), false);
+  expectToBeBool(result.globalVar('c'), true);
+  expectToBeBool(result.globalVar('d'), false);
+  expectToBeBool(result.globalVar('x'), false);
+  expectToBeBool(result.globalVar('y'), false);
 });
 
-test("LT", ()=>{
+test('LT', () => {
   const lua = `
       n1 = 10
       n2 = 100
@@ -86,15 +91,15 @@ test("LT", ()=>{
       y = s1 <= s1
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeBool(result.globalVar("a"), true);
-  expectToBeBool(result.globalVar("b"), false);
-  expectToBeBool(result.globalVar("c"), true);
-  expectToBeBool(result.globalVar("d"), false);
-  expectToBeBool(result.globalVar("x"), true);
-  expectToBeBool(result.globalVar("y"), true);
+  expectToBeBool(result.globalVar('a'), true);
+  expectToBeBool(result.globalVar('b'), false);
+  expectToBeBool(result.globalVar('c'), true);
+  expectToBeBool(result.globalVar('d'), false);
+  expectToBeBool(result.globalVar('x'), true);
+  expectToBeBool(result.globalVar('y'), true);
 });
 
-test("GT", ()=>{
+test('GT', () => {
   const lua = `
       n2 = 10
       n1 = 100
@@ -108,16 +113,16 @@ test("GT", ()=>{
       y = s1 > s1
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeBool(result.globalVar("a"), true);
-  expectToBeBool(result.globalVar("b"), false);
-  expectToBeBool(result.globalVar("c"), true);
-  expectToBeBool(result.globalVar("d"), false);
-  expectToBeBool(result.globalVar("x"), false);
-  expectToBeBool(result.globalVar("y"), false);
+  expectToBeBool(result.globalVar('a'), true);
+  expectToBeBool(result.globalVar('b'), false);
+  expectToBeBool(result.globalVar('c'), true);
+  expectToBeBool(result.globalVar('d'), false);
+  expectToBeBool(result.globalVar('x'), false);
+  expectToBeBool(result.globalVar('y'), false);
 });
 
-test("GE", ()=>{
-const lua = `
+test('GE', () => {
+  const lua = `
     n2 = 10
     n1 = 100
     s2 = "abc"
@@ -129,67 +134,70 @@ const lua = `
     x = n1 >= n1
     y = s1 >= s1
 `;
-const result = new VMBuilder().build().executeOnce(lua);
-expectToBeBool(result.globalVar("a"), true);
-expectToBeBool(result.globalVar("b"), false);
-expectToBeBool(result.globalVar("c"), true);
-expectToBeBool(result.globalVar("d"), false);
-expectToBeBool(result.globalVar("x"), true);
-expectToBeBool(result.globalVar("y"), true);
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeBool(result.globalVar('a'), true);
+  expectToBeBool(result.globalVar('b'), false);
+  expectToBeBool(result.globalVar('c'), true);
+  expectToBeBool(result.globalVar('d'), false);
+  expectToBeBool(result.globalVar('x'), true);
+  expectToBeBool(result.globalVar('y'), true);
 });
 
-test("only strings and numbers are supported", () => {
-    const lua = `
+test('only strings and numbers are supported', () => {
+  const lua = `
     a = true
     b = 10
     c = a < b
-    `
-    let exception;
-    try {
-      new VMBuilder().build().executeOnce(lua);
-    } catch (e) {
-      exception = e;
-    }
-    expect(exception).toBeInstanceOf(RuntimeError);
-    expect((exception as RuntimeError).message)
-      .toBe("Runtime error: (line: 4, col: 8): Can't compare type BooleanValue");
+    `;
+  let exception;
+  try {
+    new VMBuilder().build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(RuntimeError);
+  expect((exception as RuntimeError).message).toBe(
+    "Runtime error: (line: 4, col: 8): Can't compare type BooleanValue"
+  );
 });
 
-test("number and string raise error", () => {
-    const lua = `
+test('number and string raise error', () => {
+  const lua = `
     a = 20
     b = "abc"
     c = a < b
-    `
-    let exception;
-    try {
-      new VMBuilder().build().executeOnce(lua);
-    } catch (e) {
-      exception = e;
-    }
-    expect(exception).toBeInstanceOf(RuntimeError);
-    expect((exception as RuntimeError).message)
-      .toBe("Runtime error: (line: 4, col: 8): Right expression not a Number - StringValue");
+    `;
+  let exception;
+  try {
+    new VMBuilder().build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(RuntimeError);
+  expect((exception as RuntimeError).message).toBe(
+    'Runtime error: (line: 4, col: 8): Right expression not a Number - StringValue'
+  );
 });
 
-  test("string and number raise error", () => {
-    const lua = `
+test('string and number raise error', () => {
+  const lua = `
     a = "abc"
     b = 10
     c = a < b
-    `
-    let exception;
-    try {
-      new VMBuilder().build().executeOnce(lua);
-    } catch (e) {
-      exception = e;
-    }
-    expect(exception).toBeInstanceOf(RuntimeError);
-    expect((exception as RuntimeError).message)
-      .toBe("Runtime error: (line: 4, col: 8): Right expression not a String - NumberValue");
+    `;
+  let exception;
+  try {
+    new VMBuilder().build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(RuntimeError);
+  expect((exception as RuntimeError).message).toBe(
+    'Runtime error: (line: 4, col: 8): Right expression not a String - NumberValue'
+  );
 });
 
-test("logical AND and OR", ()=>{
+test('logical AND and OR', () => {
   const lua = `
       t1 = 0
       t2 = true
@@ -213,23 +221,23 @@ test("logical AND and OR", ()=>{
       or_g = f1 or f2
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeBool(result.globalVar("and_a"), true);
-  expectToBeBool(result.globalVar("and_b"), true);
-  expectToBeBool(result.globalVar("and_c"), false);
-  expectToBeBool(result.globalVar("and_d"), false);
-  expectToBeBool(result.globalVar("and_e"), false);
-  expectToBeBool(result.globalVar("and_f"), false);
+  expectToBeBool(result.globalVar('and_a'), true);
+  expectToBeBool(result.globalVar('and_b'), true);
+  expectToBeBool(result.globalVar('and_c'), false);
+  expectToBeBool(result.globalVar('and_d'), false);
+  expectToBeBool(result.globalVar('and_e'), false);
+  expectToBeBool(result.globalVar('and_f'), false);
 
-  expectToBeBool(result.globalVar("or_a"), true);
-  expectToBeBool(result.globalVar("or_b"), true);
-  expectToBeBool(result.globalVar("or_c"), true);
-  expectToBeBool(result.globalVar("or_d"), true);
-  expectToBeBool(result.globalVar("or_e"), true);
-  expectToBeBool(result.globalVar("or_f"), true);
-  expectToBeBool(result.globalVar("or_g"), false);
+  expectToBeBool(result.globalVar('or_a'), true);
+  expectToBeBool(result.globalVar('or_b'), true);
+  expectToBeBool(result.globalVar('or_c'), true);
+  expectToBeBool(result.globalVar('or_d'), true);
+  expectToBeBool(result.globalVar('or_e'), true);
+  expectToBeBool(result.globalVar('or_f'), true);
+  expectToBeBool(result.globalVar('or_g'), false);
 });
 
-test("multires expressions", ()=>{
+test('multires expressions', () => {
   const lua = `
       function f()
         return 100, 101, 102;
@@ -243,26 +251,26 @@ test("multires expressions", ()=>{
       e1,e2 = f2(), 42
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeNumber(result.globalVar("a1"), 1);
-  expectToBeNumber(result.globalVar("a2"), 100);
-  expectToBeNumber(result.globalVar("a3"), 3);
+  expectToBeNumber(result.globalVar('a1'), 1);
+  expectToBeNumber(result.globalVar('a2'), 100);
+  expectToBeNumber(result.globalVar('a3'), 3);
 
-  expectToBeNumber(result.globalVar("b1"), 1);
-  expectToBeNumber(result.globalVar("b2"), 100);
-  expectToBeNumber(result.globalVar("b3"), 101);
+  expectToBeNumber(result.globalVar('b1'), 1);
+  expectToBeNumber(result.globalVar('b2'), 100);
+  expectToBeNumber(result.globalVar('b3'), 101);
 
-  expectToBeNumber(result.globalVar("c1"), 100);
+  expectToBeNumber(result.globalVar('c1'), 100);
 
-  expectToBeNumber(result.globalVar("d1"), 100);
-  expectToBeNumber(result.globalVar("d2"), 101);
-  expectToBeNumber(result.globalVar("d3"), 102);
-  expectToBeNil(result.globalVar("d4"));
+  expectToBeNumber(result.globalVar('d1'), 100);
+  expectToBeNumber(result.globalVar('d2'), 101);
+  expectToBeNumber(result.globalVar('d3'), 102);
+  expectToBeNil(result.globalVar('d4'));
 
-  expectToBeNil(result.globalVar("e1"));
-  expectToBeNumber(result.globalVar("e2"), 42);
+  expectToBeNil(result.globalVar('e1'));
+  expectToBeNumber(result.globalVar('e2'), 42);
 });
 
-test("multires expressions with functions", ()=>{
+test('multires expressions with functions', () => {
   const lua = `
       function f()
           return 1,2
@@ -279,20 +287,20 @@ test("multires expressions with functions", ()=>{
       b1, b2, b3, b4, b5 = 100, fb()
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeNumber(result.globalVar("a1"), 100);
-  expectToBeNumber(result.globalVar("a2"), 1);
-  expectToBeNumber(result.globalVar("a3"), 1);
-  expectToBeNumber(result.globalVar("a4"), 2);
-  expectToBeNil(result.globalVar("a5"));
+  expectToBeNumber(result.globalVar('a1'), 100);
+  expectToBeNumber(result.globalVar('a2'), 1);
+  expectToBeNumber(result.globalVar('a3'), 1);
+  expectToBeNumber(result.globalVar('a4'), 2);
+  expectToBeNil(result.globalVar('a5'));
 
-  expectToBeNumber(result.globalVar("b1"), 100);
-  expectToBeNumber(result.globalVar("b2"), 10);
-  expectToBeNumber(result.globalVar("b3"), 1);
-  expectToBeNumber(result.globalVar("b4"), 2);
-  expectToBeNil(result.globalVar("b5"));
+  expectToBeNumber(result.globalVar('b1'), 100);
+  expectToBeNumber(result.globalVar('b2'), 10);
+  expectToBeNumber(result.globalVar('b3'), 1);
+  expectToBeNumber(result.globalVar('b4'), 2);
+  expectToBeNil(result.globalVar('b5'));
 });
 
-test("concat", ()=>{
+test('concat', () => {
   const lua = `
       n1 = 10
       n2 = 20
@@ -305,13 +313,13 @@ test("concat", ()=>{
       d = non_existing .. 10
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeString(result.globalVar("a"), "str1str210");
-  expectToBeString(result.globalVar("b"), "1020");
-  expectToBeString(result.globalVar("c"), "truestr1");
-  expectToBeString(result.globalVar("d"), "nil10");
+  expectToBeString(result.globalVar('a'), 'str1str210');
+  expectToBeString(result.globalVar('b'), '1020');
+  expectToBeString(result.globalVar('c'), 'truestr1');
+  expectToBeString(result.globalVar('d'), 'nil10');
 });
 
-test("various ops", ()=>{
+test('various ops', () => {
   const lua = `
       a = 100
       b = 70
@@ -328,19 +336,19 @@ test("various ops", ()=>{
       xr = ~10
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeNumber(result.globalVar("mn"), -30);
-  expectToBeNumber(result.globalVar("d1"), 50);
-  expectToBeNumber(result.globalVar("d2"), 0.5);
-  expectToBeNumber(result.globalVar("md"), 2);
-  expectToBeNumber(result.globalVar("fl"), 1);
-  expectToBeNumber(result.globalVar("ex"), 16);
-  expectToBeBool(result.globalVar("nott"), false);
-  expectToBeBool(result.globalVar("notf"), true);
-  expectToBeNumber(result.globalVar("l"), 3);
-  expectToBeNumber(result.globalVar("xr"), -11);
+  expectToBeNumber(result.globalVar('mn'), -30);
+  expectToBeNumber(result.globalVar('d1'), 50);
+  expectToBeNumber(result.globalVar('d2'), 0.5);
+  expectToBeNumber(result.globalVar('md'), 2);
+  expectToBeNumber(result.globalVar('fl'), 1);
+  expectToBeNumber(result.globalVar('ex'), 16);
+  expectToBeBool(result.globalVar('nott'), false);
+  expectToBeBool(result.globalVar('notf'), true);
+  expectToBeNumber(result.globalVar('l'), 3);
+  expectToBeNumber(result.globalVar('xr'), -11);
 });
 
-test("bitwise ops", ()=>{
+test('bitwise ops', () => {
   const lua = `
       a = 6
       b = 2
@@ -352,15 +360,15 @@ test("bitwise ops", ()=>{
       nt = ~ a
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeNumber(result.globalVar("vAnd"), 2);
-  expectToBeNumber(result.globalVar("vOr"), 6);
-  expectToBeNumber(result.globalVar("vXor"), 4);
-  expectToBeNumber(result.globalVar("vR"), 1);
-  expectToBeNumber(result.globalVar("vL"), 24);
-  expectToBeNumber(result.globalVar("nt"), -7);
+  expectToBeNumber(result.globalVar('vAnd'), 2);
+  expectToBeNumber(result.globalVar('vOr'), 6);
+  expectToBeNumber(result.globalVar('vXor'), 4);
+  expectToBeNumber(result.globalVar('vR'), 1);
+  expectToBeNumber(result.globalVar('vL'), 24);
+  expectToBeNumber(result.globalVar('nt'), -7);
 });
 
-test("misc ops", ()=>{
+test('misc ops', () => {
   const lua = `
       long_string = [=[one
 two]=]
@@ -373,17 +381,17 @@ two]=]
       hxFloat2 = 0x1D.A8p0
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeString(result.globalVar("long_string"), "one\ntwo");
-  expectToBeString(result.globalVar("s1"), "s1 string");
-  expectToBeString(result.globalVar("s2"), "s2 string");
-  expectToBeString(result.globalVar("s3"), "1\n2");
-  expectToBeNumber(result.globalVar("flt"), 1.25);
-  expectToBeNumber(result.globalVar("hx"), 10);
-  expectToBeNumber(result.globalVar("hxFloat"), 1.5);
-  expectToBeNumber(result.globalVar("hxFloat2"), 29.65625);
+  expectToBeString(result.globalVar('long_string'), 'one\ntwo');
+  expectToBeString(result.globalVar('s1'), 's1 string');
+  expectToBeString(result.globalVar('s2'), 's2 string');
+  expectToBeString(result.globalVar('s3'), '1\n2');
+  expectToBeNumber(result.globalVar('flt'), 1.25);
+  expectToBeNumber(result.globalVar('hx'), 10);
+  expectToBeNumber(result.globalVar('hxFloat'), 1.5);
+  expectToBeNumber(result.globalVar('hxFloat2'), 29.65625);
 });
 
-test("various function calls", ()=>{
+test('various function calls', () => {
   const lua = `
       f = function (x)
         return x*x
@@ -421,7 +429,7 @@ test("various function calls", ()=>{
   expectToBeNumber(result.returnValueAsList()[6], 42);
 });
 
-test("various function args", ()=>{
+test('various function args', () => {
   const lua = `
       f = function (x)
         return x .. '.suffix'
@@ -434,12 +442,12 @@ test("various function args", ()=>{
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expect(result.hasReturnValue()).toBeTruthy();
-  expectToBeString(result.returnValueAsList()[0], "xyz.suffix");
+  expectToBeString(result.returnValueAsList()[0], 'xyz.suffix');
   expectToBeNumber(result.returnValueAsList()[1], 123);
   expectToBeNumber(result.returnValueAsList()[2], 321);
 });
 
-test("local function", () => {
+test('local function', () => {
   const lua = `
   function f()
     return "ff"
@@ -454,10 +462,10 @@ test("local function", () => {
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expect(result.hasReturnValue()).toBeTruthy();
-  expectToBeString(result.returnValueAsList()[0], "gg");
+  expectToBeString(result.returnValueAsList()[0], 'gg');
 });
 
-test("var inits", () => {
+test('var inits', () => {
   const lua = `
   function f()
     return "a", "b", "c"
@@ -470,18 +478,18 @@ test("var inits", () => {
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expect(result.hasReturnValue()).toBeTruthy();
-  expectToBeString(result.returnValueAsList()[0], "a");
-  expectToBeString(result.returnValueAsList()[1], "b");
-  expectToBeString(result.returnValueAsList()[2], "c");
+  expectToBeString(result.returnValueAsList()[0], 'a');
+  expectToBeString(result.returnValueAsList()[1], 'b');
+  expectToBeString(result.returnValueAsList()[2], 'c');
   expectToBeNumber(result.returnValueAsList()[3], 3);
-  expectToBeString(result.returnValueAsList()[4], "b");
+  expectToBeString(result.returnValueAsList()[4], 'b');
   expectToBeNumber(result.returnValueAsList()[5], 2);
   expectToBeNumber(result.returnValueAsList()[6], 5);
   expectToBeNumber(result.returnValueAsList()[7], 5);
-  expectToBeString(result.returnValueAsList()[8], "c");
+  expectToBeString(result.returnValueAsList()[8], 'c');
 });
 
-test("varargs", () => {
+test('varargs', () => {
   const lua = `
   function f(n, ...)
     list = {...}
@@ -491,12 +499,12 @@ test("varargs", () => {
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expect(result.hasReturnValue()).toBeTruthy();
-  expectToBeString(result.returnValueAsList()[0], "a");
-  expectToBeString(result.returnValueAsList()[1], "b");
-  expectToBeString(result.returnValueAsList()[2], "c");
+  expectToBeString(result.returnValueAsList()[0], 'a');
+  expectToBeString(result.returnValueAsList()[1], 'b');
+  expectToBeString(result.returnValueAsList()[2], 'c');
 });
 
-test("varargs only", () => {
+test('varargs only', () => {
   const lua = `
   function f(...)
     list = {...}
@@ -506,17 +514,17 @@ test("varargs only", () => {
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expect(result.hasReturnValue()).toBeTruthy();
-  expectToBeString(result.returnValueAsList()[0], "a");
-  expectToBeString(result.returnValueAsList()[1], "b");
-  expectToBeString(result.returnValueAsList()[2], "c");
+  expectToBeString(result.returnValueAsList()[0], 'a');
+  expectToBeString(result.returnValueAsList()[1], 'b');
+  expectToBeString(result.returnValueAsList()[2], 'c');
 });
 
-test("nested dicts", () => {
+test('nested dicts', () => {
   const lua = `
   t = { a = { b = { c = "nested" } } }
   return t.a.b.c
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expect(result.hasReturnValue()).toBeTruthy();
-  expectToBeString(result.returnValueAsList()[0], "nested");
+  expectToBeString(result.returnValueAsList()[0], 'nested');
 });

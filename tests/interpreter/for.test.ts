@@ -1,8 +1,8 @@
-import { VMBuilder } from "@src/vm";
-import { expectToBeNil, expectToBeNumber } from "./test_utils";
+import { VMBuilder } from '@src/vm';
+import { expectToBeNil, expectToBeNumber } from './test_utils';
 
-test("for with numbers", () => {
-    const lua = `
+test('for with numbers', () => {
+  const lua = `
     sumUp = 0
     for i = 1, 10
     do
@@ -27,16 +27,16 @@ test("for with numbers", () => {
       sum0 = sum0 + 1
     end
     `;
-    const result = new VMBuilder().build().executeOnce(lua);
-    expectToBeNil(result.globalVar("i"));
-    expectToBeNumber(result.globalVar("sumUp"), 10);
-    expectToBeNumber(result.globalVar("sumDown"), 10);
-    expectToBeNumber(result.globalVar("sumUp2"), 1 + 3 + 5 + 7 + 9);
-    expectToBeNumber(result.globalVar("sum0"), 0);
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeNil(result.globalVar('i'));
+  expectToBeNumber(result.globalVar('sumUp'), 10);
+  expectToBeNumber(result.globalVar('sumDown'), 10);
+  expectToBeNumber(result.globalVar('sumUp2'), 1 + 3 + 5 + 7 + 9);
+  expectToBeNumber(result.globalVar('sum0'), 0);
 });
 
-test("for with numbers; body has access to for var", () => {
-    const lua = `
+test('for with numbers; body has access to for var', () => {
+  const lua = `
     sum = 0
     for i = 1, 10
     do
@@ -44,13 +44,13 @@ test("for with numbers; body has access to for var", () => {
       i = i + 1
     end
     `;
-    const result = new VMBuilder().build().executeOnce(lua);
-    expectToBeNil(result.globalVar("i"));
-    expectToBeNumber(result.globalVar("sum"), 1 + 3 + 5 + 7 + 9);
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeNil(result.globalVar('i'));
+  expectToBeNumber(result.globalVar('sum'), 1 + 3 + 5 + 7 + 9);
 });
 
-test("generic FOR loop", () => {
-    const lua = `
+test('generic FOR loop', () => {
+  const lua = `
     function iter(state, controlVar)
       if controlVar == state then
         return nil
@@ -66,6 +66,6 @@ test("generic FOR loop", () => {
       sum = sum + i
     end
     `;
-    const result = new VMBuilder().build().executeOnce(lua);
-    expectToBeNumber(result.globalVar("sum"), 1 + 2 + 3 + 4 + 5);
+  const result = new VMBuilder().build().executeOnce(lua);
+  expectToBeNumber(result.globalVar('sum'), 1 + 2 + 3 + 4 + 5);
 });

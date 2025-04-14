@@ -1,19 +1,19 @@
-import LuaParser from "@src/parser/LuaParser";
-import { firstValue, flattenList, make_parser } from "@src/interpreter/utils";
-import { InternalListValue, NumberValue } from "@src/interpreter/types";
-import { expectToBeNumber } from "./test_utils";
+import LuaParser from '@src/parser/LuaParser';
+import { firstValue, flattenList, make_parser } from '@src/interpreter/utils';
+import { InternalListValue, NumberValue } from '@src/interpreter/types';
+import { expectToBeNumber } from './test_utils';
 
-test("validate parser", () => {
-  const parser = make_parser("10+5");
+test('validate parser', () => {
+  const parser = make_parser('10+5');
   expect(parser).toBeInstanceOf(LuaParser);
   expect(parser.exp).toBeTruthy();
 });
 
-test("firstValue", () => {
+test('firstValue', () => {
   const number42 = NumberValue.from(42);
   const result42 = firstValue(number42);
   expectToBeNumber(result42, 42);
-  
+
   const number43 = NumberValue.from(43);
   const list1 = new InternalListValue([number43, number42]);
   const list2 = new InternalListValue([list1, number42]);
@@ -23,7 +23,7 @@ test("firstValue", () => {
   expectToBeNumber(result2, 43);
 });
 
-test("flattenList", () => {
+test('flattenList', () => {
   const list = flattenList(NumberValue.from(11));
   expectToBeNumber(list.getValueOrNil(1), 11);
   const number42 = NumberValue.from(42);
@@ -51,5 +51,4 @@ test("flattenList", () => {
   expectToBeNumber(result4.getValueOrNil(2), 10);
   expectToBeNumber(result4.getValueOrNil(3), 43);
   expectToBeNumber(result4.getValueOrNil(4), 42);
-
 });
