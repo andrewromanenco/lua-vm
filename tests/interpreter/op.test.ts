@@ -528,3 +528,17 @@ test('nested dicts', () => {
   expect(result.hasReturnValue()).toBeTruthy();
   expectToBeString(result.returnValueAsList()[0], 'nested');
 });
+
+test('eval before assignment', () => {
+  const lua = `
+  i = 3
+  a = {1,2,3,4}
+  i, a[i] = i+1, 20
+  return i, a[3], a[4]
+  `;
+  const result = new VMBuilder().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expectToBeNumber(result.returnValueAsList()[0], 4);
+  expectToBeNumber(result.returnValueAsList()[1], 20);
+  expectToBeNumber(result.returnValueAsList()[2], 4);
+});
