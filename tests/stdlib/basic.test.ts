@@ -296,3 +296,21 @@ test('tonumber', () => {
   expectToBeNumber(result.returnValueAsList()[1], 10);
   expectToBeNumber(result.returnValueAsList()[2], NaN);
 });
+
+test('tonumber', () => {
+  const lua = `
+        function f()
+          return 123
+        end
+        return type(nil), type(1), type("s"), type(true), type({}), type(f)
+        `;
+  const result = new VMBuilder().witStdLib().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(6);
+  expectToBeString(result.returnValueAsList()[0], 'nil');
+  expectToBeString(result.returnValueAsList()[1], 'number');
+  expectToBeString(result.returnValueAsList()[2], 'string');
+  expectToBeString(result.returnValueAsList()[3], 'boolean');
+  expectToBeString(result.returnValueAsList()[4], 'table');
+  expectToBeString(result.returnValueAsList()[5], 'function');
+});

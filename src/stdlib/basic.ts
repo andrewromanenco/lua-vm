@@ -154,6 +154,24 @@ function toString(args: Value[]): Value[] {
   return [StringValue.from(getOrNil(args, 0).toString())];
 }
 
+function type(args: Value[]): Value[] {
+  const val = getOrNil(args, 0);
+  if (val instanceof NilValue) {
+    return [StringValue.from('nil')];
+  } else if (val instanceof NumberValue) {
+    return [StringValue.from('number')];
+  } else if (val instanceof StringValue) {
+    return [StringValue.from('string')];
+  } else if (val instanceof BooleanValue) {
+    return [StringValue.from('boolean')];
+  } else if (val instanceof TableValue) {
+    return [StringValue.from('table')];
+  } else if (val instanceof FunctionValue) {
+    return [StringValue.from('function')];
+  }
+  throw new ExtFunctionError(`Unexpected type ${val.constructor.name}`);
+}
+
 const basicStdLib = new TableValue();
 basicStdLib.set(StringValue.from('assert'), ExtFunction.of(assert));
 basicStdLib.set(StringValue.from('error'), ExtFunction.of(error));
@@ -165,5 +183,6 @@ basicStdLib.set(StringValue.from('print'), ExtFunction.of(print));
 basicStdLib.set(StringValue.from('select'), ExtFunction.of(select));
 basicStdLib.set(StringValue.from('tonumber'), ExtFunction.of(toNumber));
 basicStdLib.set(StringValue.from('tostring'), ExtFunction.of(toString));
+basicStdLib.set(StringValue.from('type'), ExtFunction.of(type));
 
 export default basicStdLib;
