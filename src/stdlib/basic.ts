@@ -107,6 +107,12 @@ function pcall(args: Value[]): Value[] {
   }
 }
 
+function print(args: Value[]): Value[] {
+  const output = args.map(a => a.toString()).join(',');
+  console.log(output);
+  return [];
+}
+
 function toString(args: Value[]): Value[] {
   return [StringValue.from(getOrNil(args, 0).toString())];
 }
@@ -118,6 +124,7 @@ basicStdLib.set(StringValue.from('ipairs'), ExtFunction.of(ipairs));
 basicStdLib.set(StringValue.from('next'), ExtFunction.of(next));
 basicStdLib.set(StringValue.from('pairs'), ExtFunction.of(pairs));
 basicStdLib.set(StringValue.from('pcall'), ExtFunction.WithInterpreter(pcall));
+basicStdLib.set(StringValue.from('print'), ExtFunction.of(print));
 basicStdLib.set(StringValue.from('tostring'), ExtFunction.of(toString));
 
 export default basicStdLib;

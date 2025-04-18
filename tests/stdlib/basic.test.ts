@@ -240,3 +240,12 @@ test('pcall with external function throwing RuntimeError error', () => {
     'Runtime error: (line: -1, col: -1): run-time'
   );
 });
+
+test.skip('print', () => {
+  const lua = `
+    a = 1
+    c = "s"
+    print(a, b, c)
+    `;
+  new VMBuilder().witStdLib().build().executeOnce(lua);
+});
