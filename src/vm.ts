@@ -7,10 +7,22 @@ import {
 } from './interpreter/types';
 import { executeWithInterpreter } from './interpreter/utils';
 import VMMarshaller from './marshaller';
+import basicStdLib from './stdlib/basic';
 
 class VMBuilder {
+  private envPreset = new TableValue();
+
+  witStdLib(): VMBuilder {
+    this.envPreset.mergeInWithOverride(basicStdLib);
+    return this;
+  }
+
   build(): VM {
-    return new VM();
+    const vm = new VM();
+    this.envPreset.getKeys().forEach(key => {
+      vm.setLuaVar(key, this.envPreset.get(key));
+    });
+    return vm;
   }
 
   buildWithMarshaller(): VMMarshaller {
@@ -19,8 +31,19 @@ class VMBuilder {
 }
 
 class VM {
+  private envPreset = new TableValue();
+
+  setLuaVar(key: Value, value: Value): void {
+    this.envPreset.set(key, value);
+  }
+
   newThread(): ExecutionThread {
-    return new ExecutionThread();
+    const thread = new ExecutionThread();
+    this.envPreset.getKeys().forEach(key => {
+      const value = this.envPreset.get(key);
+      thread.setLuaVar(key, value);
+    });
+    return thread;
   }
 
   executeOnce(lua: string): ExecutionResult {
@@ -30,13 +53,10 @@ class VM {
 }
 
 class ExecutionThread {
-  private readonly vars: Map<StringValue, Value> = new Map<
-    StringValue,
-    Value
-  >();
+  private readonly vars: Map<Value, Value> = new Map<Value, Value>();
   private readonly interpreter = new LuaInterpreter();
 
-  setLuaVar(name: StringValue, value: Value): ExecutionThread {
+  setLuaVar(name: Value, value: Value): ExecutionThread {
     this.vars.set(name, value);
     return this;
   }

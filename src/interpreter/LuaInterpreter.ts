@@ -116,7 +116,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     return this.currentScope.get(key);
   }
 
-  setVar(name: StringValue, value: Value): void {
+  setVar(name: Value, value: Value): void {
     this.currentScope.set(name, value);
   }
 

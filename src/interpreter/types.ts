@@ -105,6 +105,13 @@ class TableValue extends Value {
   size(): number {
     return this._table.size;
   }
+
+  mergeInWithOverride(table: TableValue): void {
+    table.getKeys().forEach(key => {
+      const value = table.get(key);
+      this.set(key, value);
+    });
+  }
 }
 
 class BooleanValue extends Value {
