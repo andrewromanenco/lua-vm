@@ -249,3 +249,35 @@ test.skip('print', () => {
     `;
   new VMBuilder().witStdLib().build().executeOnce(lua);
 });
+
+test('select', () => {
+  const lua = `
+      a1,a2,a3,a4 = select(2, 'a', 'b', 'c', 'd')
+      b1,b2,b3,b4 = select(-2, 'a', 'b', 'c', 'd')
+      c1, c2, c3, c4 = select('#', 'a', 'b', 'c', 'd')
+      d1, d2, d3, d4 = select(10, 'a', 'b', 'c', 'd')
+      `;
+  const vm = new VMBuilder().witStdLib().build();
+  const thread = vm.newThread();
+  const result = thread.execute(lua);
+
+  expectToBeString(result.globalVar('a1'), 'b');
+  expectToBeString(result.globalVar('a2'), 'c');
+  expectToBeString(result.globalVar('a3'), 'd');
+  expectToBeNil(result.globalVar('a4'));
+
+  expectToBeString(result.globalVar('b1'), 'c');
+  expectToBeString(result.globalVar('b2'), 'd');
+  expectToBeNil(result.globalVar('b3'));
+  expectToBeNil(result.globalVar('b4'));
+
+  expectToBeNumber(result.globalVar('c1'), 4);
+  expectToBeNil(result.globalVar('c2'));
+  expectToBeNil(result.globalVar('c3'));
+  expectToBeNil(result.globalVar('c4'));
+
+  expectToBeNil(result.globalVar('d1'));
+  expectToBeNil(result.globalVar('d2'));
+  expectToBeNil(result.globalVar('d3'));
+  expectToBeNil(result.globalVar('d4'));
+});

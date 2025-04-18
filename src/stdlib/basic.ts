@@ -113,6 +113,29 @@ function print(args: Value[]): Value[] {
   return [];
 }
 
+function select(args: Value[]): Value[] {
+  const selector = getOrNil(args, 0);
+  if (selector instanceof NumberValue) {
+    const n = (selector as NumberValue).number;
+    if (n == 0) {
+      throw new ExtFunctionError("first param can't be zero");
+    }
+    if (n > 0) {
+      return args.slice(n);
+    } else {
+      return args.slice(args.length + n);
+    }
+  } else if (selector instanceof StringValue) {
+    const s = (selector as StringValue).string;
+    if (s !== '#') {
+      throw new ExtFunctionError("first param has to be '#' or a number");
+    }
+    return [NumberValue.from(args.length - 1)];
+  } else {
+    throw new ExtFunctionError("expect a number of '#' as the first parameter");
+  }
+}
+
 function toString(args: Value[]): Value[] {
   return [StringValue.from(getOrNil(args, 0).toString())];
 }
@@ -125,6 +148,7 @@ basicStdLib.set(StringValue.from('next'), ExtFunction.of(next));
 basicStdLib.set(StringValue.from('pairs'), ExtFunction.of(pairs));
 basicStdLib.set(StringValue.from('pcall'), ExtFunction.WithInterpreter(pcall));
 basicStdLib.set(StringValue.from('print'), ExtFunction.of(print));
+basicStdLib.set(StringValue.from('select'), ExtFunction.of(select));
 basicStdLib.set(StringValue.from('tostring'), ExtFunction.of(toString));
 
 export default basicStdLib;
