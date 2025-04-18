@@ -1,6 +1,6 @@
 import { ParserRuleContext } from 'antlr4';
 import { ExtFunctionError, RuntimeError } from './errors';
-import { InternalListValue, Value } from './types';
+import { InternalListValue, NilValue, Value } from './types';
 
 export default class ExtFunction extends Value {
   private readonly uuid: string;
@@ -20,7 +20,10 @@ export default class ExtFunction extends Value {
 
   run(args: InternalListValue, ctx: ParserRuleContext): InternalListValue {
     try {
-      return new InternalListValue(this.f(args.asList()));
+      const result = this.f(args.asList());
+      return new InternalListValue(
+        result.length == 0 ? [new NilValue()] : result
+      );
     } catch (error) {
       if (error instanceof ExtFunctionError) {
         const err = new RuntimeError((error as ExtFunctionError).message, ctx);
