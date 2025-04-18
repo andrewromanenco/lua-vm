@@ -860,10 +860,10 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     ctx: ParserRuleContext
   ): Value {
     const list_args = flattenList(args);
-    return f.run(list_args, ctx);
+    return f.run(list_args, ctx, this);
   }
 
-  private exec_function(
+  exec_function(
     f: FunctionValue | ExtFunction,
     args: InternalListValue,
     ctx: ParserRuleContext

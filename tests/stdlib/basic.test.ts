@@ -1,6 +1,9 @@
 import { RuntimeError } from '@src/interpreter/errors';
+import ExtFunction from '@src/interpreter/ExtFunction';
+import { NumberValue, StringValue, Value } from '@src/interpreter/types';
 import { VMBuilder } from '@src/vm';
 import {
+  expectToBeBool,
   expectToBeNil,
   expectToBeNumber,
   expectToBeString,
@@ -109,4 +112,131 @@ test('pairs', () => {
   expect(result.returnValueAsList().length).toBe(2);
   expectToBeNumber(result.returnValueAsList()[0], 6);
   expectToBeString(result.returnValueAsList()[1], 'abc');
+});
+
+test('pcall with no function', () => {
+  const lua = `
+    a = 100
+            status, error = pcall(a)
+            return status, error
+            `;
+  const result = new VMBuilder().witStdLib().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeBool(result.returnValueAsList()[0], false);
+  expectToBeString(result.returnValueAsList()[1], "can't call a non function");
+});
+
+test('pcall with lua function', () => {
+  const lua = `
+    function add(a, b)
+        return a + b
+    end
+            status, result = pcall(add, 1, 2)
+            return status, result
+            `;
+  const result = new VMBuilder().witStdLib().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeBool(result.returnValueAsList()[0], true);
+  expectToBeNumber(result.returnValueAsList()[1], 3);
+});
+
+test('pcall with external function', () => {
+  const lua = `
+            status, result = pcall(add, 1, 2)
+            return status, result
+            `;
+  function add(args: Value[]): Value[] {
+    const a = args[0] as NumberValue;
+    const b = args[1] as NumberValue;
+    return [NumberValue.from(a.number + b.number)];
+  }
+  const vm = new VMBuilder().witStdLib().build();
+  const thread = vm.newThread();
+  thread.setLuaVar(StringValue.from('add'), ExtFunction.of(add));
+
+  const result = thread.execute(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeBool(result.returnValueAsList()[0], true);
+  expectToBeNumber(result.returnValueAsList()[1], 3);
+});
+
+test('pcall with lua function throwing error', () => {
+  const lua = `
+    function add(a, b)
+        return a + b + nonexistingFunction()
+    end
+            status, error = pcall(add, 1, 2)
+            return status, error
+            `;
+  const result = new VMBuilder().witStdLib().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeBool(result.returnValueAsList()[0], false);
+  expectToBeString(
+    result.returnValueAsList()[1],
+    "Runtime error: (line: 3, col: 23): Can't execute non-function: NilValue"
+  );
+});
+
+test('pcall with external function throwing TS error', () => {
+  const lua = `
+            status, error = pcall(add, 1, 2)
+            return status, error
+            `;
+  function add(_args: Value[]): Value[] {
+    throw new Error('ups from ts!');
+  }
+  const vm = new VMBuilder().witStdLib().build();
+  const thread = vm.newThread();
+  thread.setLuaVar(StringValue.from('add'), ExtFunction.of(add));
+
+  const result = thread.execute(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeBool(result.returnValueAsList()[0], false);
+  expectToBeString(result.returnValueAsList()[1], 'ups from ts!');
+});
+
+test('pcall with external function throwing JS error', () => {
+  const lua = `
+            status, error = pcall(add, 1, 2)
+            return status, error
+            `;
+  function add(_args: Value[]): Value[] {
+    throw 42;
+  }
+  const vm = new VMBuilder().witStdLib().build();
+  const thread = vm.newThread();
+  thread.setLuaVar(StringValue.from('add'), ExtFunction.of(add));
+
+  const result = thread.execute(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeBool(result.returnValueAsList()[0], false);
+  expectToBeString(result.returnValueAsList()[1], '42');
+});
+
+test('pcall with external function throwing RuntimeError error', () => {
+  const lua = `
+            status, error = pcall(add, 1, 2)
+            return status, error
+            `;
+  function add(_args: Value[]): Value[] {
+    throw RuntimeError.message('run-time');
+  }
+  const vm = new VMBuilder().witStdLib().build();
+  const thread = vm.newThread();
+  thread.setLuaVar(StringValue.from('add'), ExtFunction.of(add));
+
+  const result = thread.execute(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeBool(result.returnValueAsList()[0], false);
+  expectToBeString(
+    result.returnValueAsList()[1],
+    'Runtime error: (line: -1, col: -1): run-time'
+  );
 });

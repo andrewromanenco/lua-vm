@@ -1,4 +1,5 @@
 import { BlockContext } from '../parser/LuaParser';
+import LuaInterpreter from './LuaInterpreter';
 
 abstract class Value {
   abstract asIdString(): string;
@@ -278,6 +279,25 @@ class InternalVar extends Value {
   }
 }
 
+class InterpreterValue extends Value {
+  private _interpreter: LuaInterpreter;
+
+  constructor(interpreter: LuaInterpreter) {
+    super();
+    this._interpreter = interpreter;
+  }
+
+  get interpreter(): LuaInterpreter {
+    return this._interpreter;
+  }
+  asIdString(): string {
+    throw new Error('Method not implemented.');
+  }
+  toString(): string {
+    throw new Error('Method not implemented.');
+  }
+}
+
 export {
   Value,
   NilValue,
@@ -289,4 +309,5 @@ export {
   InternalListValue,
   InternalPairValue,
   InternalVar,
+  InterpreterValue,
 };

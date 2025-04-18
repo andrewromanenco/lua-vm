@@ -1,6 +1,10 @@
-import { ExtFunctionError } from '@src/interpreter/errors';
+import { ExtFunctionError, RuntimeError } from '@src/interpreter/errors';
 import ExtFunction from '@src/interpreter/ExtFunction';
 import {
+  BooleanValue,
+  FunctionValue,
+  InternalListValue,
+  InterpreterValue,
   NilValue,
   NumberValue,
   StringValue,
@@ -8,6 +12,7 @@ import {
   Value,
 } from '@src/interpreter/types';
 import { getOrNil, isFalse } from '@src/interpreter/utils';
+import { ParserRuleContext } from 'antlr4';
 
 function assert(args: Value[]): Value[] {
   if (isFalse(getOrNil(args, 0))) {
@@ -71,6 +76,37 @@ function pairs(args: Value[]): Value[] {
   return [ExtFunction.of(next), getOrNil(args, 0), new NilValue()];
 }
 
+function pcall(args: Value[]): Value[] {
+  const f = getOrNil(args, 0);
+  if (!(f instanceof FunctionValue) && !(f instanceof ExtFunction)) {
+    return [
+      BooleanValue.false(),
+      StringValue.from("can't call a non function"),
+    ];
+  }
+  const fArgs = args.slice(1, args.length - 1);
+  const interpreter = getOrNil(args, args.length - 1);
+  try {
+    const result = (interpreter as InterpreterValue).interpreter.exec_function(
+      f,
+      new InternalListValue(fArgs),
+      {} as ParserRuleContext
+    );
+    return [BooleanValue.true(), result];
+  } catch (error) {
+    const actualError =
+      error instanceof RuntimeError && (error as RuntimeError).cause
+        ? (error as RuntimeError).cause
+        : error;
+    return [
+      BooleanValue.false(),
+      StringValue.from(
+        actualError instanceof Error ? actualError.message : String(actualError)
+      ),
+    ];
+  }
+}
+
 function toString(args: Value[]): Value[] {
   return [StringValue.from(getOrNil(args, 0).toString())];
 }
@@ -81,6 +117,7 @@ basicStdLib.set(StringValue.from('error'), ExtFunction.of(error));
 basicStdLib.set(StringValue.from('ipairs'), ExtFunction.of(ipairs));
 basicStdLib.set(StringValue.from('next'), ExtFunction.of(next));
 basicStdLib.set(StringValue.from('pairs'), ExtFunction.of(pairs));
+basicStdLib.set(StringValue.from('pcall'), ExtFunction.WithInterpreter(pcall));
 basicStdLib.set(StringValue.from('tostring'), ExtFunction.of(toString));
 
 export default basicStdLib;
