@@ -39,6 +39,10 @@ class RuntimeError extends VMError {
   get cause(): unknown | undefined {
     return this._cause;
   }
+
+  static message(msg: string): RuntimeError {
+    return new RuntimeError(msg, {} as ParserRuleContext);
+  }
 }
 
 class LuaLangError extends VMError {
@@ -47,4 +51,6 @@ class LuaLangError extends VMError {
   }
 }
 
-export { NotYetImplemented, RuntimeError, LuaLangError };
+class ExtFunctionError extends VMError {}
+
+export { NotYetImplemented, RuntimeError, LuaLangError, ExtFunctionError };

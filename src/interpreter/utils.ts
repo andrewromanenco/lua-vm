@@ -91,6 +91,10 @@ function flattenList(value: Value): InternalListValue {
   }
 }
 
+function getOrNil(values: Value[], index: number): Value {
+  return index < values.length ? values[index] : new NilValue();
+}
+
 export {
   make_parser,
   executeWithInterpreter,
@@ -98,4 +102,5 @@ export {
   isTrue,
   firstValue,
   flattenList,
+  getOrNil,
 };
