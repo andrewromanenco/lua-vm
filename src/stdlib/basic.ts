@@ -2,6 +2,7 @@ import { ExtFunctionError } from '@src/interpreter/errors';
 import ExtFunction from '@src/interpreter/ExtFunction';
 import {
   NilValue,
+  NumberValue,
   StringValue,
   TableValue,
   Value,
@@ -25,6 +26,25 @@ function error(args: Value[]): Value[] {
   throw new ExtFunctionError(message.toString());
 }
 
+function ipairs(args: Value[]): Value[] {
+  return [ExtFunction.of(ipairsIter), getOrNil(args, 0), NumberValue.from(0)];
+}
+
+function ipairsIter(args: Value[]): Value[] {
+  const state = getOrNil(args, 0);
+  const controlVar = getOrNil(args, 1);
+  if (!(state instanceof TableValue) || !(controlVar instanceof NumberValue)) {
+    return [state, new NilValue()];
+  }
+  const nextIndex = NumberValue.from((controlVar as NumberValue).number + 1);
+  const value = (state as TableValue).get(nextIndex);
+  if (value instanceof NilValue) {
+    return [new NilValue()];
+  } else {
+    return [nextIndex, value];
+  }
+}
+
 function toString(args: Value[]): Value[] {
   return [StringValue.from(getOrNil(args, 0).toString())];
 }
@@ -32,6 +52,7 @@ function toString(args: Value[]): Value[] {
 const basicStdLib = new TableValue();
 basicStdLib.set(StringValue.from('assert'), ExtFunction.of(assert));
 basicStdLib.set(StringValue.from('error'), ExtFunction.of(error));
+basicStdLib.set(StringValue.from('ipairs'), ExtFunction.of(ipairs));
 basicStdLib.set(StringValue.from('tostring'), ExtFunction.of(toString));
 
 export default basicStdLib;

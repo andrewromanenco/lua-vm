@@ -1,6 +1,9 @@
 import { RuntimeError } from '@src/interpreter/errors';
 import { VMBuilder } from '@src/vm';
-import { expectToBeString } from '@tests/interpreter/test_utils';
+import {
+  expectToBeNumber,
+  expectToBeString,
+} from '@tests/interpreter/test_utils';
 
 test('basic functions', () => {
   const lua = `
@@ -47,4 +50,22 @@ test('error', () => {
   expect((exception as RuntimeError).message).toBe(
     'Runtime error: (line: 3, col: 6): error called'
   );
+});
+
+test('ipairs', () => {
+  const lua = `
+        t = {'a', 'b', 'c'}
+        s = ""
+        n = 0
+        for i, v in ipairs(t) do
+          s = s .. v
+          n = n + i
+        end
+        return n, s
+        `;
+  const result = new VMBuilder().witStdLib().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeNumber(result.returnValueAsList()[0], 6);
+  expectToBeString(result.returnValueAsList()[1], 'abc');
 });
