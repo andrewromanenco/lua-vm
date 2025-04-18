@@ -67,6 +67,10 @@ function next(args: Value[]): Value[] {
   }
 }
 
+function pairs(args: Value[]): Value[] {
+  return [ExtFunction.of(next), getOrNil(args, 0), new NilValue()];
+}
+
 function toString(args: Value[]): Value[] {
   return [StringValue.from(getOrNil(args, 0).toString())];
 }
@@ -76,6 +80,7 @@ basicStdLib.set(StringValue.from('assert'), ExtFunction.of(assert));
 basicStdLib.set(StringValue.from('error'), ExtFunction.of(error));
 basicStdLib.set(StringValue.from('ipairs'), ExtFunction.of(ipairs));
 basicStdLib.set(StringValue.from('next'), ExtFunction.of(next));
+basicStdLib.set(StringValue.from('pairs'), ExtFunction.of(pairs));
 basicStdLib.set(StringValue.from('tostring'), ExtFunction.of(toString));
 
 export default basicStdLib;

@@ -92,3 +92,21 @@ test('next', () => {
   expectToBeNil(result.returnValueAsList()[4]);
   expectToBeNil(result.returnValueAsList()[5]);
 });
+
+test('pairs', () => {
+  const lua = `
+          t = {'a', 'b', 'c'}
+          s = ""
+          n = 0
+          for i, v in pairs(t) do
+            s = s .. v
+            n = n + i
+          end
+          return n, s
+          `;
+  const result = new VMBuilder().witStdLib().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(2);
+  expectToBeNumber(result.returnValueAsList()[0], 6);
+  expectToBeString(result.returnValueAsList()[1], 'abc');
+});
