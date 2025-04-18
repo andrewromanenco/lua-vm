@@ -1,6 +1,7 @@
 import { RuntimeError } from '@src/interpreter/errors';
 import { VMBuilder } from '@src/vm';
 import {
+  expectToBeNil,
   expectToBeNumber,
   expectToBeString,
 } from '@tests/interpreter/test_utils';
@@ -68,4 +69,26 @@ test('ipairs', () => {
   expect(result.returnValueAsList().length).toBe(2);
   expectToBeNumber(result.returnValueAsList()[0], 6);
   expectToBeString(result.returnValueAsList()[1], 'abc');
+});
+
+test('next', () => {
+  const lua = `
+          t = {a = "aValue", b = "bValue"}
+          a1, a2 = next(t);
+          b1, b2 = next(t, a1);
+          c1, c2 = next(t, b1);
+          return a1, a2, b1, b2, c1, c2
+          `;
+  const result = new VMBuilder().witStdLib().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(6);
+
+  expectToBeString(result.returnValueAsList()[0], 'a');
+  expectToBeString(result.returnValueAsList()[1], 'aValue');
+
+  expectToBeString(result.returnValueAsList()[2], 'b');
+  expectToBeString(result.returnValueAsList()[3], 'bValue');
+
+  expectToBeNil(result.returnValueAsList()[4]);
+  expectToBeNil(result.returnValueAsList()[5]);
 });

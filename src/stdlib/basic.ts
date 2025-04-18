@@ -45,6 +45,28 @@ function ipairsIter(args: Value[]): Value[] {
   }
 }
 
+function next(args: Value[]): Value[] {
+  if (!(getOrNil(args, 0) instanceof TableValue)) {
+    return [];
+  }
+  const index = getOrNil(args, 1);
+  const table = args[0] as TableValue;
+  const keys = table.getKeys();
+  if (index instanceof NilValue) {
+    return [keys[0], table.get(keys[0])];
+  } else {
+    const match = index.asIdString();
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i].asIdString() === match) {
+        if (i + 1 < keys.length) {
+          return [keys[i + 1], table.get(keys[i + 1])];
+        }
+      }
+    }
+    return [new NilValue()];
+  }
+}
+
 function toString(args: Value[]): Value[] {
   return [StringValue.from(getOrNil(args, 0).toString())];
 }
@@ -53,6 +75,7 @@ const basicStdLib = new TableValue();
 basicStdLib.set(StringValue.from('assert'), ExtFunction.of(assert));
 basicStdLib.set(StringValue.from('error'), ExtFunction.of(error));
 basicStdLib.set(StringValue.from('ipairs'), ExtFunction.of(ipairs));
+basicStdLib.set(StringValue.from('next'), ExtFunction.of(next));
 basicStdLib.set(StringValue.from('tostring'), ExtFunction.of(toString));
 
 export default basicStdLib;
