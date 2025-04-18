@@ -136,6 +136,20 @@ function select(args: Value[]): Value[] {
   }
 }
 
+function toNumber(args: Value[]): Value[] {
+  const n = getOrNil(args, 0);
+  if (n instanceof NumberValue) {
+    return [n];
+  }
+  if (!(n instanceof StringValue)) {
+    throw new ExtFunctionError('has to be a string to convert to a number');
+  }
+  const baseArg = getOrNil(args, 1);
+  const base = baseArg instanceof NumberValue ? baseArg.number : 10;
+  const number = parseInt(n.string, base);
+  return [NumberValue.from(number)];
+}
+
 function toString(args: Value[]): Value[] {
   return [StringValue.from(getOrNil(args, 0).toString())];
 }
@@ -149,6 +163,7 @@ basicStdLib.set(StringValue.from('pairs'), ExtFunction.of(pairs));
 basicStdLib.set(StringValue.from('pcall'), ExtFunction.WithInterpreter(pcall));
 basicStdLib.set(StringValue.from('print'), ExtFunction.of(print));
 basicStdLib.set(StringValue.from('select'), ExtFunction.of(select));
+basicStdLib.set(StringValue.from('tonumber'), ExtFunction.of(toNumber));
 basicStdLib.set(StringValue.from('tostring'), ExtFunction.of(toString));
 
 export default basicStdLib;

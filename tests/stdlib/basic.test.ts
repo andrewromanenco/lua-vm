@@ -281,3 +281,18 @@ test('select', () => {
   expectToBeNil(result.globalVar('d3'));
   expectToBeNil(result.globalVar('d4'));
 });
+
+test('tonumber', () => {
+  const lua = `
+      a = "123"
+      b = "A"
+      c = "xyz"
+      return tonumber(a), tonumber(b, 16), tonumber(c)
+      `;
+  const result = new VMBuilder().witStdLib().build().executeOnce(lua);
+  expect(result.hasReturnValue()).toBeTruthy();
+  expect(result.returnValueAsList().length).toBe(3);
+  expectToBeNumber(result.returnValueAsList()[0], 123);
+  expectToBeNumber(result.returnValueAsList()[1], 10);
+  expectToBeNumber(result.returnValueAsList()[2], NaN);
+});
