@@ -9,6 +9,7 @@ import { executeWithInterpreter } from './interpreter/utils';
 import VMMarshaller from './marshaller';
 import basicStdLib from './stdlib/basic';
 import stringStdLib from './stdlib/strings';
+import tableStdLib from './stdlib/table';
 
 class VMBuilder {
   private envPreset = new TableValue();
@@ -16,6 +17,7 @@ class VMBuilder {
   witStdLib(): VMBuilder {
     this.envPreset.mergeInWithOverride(basicStdLib);
     this.envPreset.mergeInWithOverride(stringStdLib);
+    this.envPreset.mergeInWithOverride(tableStdLib);
     return this;
   }
 
