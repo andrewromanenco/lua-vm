@@ -41,3 +41,32 @@ test('find', () => {
   expectToBeNil(result.globalVar('g2'));
   expectToBeNil(result.globalVar('g3'));
 });
+
+test('string function', () => {
+  const lua = `
+  len1 = string.len("")
+  len2 = string.len("abc")
+  low = string.lower("aBxY")
+  up = string.upper("aBxY")
+  rep1 = string.rep("ab", 2)
+  rep2 = string.rep("ab", 3, ",")
+  rev = string.reverse("xyz")
+  sub1 = string.sub("1234567", 2)
+  sub2 = string.sub("1234567", 2,4)
+  sub3 = string.sub("1234567", 2,-2)
+  sub4 = string.sub("1234567", -4,-2)
+  `;
+  const vm = new VMBuilder().witStdLib().build();
+  const result = vm.executeOnce(lua);
+  expectToBeNumber(result.globalVar('len1'), 0);
+  expectToBeNumber(result.globalVar('len2'), 3);
+  expectToBeString(result.globalVar('low'), 'abxy');
+  expectToBeString(result.globalVar('up'), 'ABXY');
+  expectToBeString(result.globalVar('rep1'), 'abab');
+  expectToBeString(result.globalVar('rep2'), 'ab,ab,ab');
+  expectToBeString(result.globalVar('rev'), 'zyx');
+  expectToBeString(result.globalVar('sub1'), '234567');
+  expectToBeString(result.globalVar('sub2'), '234');
+  expectToBeString(result.globalVar('sub3'), '23456');
+  expectToBeString(result.globalVar('sub4'), '456');
+});

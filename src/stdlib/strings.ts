@@ -80,8 +80,92 @@ function regexFind(
   ];
 }
 
+function len(args: Value[]): Value[] {
+  const s = getOrNil(args, 0);
+  if (!(s instanceof StringValue)) {
+    throw new ExtFunctionError('parameter is not string');
+  }
+  return [NumberValue.from(s.string.length)];
+}
+
+function lower(args: Value[]): Value[] {
+  const s = getOrNil(args, 0);
+  if (!(s instanceof StringValue)) {
+    throw new ExtFunctionError('parameter is not string');
+  }
+  return [StringValue.from(s.string.toLowerCase())];
+}
+
+function upper(args: Value[]): Value[] {
+  const s = getOrNil(args, 0);
+  if (!(s instanceof StringValue)) {
+    throw new ExtFunctionError('parameter is not string');
+  }
+  return [StringValue.from(s.string.toUpperCase())];
+}
+
+function rep(args: Value[]): Value[] {
+  const s = getOrNil(args, 0);
+  if (!(s instanceof StringValue)) {
+    throw new ExtFunctionError('parameter is not string');
+  }
+  const n = getOrNil(args, 1);
+  if (!(n instanceof NumberValue)) {
+    throw new ExtFunctionError('parameter is not number');
+  }
+  const sep = getOrNil(args, 2);
+  if (!(sep instanceof NilValue)) {
+    if (!(sep instanceof StringValue)) {
+      throw new ExtFunctionError('separator parameter is not string');
+    }
+  }
+  const separator = sep instanceof StringValue ? sep.string : '';
+  return [StringValue.from(Array(n.number).fill(s.string).join(separator))];
+}
+
+function reverse(args: Value[]): Value[] {
+  const s = getOrNil(args, 0);
+  if (!(s instanceof StringValue)) {
+    throw new ExtFunctionError('parameter is not string');
+  }
+  return [StringValue.from(s.string.split('').reverse().join(''))];
+}
+
+function sub(args: Value[]): Value[] {
+  const s = getOrNil(args, 0);
+  if (!(s instanceof StringValue)) {
+    throw new ExtFunctionError('parameter is not string');
+  }
+  const start = getOrNil(args, 1);
+  if (!(start instanceof NumberValue)) {
+    throw new ExtFunctionError('start parameter is not number');
+  }
+  const end = getOrNil(args, 2);
+  if (!(end instanceof NilValue)) {
+    if (!(end instanceof NumberValue)) {
+      throw new ExtFunctionError('end parameter is not number');
+    }
+  }
+  const strLength = s.string.length;
+  const startIndex =
+    start.number < 0 ? Math.max(0, strLength + start.number) : start.number - 1;
+  const endIndex =
+    end instanceof NumberValue
+      ? end.number < 0
+        ? strLength + end.number + 1
+        : end.number
+      : strLength;
+  return [StringValue.from(s.string.substring(startIndex, endIndex))];
+}
+
 const functions = new TableValue();
 functions.set(StringValue.from('find'), ExtFunction.of(find));
+functions.set(StringValue.from('len'), ExtFunction.of(len));
+functions.set(StringValue.from('lower'), ExtFunction.of(lower));
+functions.set(StringValue.from('upper'), ExtFunction.of(upper));
+functions.set(StringValue.from('rep'), ExtFunction.of(rep));
+functions.set(StringValue.from('reverse'), ExtFunction.of(reverse));
+functions.set(StringValue.from('sub'), ExtFunction.of(sub));
 
 const stringStdLib = new TableValue();
 stringStdLib.set(StringValue.from('string'), functions);
