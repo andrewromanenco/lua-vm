@@ -8,12 +8,14 @@ import {
 import { executeWithInterpreter } from './interpreter/utils';
 import VMMarshaller from './marshaller';
 import basicStdLib from './stdlib/basic';
+import stringStdLib from './stdlib/strings';
 
 class VMBuilder {
   private envPreset = new TableValue();
 
   witStdLib(): VMBuilder {
     this.envPreset.mergeInWithOverride(basicStdLib);
+    this.envPreset.mergeInWithOverride(stringStdLib);
     return this;
   }
 
