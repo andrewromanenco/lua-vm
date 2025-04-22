@@ -91,6 +91,13 @@ class TableValue extends Value {
     this._table.set(key.asIdString(), [key, value]);
   }
 
+  remove(key: Value): Value {
+    if (key instanceof NilValue) return new NilValue();
+    const result = this.get(key);
+    this._table.delete(key.asIdString());
+    return result;
+  }
+
   hasKey(key: Value): boolean {
     return this._table.has(key.asIdString());
   }

@@ -28,6 +28,9 @@ test('insert', () => {
     t4 = table.concat(table4, ",")
     table5 = table.insert({"a", "b", "c"}, 4, "d");
     t5 = table.concat(table5, ",")
+    t = {"x", "y", "z"}
+    table.insert(t, "w");
+    tt = table.concat(t, ",")
     `;
   const vm = new VMBuilder().witStdLib().build();
   const result = vm.executeOnce(lua);
@@ -36,4 +39,35 @@ test('insert', () => {
   expectToBeString(result.globalVar('t3'), 'd,a,b,c');
   expectToBeString(result.globalVar('t4'), 'a,b,d,c');
   expectToBeString(result.globalVar('t5'), 'a,b,c,d');
+  expectToBeString(result.globalVar('tt'), 'x,y,z,w');
+});
+
+test('remove', () => {
+  const lua = `
+      table1 = {"a","b","c"}
+      t1 = table.remove(table1, 1)
+      table1 = table.concat(table1, ",")
+
+      table2 = {"a","b","c"}
+      t2 = table.remove(table2)
+      table2 = table.concat(table2, ",")
+
+      table3 = {"a","b","c"}
+      t3 = table.remove(table3, 3)
+      table3 = table.concat(table3, ",")
+
+      table4 = {"a","b","c"}
+      t4 = table.remove(table4, 2)
+      table4 = table.concat(table4, ",")
+      `;
+  const vm = new VMBuilder().witStdLib().build();
+  const result = vm.executeOnce(lua);
+  expectToBeString(result.globalVar('t1'), 'a');
+  expectToBeString(result.globalVar('table1'), 'b,c');
+  expectToBeString(result.globalVar('t2'), 'c');
+  expectToBeString(result.globalVar('table2'), 'a,b');
+  expectToBeString(result.globalVar('t3'), 'c');
+  expectToBeString(result.globalVar('table3'), 'a,b');
+  expectToBeString(result.globalVar('t4'), 'b');
+  expectToBeString(result.globalVar('table4'), 'a,c');
 });

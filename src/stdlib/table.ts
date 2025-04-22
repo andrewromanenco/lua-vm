@@ -87,9 +87,32 @@ function listToTable(table: TableValue, list: Value[]): TableValue {
   return table;
 }
 
+function remove(args: Value[]): Value[] {
+  const table = getOrNil(args, 0);
+  if (!(table instanceof TableValue)) {
+    throw new ExtFunctionError('table has to be provided');
+  }
+  const list = tableToList(table);
+  const posArg = getOrNil(args, 1);
+  if (!(posArg instanceof NilValue)) {
+    if (!(posArg instanceof NumberValue)) {
+      throw new ExtFunctionError('pos has to be a number');
+    }
+  }
+  const pos = posArg instanceof NilValue ? list.length - 1 : posArg.number - 1;
+  if (pos < 0 || pos >= list.length) {
+    throw new ExtFunctionError('pos is out of range');
+  }
+  const removed = list.splice(pos, 1);
+  table.remove(NumberValue.from(list.length + 1));
+  listToTable(table, list);
+  return [removed[0]];
+}
+
 const functions = new TableValue();
 functions.set(StringValue.from('concat'), ExtFunction.of(concat));
 functions.set(StringValue.from('insert'), ExtFunction.of(insert));
+functions.set(StringValue.from('remove'), ExtFunction.of(remove));
 
 const tableStdLib = new TableValue();
 tableStdLib.set(StringValue.from('table'), functions);
