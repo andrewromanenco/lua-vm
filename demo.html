@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Lua-vm demp</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 2em;
+        max-width: 600px;
+        margin: auto;
+      }
+      textarea {
+        width: 100%;
+        height: 120px;
+        margin-bottom: 1em;
+        font-family: monospace;
+      }
+      button {
+        padding: 0.5em 1em;
+        font-size: 1em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Lua VM Demo</h1>
+    <ul>
+      <li>
+        Make sure `npm run buildjs` was executed and `dist/lua-vm.js` is
+        generated
+      </li>
+      <li>Run lua code like `return 10 + 32`</li>
+      <li>
+        Another example
+        <pre>
+        function add(a, b)
+          return a + b
+        end
+         return add(1,2)
+    </pre
+        >
+      </li>
+      <li>
+        And another
+        <pre>
+        t = {5,2,3,1,4}
+        table.sort(t)
+        return table.concat(t, ",")
+      </pre
+        >
+      </li>
+    </ul>
+    <hr />
+    <label for="input">Lua code:</label>
+    <textarea id="input" placeholder="Enter input..."></textarea>
+
+    <button id="runBtn">Execute</button>
+
+    <label for="output">Output Text:</label>
+    <textarea id="output" readonly></textarea>
+
+    <script src="dist/lua-vm.js"></script>
+    <script>
+      const inputEl = document.getElementById('input');
+      const outputEl = document.getElementById('output');
+      const runBtn = document.getElementById('runBtn');
+
+      runBtn.addEventListener('click', () => {
+        try {
+          const vm = new LuaVM.VMBuilder().witStdLib().build();
+          const result = vm.executeOnce(inputEl.value);
+          outputEl.value = result.returnValueAsList();
+          // technically all return values are lua types
+          console.log(result.returnValueAsList());
+        } catch (err) {
+          outputEl.value = 'Error: ' + err.message;
+        }
+      });
+    </script>
+  </body>
+</html>
