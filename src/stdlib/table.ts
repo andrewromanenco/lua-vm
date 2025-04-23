@@ -1,13 +1,18 @@
 import { ExtFunctionError } from '@src/interpreter/errors';
 import ExtFunction from '@src/interpreter/ExtFunction';
 import {
+  BooleanValue,
+  FunctionValue,
+  InternalListValue,
+  InterpreterValue,
   NilValue,
   NumberValue,
   StringValue,
   TableValue,
   Value,
 } from '@src/interpreter/types';
-import { getOrNil } from '@src/interpreter/utils';
+import { flattenList, getOrNil, isTrue } from '@src/interpreter/utils';
+import { ParserRuleContext } from 'antlr4';
 
 function concat(args: Value[]): Value[] {
   const table = getOrNil(args, 0);
@@ -109,10 +114,51 @@ function remove(args: Value[]): Value[] {
   return [removed[0]];
 }
 
+function sort(args: Value[]): Value[] {
+  const table = getOrNil(args, 0);
+  if (!(table instanceof TableValue)) {
+    throw new ExtFunctionError('table has to be provided');
+  }
+  const list = tableToList(table);
+  const interpreter = getOrNil(args, args.length - 1);
+  const comparator =
+    args.length == 2 ? ExtFunction.of(defaultComparator) : args[1];
+  if (
+    !(comparator instanceof FunctionValue) &&
+    !(comparator instanceof ExtFunction)
+  ) {
+    throw new ExtFunctionError('comparator muse be a function');
+  }
+  list.sort((a, b) => {
+    const result = (interpreter as InterpreterValue).interpreter.exec_function(
+      comparator,
+      new InternalListValue([a, b]),
+      {} as ParserRuleContext
+    );
+    const aIsFirst = flattenList(result).getValueOrNil(1);
+    return isTrue(aIsFirst) ? -1 : 1;
+  });
+  listToTable(table, list);
+  return [table];
+}
+
+function defaultComparator(args: Value[]): Value[] {
+  const a = getOrNil(args, 0);
+  const b = getOrNil(args, 1);
+  if (a instanceof NumberValue && b instanceof NumberValue) {
+    return [BooleanValue.from(a.number < b.number)];
+  }
+  if (a instanceof StringValue && b instanceof StringValue) {
+    return [BooleanValue.from(a.string < b.string)];
+  }
+  throw new ExtFunctionError('Elements must all be either numbers or strings');
+}
+
 const functions = new TableValue();
 functions.set(StringValue.from('concat'), ExtFunction.of(concat));
 functions.set(StringValue.from('insert'), ExtFunction.of(insert));
 functions.set(StringValue.from('remove'), ExtFunction.of(remove));
+functions.set(StringValue.from('sort'), ExtFunction.WithInterpreter(sort));
 
 const tableStdLib = new TableValue();
 tableStdLib.set(StringValue.from('table'), functions);

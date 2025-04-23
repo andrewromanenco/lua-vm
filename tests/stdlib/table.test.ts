@@ -1,3 +1,10 @@
+import ExtFunction from '@src/interpreter/ExtFunction';
+import {
+  BooleanValue,
+  NumberValue,
+  StringValue,
+  Value,
+} from '@src/interpreter/types';
 import { VMBuilder } from '@src/vm';
 import { expectToBeString } from '@tests/interpreter/test_utils';
 
@@ -70,4 +77,51 @@ test('remove', () => {
   expectToBeString(result.globalVar('table3'), 'a,b');
   expectToBeString(result.globalVar('t4'), 'b');
   expectToBeString(result.globalVar('table4'), 'a,c');
+});
+
+test('sort', () => {
+  const lua = `
+  list1 = {3,2,5,1,4}
+  table.sort(list1)
+  list1 = table.concat(list1, ",")
+
+  list2 = {'a', 'c', 'd', 'b'}
+  table.sort(list2)
+  list2 = table.concat(list2, ",")
+  `;
+  const vm = new VMBuilder().witStdLib().build();
+  const result = vm.executeOnce(lua);
+  expectToBeString(result.globalVar('list1'), '1,2,3,4,5');
+  expectToBeString(result.globalVar('list2'), 'a,b,c,d');
+});
+
+test('sort with comparator', () => {
+  const lua = `
+  function c(a,b)
+    return a > b
+  end
+  list = {3,2,5,1,4}
+  table.sort(list, c)
+  list = table.concat(list, ",")
+  `;
+  const vm = new VMBuilder().witStdLib().build();
+  const result = vm.executeOnce(lua);
+  expectToBeString(result.globalVar('list'), '5,4,3,2,1');
+});
+
+test('sort with external comparator', () => {
+  const lua = `
+  list = {3,2,5,1,4}
+  table.sort(list, c)
+  list = table.concat(list, ",")
+  `;
+  function c(args: Value[]): Value[] {
+    const a = args[0] as NumberValue;
+    const b = args[1] as NumberValue;
+    return [BooleanValue.from(a.number > b.number)];
+  }
+  const vm = new VMBuilder().witStdLib().build();
+  vm.setLuaVar(StringValue.from('c'), ExtFunction.of(c));
+  const result = vm.executeOnce(lua);
+  expectToBeString(result.globalVar('list'), '5,4,3,2,1');
 });
