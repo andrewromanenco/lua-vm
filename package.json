@@ -17,9 +17,9 @@
     "typescript",
     "parser"
   ],
-  "author": "Andrew Romanenco",
+  "author": "Andrew Romanenco <andrew@romanenco.com>",
   "license": "MIT",
-  "description": "LuaVM",
+  "description": "A lightweight Lua virtual machine written in TypeScript. Safely runs Lua code in the browser or Node.js with no access to the host environment.",
   "repository": {
     "type": "git",
     "url": "https://github.com/andrewromanenco/lua-vm.git"
