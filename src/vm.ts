@@ -14,6 +14,7 @@ import tableStdLib from './stdlib/table';
 
 class VMBuilder {
   private envPreset = new TableValue();
+  private credit = 10000;
 
   witStdLib(): VMBuilder {
     this.envPreset.mergeInWithOverride(basicStdLib);
@@ -23,8 +24,13 @@ class VMBuilder {
     return this;
   }
 
+  withRunCredit(credit: number): VMBuilder {
+    this.credit = credit;
+    return this;
+  }
+
   build(): VM {
-    const vm = new VM();
+    const vm = new VM(this.credit);
     this.envPreset.getKeys().forEach(key => {
       vm.setLuaVar(key, this.envPreset.get(key));
     });
@@ -38,13 +44,18 @@ class VMBuilder {
 
 class VM {
   private envPreset = new TableValue();
+  private readonly credits;
+
+  constructor(credits: number) {
+    this.credits = credits;
+  }
 
   setLuaVar(key: Value, value: Value): void {
     this.envPreset.set(key, value);
   }
 
   newThread(): ExecutionThread {
-    const thread = new ExecutionThread();
+    const thread = new ExecutionThread(this.credits);
     this.envPreset.getKeys().forEach(key => {
       const value = this.envPreset.get(key);
       thread.setLuaVar(key, value);
@@ -60,7 +71,11 @@ class VM {
 
 class ExecutionThread {
   private readonly vars: Map<Value, Value> = new Map<Value, Value>();
-  private readonly interpreter = new LuaInterpreter();
+  private readonly interpreter;
+
+  constructor(runCredits: number) {
+    this.interpreter = new LuaInterpreter(runCredits);
+  }
 
   setLuaVar(name: Value, value: Value): ExecutionThread {
     this.vars.set(name, value);

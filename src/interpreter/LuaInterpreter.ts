@@ -100,10 +100,20 @@ import { ParserRuleContext, TerminalNode } from 'antlr4';
 
 export default class LuaInterpreter extends LuaParserVisitor<Value> {
   private currentScope: VisibilityScope;
+  private runCredits: number;
 
-  constructor() {
+  constructor(runCredits = 10000) {
     super();
     this.currentScope = VisibilityScope.root();
+    this.runCredits = runCredits;
+  }
+
+  private consumeCredit(ctx: ParserRuleContext): void {
+    if (this.runCredits == 0) {
+      throw new RuntimeError('The program runs too long', ctx);
+    } else {
+      this.runCredits--;
+    }
   }
 
   getAllGlobalVars(): TableValue {
@@ -447,11 +457,13 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     return new InternalListValue(values);
   };
 
-  visitExp_true = (_ctx: Exp_trueContext): Value => {
+  visitExp_true = (ctx: Exp_trueContext): Value => {
+    this.consumeCredit(ctx);
     return BooleanValue.true();
   };
 
   visitExp_bits = (ctx: Exp_bitsContext): Value => {
+    this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
 
@@ -483,16 +495,19 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitExp_and = (ctx: Exp_andContext): Value => {
+    this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
     return BooleanValue.from(isTrue(left) && isTrue(right));
   };
 
   visitExp_string = (ctx: Exp_stringContext): Value => {
+    this.consumeCredit(ctx);
     return ctx.string_().accept(this);
   };
 
   visitExp_arithmetic_high = (ctx: Exp_arithmetic_highContext): Value => {
+    this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
 
@@ -523,6 +538,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitExp_rel = (ctx: Exp_relContext): Value => {
+    this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
     if (ctx.EE()) {
@@ -552,6 +568,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     ctx: Exp_relContext,
     le: boolean
   ): BooleanValue {
+    this.consumeCredit(ctx);
     if (left instanceof NumberValue) {
       if (!(right instanceof NumberValue)) {
         throw new RuntimeError(
@@ -608,10 +625,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   visitStat_table_construnctor = (
     ctx: Stat_table_construnctorContext
   ): Value => {
+    this.consumeCredit(ctx);
     return ctx.tableconstructor().accept(this);
   };
 
   visitExp_unary = (ctx: Exp_unaryContext): Value => {
+    this.consumeCredit(ctx);
     const exp = firstValue(ctx.exp().accept(this));
     if (ctx.MINUS()) {
       if (exp instanceof NumberValue) {
@@ -649,20 +668,24 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitExp_or = (ctx: Exp_orContext): Value => {
+    this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
     return BooleanValue.from(isTrue(left) || isTrue(right));
   };
 
-  visitExp_false = (_ctx: Exp_falseContext): Value => {
+  visitExp_false = (ctx: Exp_falseContext): Value => {
+    this.consumeCredit(ctx);
     return BooleanValue.false();
   };
 
   visitStat_prefix_exp = (ctx: Stat_prefix_expContext): Value => {
+    this.consumeCredit(ctx);
     return ctx.prefixexp().accept(this);
   };
 
   visitExp_exponent = (ctx: Exp_exponentContext): Value => {
+    this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
 
@@ -684,10 +707,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitExp_number = (ctx: Exp_numberContext): Value => {
+    this.consumeCredit(ctx);
     return ctx.number_().accept(this);
   };
 
   visitExp_concat = (ctx: Exp_concatContext): Value => {
+    this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
     return StringValue.from(
@@ -713,7 +738,8 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     }
   }
 
-  visitExp_vararg = (_ctx: Exp_varargContext): Value => {
+  visitExp_vararg = (ctx: Exp_varargContext): Value => {
+    this.consumeCredit(ctx);
     const varargs = this.currentScope.get(StringValue.from('...'));
     if (varargs instanceof NilValue) {
       return new InternalListValue([]);
@@ -727,6 +753,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitExp_arithmetic_low = (ctx: Exp_arithmetic_lowContext): Value => {
+    this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
     if (!(left instanceof NumberValue)) {
@@ -753,10 +780,12 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitExp_function_def = (ctx: Exp_function_defContext): Value => {
+    this.consumeCredit(ctx);
     return ctx.functiondef().accept(this);
   };
 
-  visitExp_nil = (_ctx: Exp_nilContext): Value => {
+  visitExp_nil = (ctx: Exp_nilContext): Value => {
+    this.consumeCredit(ctx);
     return new NilValue();
   };
 
@@ -784,6 +813,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitPrefixexp_name = (ctx: Prefixexp_nameContext): Value => {
+    this.consumeCredit(ctx);
     const topName = ctx.NAME_list()[0].getText();
     return this.walkExpAndName(
       this.currentScope.get(StringValue.from(topName)),
@@ -799,6 +829,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   visitPrefixexp_function_call = (
     ctx: Prefixexp_function_callContext
   ): Value => {
+    this.consumeCredit(ctx);
     const value = this.walkExpAndName(
       ctx.functioncall().accept(this),
       ctx.exp_list(),
@@ -812,6 +843,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitPrefixexp_exp = (ctx: Prefixexp_expContext): Value => {
+    this.consumeCredit(ctx);
     const f = ctx.exp(0).accept(this);
     return this.walkExpAndName(
       f,
@@ -874,6 +906,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   }
 
   visitFcall_name = (ctx: Fcall_nameContext): Value => {
+    this.consumeCredit(ctx);
     const fname = ctx.NAME(0).getText();
     const value = this.walkExpAndName(
       this.currentScope.get(StringValue.from(fname)),
@@ -939,6 +972,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   }
 
   visitFcall_name_ext = (ctx: Fcall_name_extContext): Value => {
+    this.consumeCredit(ctx);
     const table = firstValue(
       this.walkExpAndName(
         this.currentScope.get(StringValue.from(ctx.NAME(0).getText())),
@@ -974,6 +1008,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitFcall_function_call = (ctx: Fcall_function_callContext): Value => {
+    this.consumeCredit(ctx);
     const fun = firstValue(
       this.walkExpAndName(
         ctx.functioncall().accept(this),
@@ -999,6 +1034,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitFcall_exp = (ctx: Fcall_expContext): Value => {
+    this.consumeCredit(ctx);
     const fun = firstValue(
       this.walkExpAndName(
         ctx.exp(0).accept(this),
@@ -1024,6 +1060,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   };
 
   visitFcall_exp_ext = (ctx: Fcall_exp_extContext): Value => {
+    this.consumeCredit(ctx);
     const table = firstValue(
       this.walkExpAndName(
         firstValue(ctx.exp(0).accept(this)),
@@ -1061,6 +1098,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   visitFcall_function_call_ext = (
     ctx: Fcall_function_call_extContext
   ): Value => {
+    this.consumeCredit(ctx);
     const table = firstValue(
       this.walkExpAndName(
         firstValue(ctx.functioncall().accept(this)),

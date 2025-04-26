@@ -245,3 +245,42 @@ test('incorrect lua code', () => {
     "Lua: no viable alternative at input 'a ==' (line: 3, col: 4)"
   );
 });
+
+test('infinite loop does not last forever', () => {
+  const lua = `
+  a  = 1
+  b = 0
+  while a < 100 do
+    b = b + 1
+  end
+  `;
+  let exception;
+  try {
+    new VMBuilder().build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(RuntimeError);
+  expect((exception as RuntimeError).message).toBe(
+    'Runtime error: (line: 5, col: 12): The program runs too long'
+  );
+});
+
+test('limit running time', () => {
+  const lua = `
+  a  = 1
+  while a < 100 do
+    a = a + 1
+  end
+  `;
+  let exception;
+  try {
+    new VMBuilder().withRunCredit(10).build().executeOnce(lua);
+  } catch (e) {
+    exception = e;
+  }
+  expect(exception).toBeInstanceOf(RuntimeError);
+  expect((exception as RuntimeError).message).toBe(
+    'Runtime error: (line: 3, col: 8): The program runs too long'
+  );
+});
