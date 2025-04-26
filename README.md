@@ -1,5 +1,8 @@
 # LUA VM: lua interpreter in TypeScript
 
+[![npm version](https://img.shields.io/npm/v/lua-vm)](https://www.npmjs.com/package/lua-vm)
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 **LuaVM** is a safe, sandboxed Lua interpreter implemented in TypeScript. It is designed to be easily embedded in TypeScript/JavaScript applications or web environments (also referred to as **host systems**).
 
 The virtual machine executes Lua code without any ability to access or affect the host environment. There are **no escape hatches**: Lua code cannot invoke arbitrary host functions or manipulate memory outside the VM. There is **no DOM** access.
