@@ -181,6 +181,35 @@ Explore the following files and directories for usage patterns and integration i
 npm install lua-vm
 ```
 
+```ts
+import {
+  VMBuilder,
+  Value,
+  NumberValue,
+  StringValue,
+  ExtFunction } from 'lua-vm';
+
+function add(args: Value[]): Value[] {
+  const a = args[0] as NumberValue;
+  const b = args[1] as NumberValue;
+  return [NumberValue.from(a.number + b.number)];
+}
+
+const lua = `
+    a = 2
+    return a*b, add(a, b)
+    `;
+const vm = new VMBuilder().build();
+vm.setLuaVar(StringValue.from("b"), NumberValue.from(3));
+vm.setLuaVar(StringValue.from("add"), ExtFunction.of(add));
+const result = vm.executeOnce(lua);
+const resultAsList = result.returnValueAsList();
+const r1 = (resultAsList[0] as NumberValue).number;
+const r2 = (resultAsList[1] as NumberValue).number;
+console.log(r1);
+console.log(r2);
+```
+
 #### As a JavaScript Library (for use in web apps):
 
 1. Download the latest `lua-vm.js` from [GitHub Releases](https://github.com/andrewromanenco/lua-vm/releases).

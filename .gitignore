@@ -61,7 +61,6 @@ yarn-error.log
 tests/baselines/reference/dt
 .failed-tests
 TEST-results.xml
-package-lock.json
 .eslintcache
 *v8.log
 /lib/

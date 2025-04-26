@@ -1,20 +1,33 @@
 {
-  "name": "appx",
+  "name": "lua-vm",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && tsc-alias",
     "test": "jest",
     "buildjs": "node build.js",
     "lint": "eslint .",
     "format:fix": "prettier --write .",
     "format": "prettier --check ."
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "lua",
+    "virtual-machine",
+    "typescript",
+    "parser"
+  ],
+  "author": "Andrew Romanenco",
   "license": "MIT",
-  "description": "",
+  "description": "LuaVM",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrewromanenco/lua-vm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andrewromanenco/lua-vm/issues"
+  },
+  "homepage": "https://github.com/andrewromanenco/lua-vm",
   "devDependencies": {
     "@eslint/js": "^9.24.0",
     "@types/jest": "^29.5.14",
@@ -25,10 +38,16 @@
     "jest": "^29.7.0",
     "prettier": "^3.5.3",
     "ts-jest": "^29.2.6",
+    "tsc-alias": "^1.8.15",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.29.1"
   },
   "dependencies": {
     "antlr4": "^4.13.2"
-  }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.txt"
+  ]
 }

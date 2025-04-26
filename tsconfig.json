@@ -7,9 +7,12 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "baseUrl": "./",
+    "declaration": true,
+    "declarationDir": "./dist",
     "paths": {
       "@src/*": ["src/*"],
       "@tests/*": ["tests/*"]
     }
-  }
+  },
+  "include": ["src"]
 }
