@@ -32,7 +32,7 @@ This strict separation ensures **safe and predictable behavior** in embedded con
 - Set variables in the Lua VM before execution.
 - Read variables after execution completes.
 - Provide external (TypeScript/JavaScript) functions callable from Lua.
-- Enforce a configurable instruction limit to prevent infinite loops.
+- Enforce a configurable instruction limit to prevent infinite loops (10k is the default).
 - Optionally include a subset of standard Lua library functions.
 - Supported Types: nil, boolean, number, string, function, and table.
 - All LuaVM values are TypeScript-wrapped primitives; behavior is aligned with **JS semantics**.
@@ -58,6 +58,10 @@ The `VMBuilder` class is the entry point for constructing a Lua VM instance.
 - **Create a VM with a subset of Lua standard library functions:**
   ```ts
   const vm = new VMBuilder().withStdLib().build();
+  ```
+- **Limit running time:**
+  ```ts
+  const vm = new VMBuilder().withRunCredit(10).withStdLib().build();
   ```
 
 A VM instance created via `VMBuilder` acts as a container for **execution threads**. These threads are not concurrent or parallel (LuaVM does not support real multithreading); instead, they represent **independent memory contexts**. This design allows you to run multiple isolated Lua programs using a single VM instance.
@@ -159,16 +163,16 @@ Represents an **external (host-defined) function** exposed to the Lua runtime.
 Explore the following files and directories for usage patterns and integration ideas:
 
 - **General VM usage** (setting/getting variables, error handling):  
-  [tests/vm.test.ts](https://github.com/andrewromanenco/lua-vm-ts/blob/main/tests/vm.test.ts)
+  [tests/vm.test.ts](https://github.com/andrewromanenco/lua-vm/blob/main/tests/vm.test.ts)
   
 - **Using external (host-provided) functions:**  
-  [tests/vmfun.test.ts](https://github.com/andrewromanenco/lua-vm-ts/blob/main/tests/vmfun.test.ts)
+  [tests/vmfun.test.ts](https://github.com/andrewromanenco/lua-vm/blob/main/tests/vmfun.test.ts)
   
 - **Writing custom external functions:**  
-  [src/stdlib/*](https://github.com/andrewromanenco/lua-vm-ts/tree/main/src/stdlib)
+  [src/stdlib/*](https://github.com/andrewromanenco/lua-vm/tree/main/src/stdlib)
 
 - **Embedding LuaVM in a web page:**  
-  [demo.html](https://github.com/andrewromanenco/lua-vm-ts/blob/main/demo.html)
+  [demo.html](https://github.com/andrewromanenco/lua-vm/blob/main/demo.html)
 
 ### 📦 Installation
 
@@ -179,16 +183,16 @@ npm install lua-vm
 
 #### As a JavaScript Library (for use in web apps):
 
-1. Download the latest `lua-vm.js` from [GitHub Releases](https://github.com/andrewromanenco/lua-vm-ts/releases).
+1. Download the latest `lua-vm.js` from [GitHub Releases](https://github.com/andrewromanenco/lua-vm/releases).
 2. _OR_ build it from source:
    ```bash
    npm run buildjs
    ```
-3. See [demo.html](https://github.com/andrewromanenco/lua-vm-ts/blob/main/demo.html) for an example of integration in a browser environment.
+3. See [demo.html](https://github.com/andrewromanenco/lua-vm/blob/main/demo.html) for an example of integration in a browser environment.
 
 ## STDLIB
 
-The [StdLib](https://github.com/andrewromanenco/lua-vm-ts/tree/main/src/stdlib) is a curated subset of Lua’s standard library, reimplemented as ExtFunctions in TypeScript.
+The [StdLib](https://github.com/andrewromanenco/lua-vm/tree/main/src/stdlib) is a curated subset of Lua’s standard library, reimplemented as ExtFunctions in TypeScript.
 
 These functions are designed to be safe and sandboxed—they do not access the host environment (no DOM, no browser APIs, no external side effects).
 
