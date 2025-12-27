@@ -498,7 +498,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
-    return BooleanValue.from(isTrue(left) && isTrue(right));
+    return isTrue(left) ? right : left;
   };
 
   visitExp_string = (ctx: Exp_stringContext): Value => {
@@ -671,7 +671,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     this.consumeCredit(ctx);
     const left = firstValue(ctx.exp(0).accept(this));
     const right = firstValue(ctx.exp(1).accept(this));
-    return BooleanValue.from(isTrue(left) || isTrue(right));
+    return isTrue(left) ? left : right;
   };
 
   visitExp_false = (ctx: Exp_falseContext): Value => {
