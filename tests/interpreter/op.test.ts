@@ -221,20 +221,20 @@ test('logical AND and OR', () => {
       or_g = f1 or f2
   `;
   const result = new VMBuilder().build().executeOnce(lua);
-  expectToBeBool(result.globalVar('and_a'), true);
+  expectToBeNumber(result.globalVar('and_a'), 100);
   expectToBeBool(result.globalVar('and_b'), true);
   expectToBeBool(result.globalVar('and_c'), false);
-  expectToBeBool(result.globalVar('and_d'), false);
+  expectToBeNil(result.globalVar('and_d'));
   expectToBeBool(result.globalVar('and_e'), false);
-  expectToBeBool(result.globalVar('and_f'), false);
+  expectToBeNil(result.globalVar('and_f'));
 
-  expectToBeBool(result.globalVar('or_a'), true);
-  expectToBeBool(result.globalVar('or_b'), true);
+  expectToBeNumber(result.globalVar('or_a'), 0);
+  expectToBeString(result.globalVar('or_b'), "some string");
   expectToBeBool(result.globalVar('or_c'), true);
   expectToBeBool(result.globalVar('or_d'), true);
   expectToBeBool(result.globalVar('or_e'), true);
-  expectToBeBool(result.globalVar('or_f'), true);
-  expectToBeBool(result.globalVar('or_g'), false);
+  expectToBeNumber(result.globalVar('or_f'), 100);
+  expectToBeNil(result.globalVar('or_g'));
 });
 
 test('multires expressions', () => {
