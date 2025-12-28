@@ -199,6 +199,12 @@ test('string and number raise error', () => {
 
 test('logical AND and OR', () => {
   const lua = `
+      calls = 0;
+      function error(msg)
+        calls = calls + 1
+        return msg
+      end
+
       t1 = 0
       t2 = true
       t3 = "some string"
@@ -211,6 +217,7 @@ test('logical AND and OR', () => {
       and_d = f2 and t2
       and_e = f1 and t2
       and_f = f2 and t4
+      and_g = false and error("this should not be evaluated")
 
       or_a = t1 or t4
       or_b = t3 or true
@@ -219,6 +226,7 @@ test('logical AND and OR', () => {
       or_e = f1 or t2
       or_f = f2 or t4
       or_g = f1 or f2
+      or_h = true or error("this should not be evaluated")
   `;
   const result = new VMBuilder().build().executeOnce(lua);
   expectToBeNumber(result.globalVar('and_a'), 100);
@@ -229,12 +237,14 @@ test('logical AND and OR', () => {
   expectToBeNil(result.globalVar('and_f'));
 
   expectToBeNumber(result.globalVar('or_a'), 0);
-  expectToBeString(result.globalVar('or_b'), "some string");
+  expectToBeString(result.globalVar('or_b'), 'some string');
   expectToBeBool(result.globalVar('or_c'), true);
   expectToBeBool(result.globalVar('or_d'), true);
   expectToBeBool(result.globalVar('or_e'), true);
   expectToBeNumber(result.globalVar('or_f'), 100);
   expectToBeNil(result.globalVar('or_g'));
+
+  expectToBeNumber(result.globalVar('calls'), 0);
 });
 
 test('multires expressions', () => {
