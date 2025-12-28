@@ -1,6 +1,12 @@
 import { ParserRuleContext } from 'antlr4';
 import { ExtFunctionError, RuntimeError } from './errors';
-import { InternalListValue, InterpreterValue, NilValue, Value } from './types';
+import {
+  InternalListValue,
+  InterpreterValue,
+  NilValue,
+  TableValue,
+  Value,
+} from './types';
 import LuaInterpreter from './LuaInterpreter';
 
 export default class ExtFunction extends Value {
@@ -68,5 +74,9 @@ export default class ExtFunction extends Value {
 
   toString(): string {
     return `extFun:${this.name}:${this.uuid}`;
+  }
+
+  getMetatable(): TableValue | NilValue {
+    return new NilValue();
   }
 }
