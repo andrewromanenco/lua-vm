@@ -1,4 +1,4 @@
-// Generated from LuaParser.g4 by ANTLR 4.13.2
+// Generated from ./LuaParser.g4 by ANTLR 4.13.2
 
 import {ParseTreeVisitor} from 'antlr4';
 

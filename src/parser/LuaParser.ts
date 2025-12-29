@@ -40,53 +40,52 @@ export default class LuaParser extends Parser {
 	public static readonly LT = 19;
 	public static readonly GT = 20;
 	public static readonly RETURN = 21;
-	public static readonly CONTINUE = 22;
-	public static readonly CC = 23;
-	public static readonly NIL = 24;
-	public static readonly FALSE = 25;
-	public static readonly TRUE = 26;
-	public static readonly DOT = 27;
-	public static readonly SQUIG = 28;
-	public static readonly MINUS = 29;
-	public static readonly POUND = 30;
-	public static readonly OP = 31;
-	public static readonly CP = 32;
-	public static readonly NOT = 33;
-	public static readonly LL = 34;
-	public static readonly GG = 35;
-	public static readonly AMP = 36;
-	public static readonly SS = 37;
-	public static readonly PER = 38;
-	public static readonly COL = 39;
-	public static readonly LE = 40;
-	public static readonly GE = 41;
-	public static readonly AND = 42;
-	public static readonly OR = 43;
-	public static readonly PLUS = 44;
-	public static readonly STAR = 45;
-	public static readonly OCU = 46;
-	public static readonly CCU = 47;
-	public static readonly OB = 48;
-	public static readonly CB = 49;
-	public static readonly EE = 50;
-	public static readonly DD = 51;
-	public static readonly PIPE = 52;
-	public static readonly CARET = 53;
-	public static readonly SLASH = 54;
-	public static readonly DDD = 55;
-	public static readonly SQEQ = 56;
-	public static readonly NAME = 57;
-	public static readonly NORMALSTRING = 58;
-	public static readonly CHARSTRING = 59;
-	public static readonly LONGSTRING = 60;
-	public static readonly INT = 61;
-	public static readonly HEX = 62;
-	public static readonly FLOAT = 63;
-	public static readonly HEX_FLOAT = 64;
-	public static readonly COMMENT = 65;
-	public static readonly WS = 66;
-	public static readonly NL = 67;
-	public static readonly SHEBANG = 68;
+	public static readonly CC = 22;
+	public static readonly NIL = 23;
+	public static readonly FALSE = 24;
+	public static readonly TRUE = 25;
+	public static readonly DOT = 26;
+	public static readonly SQUIG = 27;
+	public static readonly MINUS = 28;
+	public static readonly POUND = 29;
+	public static readonly OP = 30;
+	public static readonly CP = 31;
+	public static readonly NOT = 32;
+	public static readonly LL = 33;
+	public static readonly GG = 34;
+	public static readonly AMP = 35;
+	public static readonly SS = 36;
+	public static readonly PER = 37;
+	public static readonly COL = 38;
+	public static readonly LE = 39;
+	public static readonly GE = 40;
+	public static readonly AND = 41;
+	public static readonly OR = 42;
+	public static readonly PLUS = 43;
+	public static readonly STAR = 44;
+	public static readonly OCU = 45;
+	public static readonly CCU = 46;
+	public static readonly OB = 47;
+	public static readonly CB = 48;
+	public static readonly EE = 49;
+	public static readonly DD = 50;
+	public static readonly PIPE = 51;
+	public static readonly CARET = 52;
+	public static readonly SLASH = 53;
+	public static readonly DDD = 54;
+	public static readonly SQEQ = 55;
+	public static readonly NAME = 56;
+	public static readonly NORMALSTRING = 57;
+	public static readonly CHARSTRING = 58;
+	public static readonly LONGSTRING = 59;
+	public static readonly INT = 60;
+	public static readonly HEX = 61;
+	public static readonly FLOAT = 62;
+	public static readonly HEX_FLOAT = 63;
+	public static readonly COMMENT = 64;
+	public static readonly WS = 65;
+	public static readonly NL = 66;
+	public static readonly SHEBANG = 67;
 	public static override readonly EOF = Token.EOF;
 	public static readonly RULE_start_ = 0;
 	public static readonly RULE_chunk = 1;
@@ -126,7 +125,6 @@ export default class LuaParser extends Parser {
                                                             "'function'", 
                                                             "'local'", "'<'", 
                                                             "'>'", "'return'", 
-                                                            "'continue'", 
                                                             "'::'", "'nil'", 
                                                             "'false'", "'true'", 
                                                             "'.'", "'~'", 
@@ -155,7 +153,6 @@ export default class LuaParser extends Parser {
                                                              "IN", "FUNCTION", 
                                                              "LOCAL", "LT", 
                                                              "GT", "RETURN", 
-                                                             "CONTINUE", 
                                                              "CC", "NIL", 
                                                              "FALSE", "TRUE", 
                                                              "DOT", "SQUIG", 
@@ -260,29 +257,26 @@ export default class LuaParser extends Parser {
 		this.enterRule(localctx, 4, LuaParser.RULE_block);
 		let _la: number;
 		try {
-			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
 			this.state = 60;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 0, this._ctx);
-			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-				if (_alt === 1) {
-					{
-					{
-					this.state = 57;
-					this.stat();
-					}
-					}
+			_la = this._input.LA(1);
+			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 1078347194) !== 0) || _la===56) {
+				{
+				{
+				this.state = 57;
+				this.stat();
+				}
 				}
 				this.state = 62;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 0, this._ctx);
+				_la = this._input.LA(1);
 			}
 			this.state = 64;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 6291464) !== 0)) {
+			if (_la===21) {
 				{
 				this.state = 63;
 				this.retstat();
@@ -670,46 +664,24 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 170;
+			this.state = 164;
+			this.match(LuaParser.RETURN);
+			this.state = 166;
 			this._errHandler.sync(this);
-			switch (this._input.LA(1)) {
-			case 21:
+			_la = this._input.LA(1);
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 2072117248) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & 4282392577) !== 0)) {
 				{
-				this.state = 164;
-				this.match(LuaParser.RETURN);
-				this.state = 166;
-				this._errHandler.sync(this);
-				_la = this._input.LA(1);
-				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 4144103424) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & 4282392577) !== 0)) {
-					{
-					this.state = 165;
-					this.explist();
-					}
+				this.state = 165;
+				this.explist();
 				}
-
-				}
-				break;
-			case 3:
-				{
-				this.state = 168;
-				this.match(LuaParser.BREAK);
-				}
-				break;
-			case 22:
-				{
-				this.state = 169;
-				this.match(LuaParser.CONTINUE);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
 			}
-			this.state = 173;
+
+			this.state = 169;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===1) {
 				{
-				this.state = 172;
+				this.state = 168;
 				this.match(LuaParser.SEMI);
 				}
 			}
@@ -737,11 +709,11 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 175;
+			this.state = 171;
 			this.match(LuaParser.CC);
-			this.state = 176;
+			this.state = 172;
 			this.match(LuaParser.NAME);
-			this.state = 177;
+			this.state = 173;
 			this.match(LuaParser.CC);
 			}
 		}
@@ -767,32 +739,32 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 179;
+			this.state = 175;
 			this.match(LuaParser.NAME);
-			this.state = 184;
+			this.state = 180;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===27) {
+			while (_la===26) {
 				{
 				{
-				this.state = 180;
+				this.state = 176;
 				this.match(LuaParser.DOT);
-				this.state = 181;
+				this.state = 177;
 				this.match(LuaParser.NAME);
 				}
 				}
-				this.state = 186;
+				this.state = 182;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
-			this.state = 189;
+			this.state = 185;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===39) {
+			if (_la===38) {
 				{
-				this.state = 187;
+				this.state = 183;
 				this.match(LuaParser.COL);
-				this.state = 188;
+				this.state = 184;
 				this.match(LuaParser.NAME);
 				}
 			}
@@ -821,21 +793,21 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 191;
+			this.state = 187;
 			this.var_();
-			this.state = 196;
+			this.state = 192;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===15) {
 				{
 				{
-				this.state = 192;
+				this.state = 188;
 				this.match(LuaParser.COMMA);
-				this.state = 193;
+				this.state = 189;
 				this.var_();
 				}
 				}
-				this.state = 198;
+				this.state = 194;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -863,25 +835,25 @@ export default class LuaParser extends Parser {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 199;
+			this.state = 195;
 			this.match(LuaParser.NAME);
-			this.state = 204;
+			this.state = 200;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 15, this._ctx);
+			_alt = this._interp.adaptivePredict(this._input, 14, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					{
 					{
-					this.state = 200;
+					this.state = 196;
 					this.match(LuaParser.COMMA);
-					this.state = 201;
+					this.state = 197;
 					this.match(LuaParser.NAME);
 					}
 					}
 				}
-				this.state = 206;
+				this.state = 202;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 15, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 14, this._ctx);
 			}
 			}
 		}
@@ -907,21 +879,21 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 207;
+			this.state = 203;
 			this.exp(0);
-			this.state = 212;
+			this.state = 208;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			while (_la===15) {
 				{
 				{
-				this.state = 208;
+				this.state = 204;
 				this.match(LuaParser.COMMA);
-				this.state = 209;
+				this.state = 205;
 				this.exp(0);
 				}
 				}
-				this.state = 214;
+				this.state = 210;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 			}
@@ -961,66 +933,66 @@ export default class LuaParser extends Parser {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 227;
+			this.state = 223;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 24:
+			case 23:
 				{
 				localctx = new Exp_nilContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
 
-				this.state = 216;
+				this.state = 212;
 				this.match(LuaParser.NIL);
 				}
 				break;
-			case 25:
+			case 24:
 				{
 				localctx = new Exp_falseContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 217;
+				this.state = 213;
 				this.match(LuaParser.FALSE);
 				}
 				break;
-			case 26:
+			case 25:
 				{
 				localctx = new Exp_trueContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 218;
+				this.state = 214;
 				this.match(LuaParser.TRUE);
 				}
 				break;
+			case 60:
 			case 61:
 			case 62:
 			case 63:
-			case 64:
 				{
 				localctx = new Exp_numberContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 219;
+				this.state = 215;
 				this.number_();
 				}
 				break;
+			case 57:
 			case 58:
 			case 59:
-			case 60:
 				{
 				localctx = new Exp_stringContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 220;
+				this.state = 216;
 				this.string_();
 				}
 				break;
-			case 55:
+			case 54:
 				{
 				localctx = new Exp_varargContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 221;
+				this.state = 217;
 				this.match(LuaParser.DDD);
 				}
 				break;
@@ -1029,47 +1001,47 @@ export default class LuaParser extends Parser {
 				localctx = new Exp_function_defContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 222;
+				this.state = 218;
 				this.functiondef();
 				}
 				break;
-			case 31:
-			case 57:
+			case 30:
+			case 56:
 				{
 				localctx = new Stat_prefix_expContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 223;
+				this.state = 219;
 				this.prefixexp();
 				}
 				break;
-			case 46:
+			case 45:
 				{
 				localctx = new Stat_table_construnctorContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 224;
+				this.state = 220;
 				this.tableconstructor();
 				}
 				break;
+			case 27:
 			case 28:
 			case 29:
-			case 30:
-			case 33:
+			case 32:
 				{
 				localctx = new Exp_unaryContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 225;
+				this.state = 221;
 				_la = this._input.LA(1);
-				if(!(((((_la - 28)) & ~0x1F) === 0 && ((1 << (_la - 28)) & 39) !== 0))) {
+				if(!(((((_la - 27)) & ~0x1F) === 0 && ((1 << (_la - 27)) & 39) !== 0))) {
 				this._errHandler.recoverInline(this);
 				}
 				else {
 					this._errHandler.reportMatch(this);
 				    this.consume();
 				}
-				this.state = 226;
+				this.state = 222;
 				this.exp(8);
 				}
 				break;
@@ -1077,9 +1049,9 @@ export default class LuaParser extends Parser {
 				throw new NoViableAltException(this);
 			}
 			this._ctx.stop = this._input.LT(-1);
-			this.state = 255;
+			this.state = 251;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 19, this._ctx);
+			_alt = this._interp.adaptivePredict(this._input, 18, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					if (this._parseListeners != null) {
@@ -1087,22 +1059,22 @@ export default class LuaParser extends Parser {
 					}
 					_prevctx = localctx;
 					{
-					this.state = 253;
+					this.state = 249;
 					this._errHandler.sync(this);
-					switch ( this._interp.adaptivePredict(this._input, 18, this._ctx) ) {
+					switch ( this._interp.adaptivePredict(this._input, 17, this._ctx) ) {
 					case 1:
 						{
 						localctx = new Exp_exponentContext(this, new ExpContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_exp);
-						this.state = 229;
+						this.state = 225;
 						if (!(this.precpred(this._ctx, 9))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 9)");
 						}
 						{
-						this.state = 230;
+						this.state = 226;
 						this.match(LuaParser.CARET);
 						}
-						this.state = 231;
+						this.state = 227;
 						this.exp(9);
 						}
 						break;
@@ -1110,20 +1082,20 @@ export default class LuaParser extends Parser {
 						{
 						localctx = new Exp_arithmetic_highContext(this, new ExpContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_exp);
-						this.state = 232;
+						this.state = 228;
 						if (!(this.precpred(this._ctx, 7))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 7)");
 						}
-						this.state = 233;
+						this.state = 229;
 						_la = this._input.LA(1);
-						if(!(((((_la - 37)) & ~0x1F) === 0 && ((1 << (_la - 37)) & 131331) !== 0))) {
+						if(!(((((_la - 36)) & ~0x1F) === 0 && ((1 << (_la - 36)) & 131331) !== 0))) {
 						this._errHandler.recoverInline(this);
 						}
 						else {
 							this._errHandler.reportMatch(this);
 						    this.consume();
 						}
-						this.state = 234;
+						this.state = 230;
 						this.exp(8);
 						}
 						break;
@@ -1131,20 +1103,20 @@ export default class LuaParser extends Parser {
 						{
 						localctx = new Exp_arithmetic_lowContext(this, new ExpContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_exp);
-						this.state = 235;
+						this.state = 231;
 						if (!(this.precpred(this._ctx, 6))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 6)");
 						}
-						this.state = 236;
+						this.state = 232;
 						_la = this._input.LA(1);
-						if(!(_la===29 || _la===44)) {
+						if(!(_la===28 || _la===43)) {
 						this._errHandler.recoverInline(this);
 						}
 						else {
 							this._errHandler.reportMatch(this);
 						    this.consume();
 						}
-						this.state = 237;
+						this.state = 233;
 						this.exp(7);
 						}
 						break;
@@ -1152,15 +1124,15 @@ export default class LuaParser extends Parser {
 						{
 						localctx = new Exp_concatContext(this, new ExpContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_exp);
-						this.state = 238;
+						this.state = 234;
 						if (!(this.precpred(this._ctx, 5))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 5)");
 						}
 						{
-						this.state = 239;
+						this.state = 235;
 						this.match(LuaParser.DD);
 						}
-						this.state = 240;
+						this.state = 236;
 						this.exp(5);
 						}
 						break;
@@ -1168,20 +1140,20 @@ export default class LuaParser extends Parser {
 						{
 						localctx = new Exp_relContext(this, new ExpContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_exp);
-						this.state = 241;
+						this.state = 237;
 						if (!(this.precpred(this._ctx, 4))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 4)");
 						}
-						this.state = 242;
+						this.state = 238;
 						_la = this._input.LA(1);
-						if(!(_la===19 || _la===20 || ((((_la - 40)) & ~0x1F) === 0 && ((1 << (_la - 40)) & 66563) !== 0))) {
+						if(!(_la===19 || _la===20 || ((((_la - 39)) & ~0x1F) === 0 && ((1 << (_la - 39)) & 66563) !== 0))) {
 						this._errHandler.recoverInline(this);
 						}
 						else {
 							this._errHandler.reportMatch(this);
 						    this.consume();
 						}
-						this.state = 243;
+						this.state = 239;
 						this.exp(5);
 						}
 						break;
@@ -1189,15 +1161,15 @@ export default class LuaParser extends Parser {
 						{
 						localctx = new Exp_andContext(this, new ExpContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_exp);
-						this.state = 244;
+						this.state = 240;
 						if (!(this.precpred(this._ctx, 3))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 3)");
 						}
 						{
-						this.state = 245;
+						this.state = 241;
 						this.match(LuaParser.AND);
 						}
-						this.state = 246;
+						this.state = 242;
 						this.exp(4);
 						}
 						break;
@@ -1205,15 +1177,15 @@ export default class LuaParser extends Parser {
 						{
 						localctx = new Exp_orContext(this, new ExpContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_exp);
-						this.state = 247;
+						this.state = 243;
 						if (!(this.precpred(this._ctx, 2))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 2)");
 						}
 						{
-						this.state = 248;
+						this.state = 244;
 						this.match(LuaParser.OR);
 						}
-						this.state = 249;
+						this.state = 245;
 						this.exp(3);
 						}
 						break;
@@ -1221,29 +1193,29 @@ export default class LuaParser extends Parser {
 						{
 						localctx = new Exp_bitsContext(this, new ExpContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_exp);
-						this.state = 250;
+						this.state = 246;
 						if (!(this.precpred(this._ctx, 1))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 1)");
 						}
-						this.state = 251;
+						this.state = 247;
 						_la = this._input.LA(1);
-						if(!(((((_la - 28)) & ~0x1F) === 0 && ((1 << (_la - 28)) & 16777665) !== 0))) {
+						if(!(((((_la - 27)) & ~0x1F) === 0 && ((1 << (_la - 27)) & 16777665) !== 0))) {
 						this._errHandler.recoverInline(this);
 						}
 						else {
 							this._errHandler.reportMatch(this);
 						    this.consume();
 						}
-						this.state = 252;
+						this.state = 248;
 						this.exp(2);
 						}
 						break;
 					}
 					}
 				}
-				this.state = 257;
+				this.state = 253;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 19, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 18, this._ctx);
 			}
 			}
 		}
@@ -1266,14 +1238,14 @@ export default class LuaParser extends Parser {
 		let localctx: VarContext = new VarContext(this, this._ctx, this.state);
 		this.enterRule(localctx, 26, LuaParser.RULE_var);
 		try {
-			this.state = 268;
+			this.state = 264;
 			this._errHandler.sync(this);
-			switch ( this._interp.adaptivePredict(this._input, 21, this._ctx) ) {
+			switch ( this._interp.adaptivePredict(this._input, 20, this._ctx) ) {
 			case 1:
 				localctx = new Var_nameContext(this, localctx);
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 258;
+				this.state = 254;
 				this.match(LuaParser.NAME);
 				}
 				break;
@@ -1281,26 +1253,26 @@ export default class LuaParser extends Parser {
 				localctx = new Var_expContext(this, localctx);
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 259;
+				this.state = 255;
 				this.prefixexp();
-				this.state = 266;
+				this.state = 262;
 				this._errHandler.sync(this);
 				switch (this._input.LA(1)) {
-				case 48:
+				case 47:
 					{
-					this.state = 260;
+					this.state = 256;
 					this.match(LuaParser.OB);
-					this.state = 261;
+					this.state = 257;
 					this.exp(0);
-					this.state = 262;
+					this.state = 258;
 					this.match(LuaParser.CB);
 					}
 					break;
-				case 27:
+				case 26:
 					{
-					this.state = 264;
+					this.state = 260;
 					this.match(LuaParser.DOT);
-					this.state = 265;
+					this.state = 261;
 					this.match(LuaParser.NAME);
 					}
 					break;
@@ -1331,39 +1303,39 @@ export default class LuaParser extends Parser {
 		this.enterRule(localctx, 28, LuaParser.RULE_prefixexp);
 		try {
 			let _alt: number;
-			this.state = 308;
+			this.state = 304;
 			this._errHandler.sync(this);
-			switch ( this._interp.adaptivePredict(this._input, 28, this._ctx) ) {
+			switch ( this._interp.adaptivePredict(this._input, 27, this._ctx) ) {
 			case 1:
 				localctx = new Prefixexp_nameContext(this, localctx);
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 270;
+				this.state = 266;
 				this.match(LuaParser.NAME);
-				this.state = 279;
+				this.state = 275;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 23, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 22, this._ctx);
 				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 					if (_alt === 1) {
 						{
-						this.state = 277;
+						this.state = 273;
 						this._errHandler.sync(this);
 						switch (this._input.LA(1)) {
-						case 48:
+						case 47:
 							{
-							this.state = 271;
+							this.state = 267;
 							this.match(LuaParser.OB);
-							this.state = 272;
+							this.state = 268;
 							this.exp(0);
-							this.state = 273;
+							this.state = 269;
 							this.match(LuaParser.CB);
 							}
 							break;
-						case 27:
+						case 26:
 							{
-							this.state = 275;
+							this.state = 271;
 							this.match(LuaParser.DOT);
-							this.state = 276;
+							this.state = 272;
 							this.match(LuaParser.NAME);
 							}
 							break;
@@ -1372,9 +1344,9 @@ export default class LuaParser extends Parser {
 						}
 						}
 					}
-					this.state = 281;
+					this.state = 277;
 					this._errHandler.sync(this);
-					_alt = this._interp.adaptivePredict(this._input, 23, this._ctx);
+					_alt = this._interp.adaptivePredict(this._input, 22, this._ctx);
 				}
 				}
 				break;
@@ -1382,32 +1354,32 @@ export default class LuaParser extends Parser {
 				localctx = new Prefixexp_function_callContext(this, localctx);
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 282;
+				this.state = 278;
 				this.functioncall(0);
-				this.state = 291;
+				this.state = 287;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 25, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 24, this._ctx);
 				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 					if (_alt === 1) {
 						{
-						this.state = 289;
+						this.state = 285;
 						this._errHandler.sync(this);
 						switch (this._input.LA(1)) {
-						case 48:
+						case 47:
 							{
-							this.state = 283;
+							this.state = 279;
 							this.match(LuaParser.OB);
-							this.state = 284;
+							this.state = 280;
 							this.exp(0);
-							this.state = 285;
+							this.state = 281;
 							this.match(LuaParser.CB);
 							}
 							break;
-						case 27:
+						case 26:
 							{
-							this.state = 287;
+							this.state = 283;
 							this.match(LuaParser.DOT);
-							this.state = 288;
+							this.state = 284;
 							this.match(LuaParser.NAME);
 							}
 							break;
@@ -1416,9 +1388,9 @@ export default class LuaParser extends Parser {
 						}
 						}
 					}
-					this.state = 293;
+					this.state = 289;
 					this._errHandler.sync(this);
-					_alt = this._interp.adaptivePredict(this._input, 25, this._ctx);
+					_alt = this._interp.adaptivePredict(this._input, 24, this._ctx);
 				}
 				}
 				break;
@@ -1426,36 +1398,36 @@ export default class LuaParser extends Parser {
 				localctx = new Prefixexp_expContext(this, localctx);
 				this.enterOuterAlt(localctx, 3);
 				{
-				this.state = 294;
+				this.state = 290;
 				this.match(LuaParser.OP);
-				this.state = 295;
+				this.state = 291;
 				this.exp(0);
-				this.state = 296;
+				this.state = 292;
 				this.match(LuaParser.CP);
-				this.state = 305;
+				this.state = 301;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 27, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 26, this._ctx);
 				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 					if (_alt === 1) {
 						{
-						this.state = 303;
+						this.state = 299;
 						this._errHandler.sync(this);
 						switch (this._input.LA(1)) {
-						case 48:
+						case 47:
 							{
-							this.state = 297;
+							this.state = 293;
 							this.match(LuaParser.OB);
-							this.state = 298;
+							this.state = 294;
 							this.exp(0);
-							this.state = 299;
+							this.state = 295;
 							this.match(LuaParser.CB);
 							}
 							break;
-						case 27:
+						case 26:
 							{
-							this.state = 301;
+							this.state = 297;
 							this.match(LuaParser.DOT);
-							this.state = 302;
+							this.state = 298;
 							this.match(LuaParser.NAME);
 							}
 							break;
@@ -1464,9 +1436,9 @@ export default class LuaParser extends Parser {
 						}
 						}
 					}
-					this.state = 307;
+					this.state = 303;
 					this._errHandler.sync(this);
-					_alt = this._interp.adaptivePredict(this._input, 27, this._ctx);
+					_alt = this._interp.adaptivePredict(this._input, 26, this._ctx);
 				}
 				}
 				break;
@@ -1506,40 +1478,40 @@ export default class LuaParser extends Parser {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 373;
+			this.state = 369;
 			this._errHandler.sync(this);
-			switch ( this._interp.adaptivePredict(this._input, 37, this._ctx) ) {
+			switch ( this._interp.adaptivePredict(this._input, 36, this._ctx) ) {
 			case 1:
 				{
 				localctx = new Fcall_nameContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
 
-				this.state = 311;
+				this.state = 307;
 				this.match(LuaParser.NAME);
-				this.state = 320;
+				this.state = 316;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (_la===27 || _la===48) {
+				while (_la===26 || _la===47) {
 					{
-					this.state = 318;
+					this.state = 314;
 					this._errHandler.sync(this);
 					switch (this._input.LA(1)) {
-					case 48:
+					case 47:
 						{
-						this.state = 312;
+						this.state = 308;
 						this.match(LuaParser.OB);
-						this.state = 313;
+						this.state = 309;
 						this.exp(0);
-						this.state = 314;
+						this.state = 310;
 						this.match(LuaParser.CB);
 						}
 						break;
-					case 27:
+					case 26:
 						{
-						this.state = 316;
+						this.state = 312;
 						this.match(LuaParser.DOT);
-						this.state = 317;
+						this.state = 313;
 						this.match(LuaParser.NAME);
 						}
 						break;
@@ -1547,11 +1519,11 @@ export default class LuaParser extends Parser {
 						throw new NoViableAltException(this);
 					}
 					}
-					this.state = 322;
+					this.state = 318;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
 				}
-				this.state = 323;
+				this.state = 319;
 				this.args();
 				}
 				break;
@@ -1560,35 +1532,35 @@ export default class LuaParser extends Parser {
 				localctx = new Fcall_expContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 324;
+				this.state = 320;
 				this.match(LuaParser.OP);
-				this.state = 325;
+				this.state = 321;
 				this.exp(0);
-				this.state = 326;
+				this.state = 322;
 				this.match(LuaParser.CP);
-				this.state = 335;
+				this.state = 331;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (_la===27 || _la===48) {
+				while (_la===26 || _la===47) {
 					{
-					this.state = 333;
+					this.state = 329;
 					this._errHandler.sync(this);
 					switch (this._input.LA(1)) {
-					case 48:
+					case 47:
 						{
-						this.state = 327;
+						this.state = 323;
 						this.match(LuaParser.OB);
-						this.state = 328;
+						this.state = 324;
 						this.exp(0);
-						this.state = 329;
+						this.state = 325;
 						this.match(LuaParser.CB);
 						}
 						break;
-					case 27:
+					case 26:
 						{
-						this.state = 331;
+						this.state = 327;
 						this.match(LuaParser.DOT);
-						this.state = 332;
+						this.state = 328;
 						this.match(LuaParser.NAME);
 						}
 						break;
@@ -1596,11 +1568,11 @@ export default class LuaParser extends Parser {
 						throw new NoViableAltException(this);
 					}
 					}
-					this.state = 337;
+					this.state = 333;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
 				}
-				this.state = 338;
+				this.state = 334;
 				this.args();
 				}
 				break;
@@ -1609,31 +1581,31 @@ export default class LuaParser extends Parser {
 				localctx = new Fcall_name_extContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 340;
+				this.state = 336;
 				this.match(LuaParser.NAME);
-				this.state = 349;
+				this.state = 345;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (_la===27 || _la===48) {
+				while (_la===26 || _la===47) {
 					{
-					this.state = 347;
+					this.state = 343;
 					this._errHandler.sync(this);
 					switch (this._input.LA(1)) {
-					case 48:
+					case 47:
 						{
-						this.state = 341;
+						this.state = 337;
 						this.match(LuaParser.OB);
-						this.state = 342;
+						this.state = 338;
 						this.exp(0);
-						this.state = 343;
+						this.state = 339;
 						this.match(LuaParser.CB);
 						}
 						break;
-					case 27:
+					case 26:
 						{
-						this.state = 345;
+						this.state = 341;
 						this.match(LuaParser.DOT);
-						this.state = 346;
+						this.state = 342;
 						this.match(LuaParser.NAME);
 						}
 						break;
@@ -1641,15 +1613,15 @@ export default class LuaParser extends Parser {
 						throw new NoViableAltException(this);
 					}
 					}
-					this.state = 351;
+					this.state = 347;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
 				}
-				this.state = 352;
+				this.state = 348;
 				this.match(LuaParser.COL);
-				this.state = 353;
+				this.state = 349;
 				this.match(LuaParser.NAME);
-				this.state = 354;
+				this.state = 350;
 				this.args();
 				}
 				break;
@@ -1658,35 +1630,35 @@ export default class LuaParser extends Parser {
 				localctx = new Fcall_exp_extContext(this, localctx);
 				this._ctx = localctx;
 				_prevctx = localctx;
-				this.state = 355;
+				this.state = 351;
 				this.match(LuaParser.OP);
-				this.state = 356;
+				this.state = 352;
 				this.exp(0);
-				this.state = 357;
+				this.state = 353;
 				this.match(LuaParser.CP);
-				this.state = 366;
+				this.state = 362;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (_la===27 || _la===48) {
+				while (_la===26 || _la===47) {
 					{
-					this.state = 364;
+					this.state = 360;
 					this._errHandler.sync(this);
 					switch (this._input.LA(1)) {
-					case 48:
+					case 47:
 						{
-						this.state = 358;
+						this.state = 354;
 						this.match(LuaParser.OB);
-						this.state = 359;
+						this.state = 355;
 						this.exp(0);
-						this.state = 360;
+						this.state = 356;
 						this.match(LuaParser.CB);
 						}
 						break;
-					case 27:
+					case 26:
 						{
-						this.state = 362;
+						this.state = 358;
 						this.match(LuaParser.DOT);
-						this.state = 363;
+						this.state = 359;
 						this.match(LuaParser.NAME);
 						}
 						break;
@@ -1694,23 +1666,23 @@ export default class LuaParser extends Parser {
 						throw new NoViableAltException(this);
 					}
 					}
-					this.state = 368;
+					this.state = 364;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
 				}
-				this.state = 369;
+				this.state = 365;
 				this.match(LuaParser.COL);
-				this.state = 370;
+				this.state = 366;
 				this.match(LuaParser.NAME);
-				this.state = 371;
+				this.state = 367;
 				this.args();
 				}
 				break;
 			}
 			this._ctx.stop = this._input.LT(-1);
-			this.state = 405;
+			this.state = 401;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 43, this._ctx);
+			_alt = this._interp.adaptivePredict(this._input, 42, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					if (this._parseListeners != null) {
@@ -1718,40 +1690,40 @@ export default class LuaParser extends Parser {
 					}
 					_prevctx = localctx;
 					{
-					this.state = 403;
+					this.state = 399;
 					this._errHandler.sync(this);
-					switch ( this._interp.adaptivePredict(this._input, 42, this._ctx) ) {
+					switch ( this._interp.adaptivePredict(this._input, 41, this._ctx) ) {
 					case 1:
 						{
 						localctx = new Fcall_function_callContext(this, new FunctioncallContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_functioncall);
-						this.state = 375;
+						this.state = 371;
 						if (!(this.precpred(this._ctx, 5))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 5)");
 						}
-						this.state = 384;
+						this.state = 380;
 						this._errHandler.sync(this);
 						_la = this._input.LA(1);
-						while (_la===27 || _la===48) {
+						while (_la===26 || _la===47) {
 							{
-							this.state = 382;
+							this.state = 378;
 							this._errHandler.sync(this);
 							switch (this._input.LA(1)) {
-							case 48:
+							case 47:
 								{
-								this.state = 376;
+								this.state = 372;
 								this.match(LuaParser.OB);
-								this.state = 377;
+								this.state = 373;
 								this.exp(0);
-								this.state = 378;
+								this.state = 374;
 								this.match(LuaParser.CB);
 								}
 								break;
-							case 27:
+							case 26:
 								{
-								this.state = 380;
+								this.state = 376;
 								this.match(LuaParser.DOT);
-								this.state = 381;
+								this.state = 377;
 								this.match(LuaParser.NAME);
 								}
 								break;
@@ -1759,11 +1731,11 @@ export default class LuaParser extends Parser {
 								throw new NoViableAltException(this);
 							}
 							}
-							this.state = 386;
+							this.state = 382;
 							this._errHandler.sync(this);
 							_la = this._input.LA(1);
 						}
-						this.state = 387;
+						this.state = 383;
 						this.args();
 						}
 						break;
@@ -1771,33 +1743,33 @@ export default class LuaParser extends Parser {
 						{
 						localctx = new Fcall_function_call_extContext(this, new FunctioncallContext(this, _parentctx, _parentState));
 						this.pushNewRecursionContext(localctx, _startState, LuaParser.RULE_functioncall);
-						this.state = 388;
+						this.state = 384;
 						if (!(this.precpred(this._ctx, 2))) {
 							throw this.createFailedPredicateException("this.precpred(this._ctx, 2)");
 						}
-						this.state = 397;
+						this.state = 393;
 						this._errHandler.sync(this);
 						_la = this._input.LA(1);
-						while (_la===27 || _la===48) {
+						while (_la===26 || _la===47) {
 							{
-							this.state = 395;
+							this.state = 391;
 							this._errHandler.sync(this);
 							switch (this._input.LA(1)) {
-							case 48:
+							case 47:
 								{
-								this.state = 389;
+								this.state = 385;
 								this.match(LuaParser.OB);
-								this.state = 390;
+								this.state = 386;
 								this.exp(0);
-								this.state = 391;
+								this.state = 387;
 								this.match(LuaParser.CB);
 								}
 								break;
-							case 27:
+							case 26:
 								{
-								this.state = 393;
+								this.state = 389;
 								this.match(LuaParser.DOT);
-								this.state = 394;
+								this.state = 390;
 								this.match(LuaParser.NAME);
 								}
 								break;
@@ -1805,24 +1777,24 @@ export default class LuaParser extends Parser {
 								throw new NoViableAltException(this);
 							}
 							}
-							this.state = 399;
+							this.state = 395;
 							this._errHandler.sync(this);
 							_la = this._input.LA(1);
 						}
-						this.state = 400;
+						this.state = 396;
 						this.match(LuaParser.COL);
-						this.state = 401;
+						this.state = 397;
 						this.match(LuaParser.NAME);
-						this.state = 402;
+						this.state = 398;
 						this.args();
 						}
 						break;
 					}
 					}
 				}
-				this.state = 407;
+				this.state = 403;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 43, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 42, this._ctx);
 			}
 			}
 		}
@@ -1846,44 +1818,44 @@ export default class LuaParser extends Parser {
 		this.enterRule(localctx, 32, LuaParser.RULE_args);
 		let _la: number;
 		try {
-			this.state = 415;
+			this.state = 411;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 31:
+			case 30:
 				localctx = new Args_exp_listContext(this, localctx);
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 408;
+				this.state = 404;
 				this.match(LuaParser.OP);
-				this.state = 410;
+				this.state = 406;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 4144103424) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & 4282392577) !== 0)) {
+				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 2072117248) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & 4282392577) !== 0)) {
 					{
-					this.state = 409;
+					this.state = 405;
 					this.explist();
 					}
 				}
 
-				this.state = 412;
+				this.state = 408;
 				this.match(LuaParser.CP);
 				}
 				break;
-			case 46:
+			case 45:
 				localctx = new Args_table_constructorContext(this, localctx);
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 413;
+				this.state = 409;
 				this.tableconstructor();
 				}
 				break;
+			case 57:
 			case 58:
 			case 59:
-			case 60:
 				localctx = new Args_stringContext(this, localctx);
 				this.enterOuterAlt(localctx, 3);
 				{
-				this.state = 414;
+				this.state = 410;
 				this.string_();
 				}
 				break;
@@ -1912,9 +1884,9 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 417;
+			this.state = 413;
 			this.match(LuaParser.FUNCTION);
-			this.state = 418;
+			this.state = 414;
 			this.funcbody();
 			}
 		}
@@ -1939,15 +1911,15 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 420;
+			this.state = 416;
 			this.match(LuaParser.OP);
-			this.state = 421;
+			this.state = 417;
 			this.parlist();
-			this.state = 422;
+			this.state = 418;
 			this.match(LuaParser.CP);
-			this.state = 423;
+			this.state = 419;
 			this.block();
-			this.state = 424;
+			this.state = 420;
 			this.match(LuaParser.END);
 			}
 		}
@@ -1971,38 +1943,38 @@ export default class LuaParser extends Parser {
 		this.enterRule(localctx, 38, LuaParser.RULE_parlist);
 		let _la: number;
 		try {
-			this.state = 433;
+			this.state = 429;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 57:
+			case 56:
 				localctx = new Parlist_namellistContext(this, localctx);
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 426;
+				this.state = 422;
 				this.namelist();
-				this.state = 429;
+				this.state = 425;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 				if (_la===15) {
 					{
-					this.state = 427;
+					this.state = 423;
 					this.match(LuaParser.COMMA);
-					this.state = 428;
+					this.state = 424;
 					this.match(LuaParser.DDD);
 					}
 				}
 
 				}
 				break;
-			case 55:
+			case 54:
 				localctx = new Parlist_varargContext(this, localctx);
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 431;
+				this.state = 427;
 				this.match(LuaParser.DDD);
 				}
 				break;
-			case 32:
+			case 31:
 				localctx = new Parlist_noneContext(this, localctx);
 				this.enterOuterAlt(localctx, 3);
 				// tslint:disable-next-line:no-empty
@@ -2035,19 +2007,19 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 435;
+			this.state = 431;
 			this.match(LuaParser.OCU);
-			this.state = 437;
+			this.state = 433;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 4144103424) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & 4282425345) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 2072117248) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & 4282425345) !== 0)) {
 				{
-				this.state = 436;
+				this.state = 432;
 				this.fieldlist();
 				}
 			}
 
-			this.state = 439;
+			this.state = 435;
 			this.match(LuaParser.CCU);
 			}
 		}
@@ -2074,32 +2046,32 @@ export default class LuaParser extends Parser {
 			let _alt: number;
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 441;
+			this.state = 437;
 			this.field();
-			this.state = 447;
+			this.state = 443;
 			this._errHandler.sync(this);
-			_alt = this._interp.adaptivePredict(this._input, 49, this._ctx);
+			_alt = this._interp.adaptivePredict(this._input, 48, this._ctx);
 			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
 				if (_alt === 1) {
 					{
 					{
-					this.state = 442;
+					this.state = 438;
 					this.fieldsep();
-					this.state = 443;
+					this.state = 439;
 					this.field();
 					}
 					}
 				}
-				this.state = 449;
+				this.state = 445;
 				this._errHandler.sync(this);
-				_alt = this._interp.adaptivePredict(this._input, 49, this._ctx);
+				_alt = this._interp.adaptivePredict(this._input, 48, this._ctx);
 			}
-			this.state = 451;
+			this.state = 447;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
 			if (_la===1 || _la===15) {
 				{
-				this.state = 450;
+				this.state = 446;
 				this.fieldsep();
 				}
 			}
@@ -2125,22 +2097,22 @@ export default class LuaParser extends Parser {
 		let localctx: FieldContext = new FieldContext(this, this._ctx, this.state);
 		this.enterRule(localctx, 44, LuaParser.RULE_field);
 		try {
-			this.state = 463;
+			this.state = 459;
 			this._errHandler.sync(this);
-			switch ( this._interp.adaptivePredict(this._input, 51, this._ctx) ) {
+			switch ( this._interp.adaptivePredict(this._input, 50, this._ctx) ) {
 			case 1:
 				localctx = new Field_exp_expContext(this, localctx);
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 453;
+				this.state = 449;
 				this.match(LuaParser.OB);
-				this.state = 454;
+				this.state = 450;
 				this.exp(0);
-				this.state = 455;
+				this.state = 451;
 				this.match(LuaParser.CB);
-				this.state = 456;
+				this.state = 452;
 				this.match(LuaParser.EQ);
-				this.state = 457;
+				this.state = 453;
 				this.exp(0);
 				}
 				break;
@@ -2148,11 +2120,11 @@ export default class LuaParser extends Parser {
 				localctx = new Field_name_expContext(this, localctx);
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 459;
+				this.state = 455;
 				this.match(LuaParser.NAME);
-				this.state = 460;
+				this.state = 456;
 				this.match(LuaParser.EQ);
-				this.state = 461;
+				this.state = 457;
 				this.exp(0);
 				}
 				break;
@@ -2160,7 +2132,7 @@ export default class LuaParser extends Parser {
 				localctx = new Field_expContext(this, localctx);
 				this.enterOuterAlt(localctx, 3);
 				{
-				this.state = 462;
+				this.state = 458;
 				this.exp(0);
 				}
 				break;
@@ -2188,7 +2160,7 @@ export default class LuaParser extends Parser {
 		try {
 			this.enterOuterAlt(localctx, 1);
 			{
-			this.state = 465;
+			this.state = 461;
 			_la = this._input.LA(1);
 			if(!(_la===1 || _la===15)) {
 			this._errHandler.recoverInline(this);
@@ -2218,38 +2190,38 @@ export default class LuaParser extends Parser {
 		let localctx: NumberContext = new NumberContext(this, this._ctx, this.state);
 		this.enterRule(localctx, 48, LuaParser.RULE_number);
 		try {
-			this.state = 471;
+			this.state = 467;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 61:
+			case 60:
 				localctx = new Number_intContext(this, localctx);
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 467;
+				this.state = 463;
 				this.match(LuaParser.INT);
 				}
 				break;
-			case 62:
+			case 61:
 				localctx = new Number_hexContext(this, localctx);
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 468;
+				this.state = 464;
 				this.match(LuaParser.HEX);
 				}
 				break;
-			case 63:
+			case 62:
 				localctx = new Number_floatContext(this, localctx);
 				this.enterOuterAlt(localctx, 3);
 				{
-				this.state = 469;
+				this.state = 465;
 				this.match(LuaParser.FLOAT);
 				}
 				break;
-			case 64:
+			case 63:
 				localctx = new Number_hex_floatContext(this, localctx);
 				this.enterOuterAlt(localctx, 4);
 				{
-				this.state = 470;
+				this.state = 466;
 				this.match(LuaParser.HEX_FLOAT);
 				}
 				break;
@@ -2276,30 +2248,30 @@ export default class LuaParser extends Parser {
 		let localctx: StringContext = new StringContext(this, this._ctx, this.state);
 		this.enterRule(localctx, 50, LuaParser.RULE_string);
 		try {
-			this.state = 476;
+			this.state = 472;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 58:
+			case 57:
 				localctx = new String_stringContext(this, localctx);
 				this.enterOuterAlt(localctx, 1);
 				{
-				this.state = 473;
+				this.state = 469;
 				this.match(LuaParser.NORMALSTRING);
 				}
 				break;
-			case 59:
+			case 58:
 				localctx = new String_charstringContext(this, localctx);
 				this.enterOuterAlt(localctx, 2);
 				{
-				this.state = 474;
+				this.state = 470;
 				this.match(LuaParser.CHARSTRING);
 				}
 				break;
-			case 60:
+			case 59:
 				localctx = new String_longstringContext(this, localctx);
 				this.enterOuterAlt(localctx, 3);
 				{
-				this.state = 475;
+				this.state = 471;
 				this.match(LuaParser.LONGSTRING);
 				}
 				break;
@@ -2362,7 +2334,7 @@ export default class LuaParser extends Parser {
 		return true;
 	}
 
-	public static readonly _serializedATN: number[] = [4,1,68,479,2,0,7,0,2,
+	public static readonly _serializedATN: number[] = [4,1,67,475,2,0,7,0,2,
 	1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,7,7,2,8,7,8,2,9,7,9,2,
 	10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,14,2,15,7,15,2,16,7,16,2,17,
 	7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,
@@ -2373,160 +2345,158 @@ export default class LuaParser extends Parser {
 	1,3,1,3,1,3,1,3,1,3,3,3,120,8,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,
 	1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,1,3,3,3,146,8,3,3,3,
 	148,8,3,1,4,1,4,1,4,1,4,1,4,5,4,155,8,4,10,4,12,4,158,9,4,1,5,1,5,1,5,3,
-	5,163,8,5,1,6,1,6,3,6,167,8,6,1,6,1,6,3,6,171,8,6,1,6,3,6,174,8,6,1,7,1,
-	7,1,7,1,7,1,8,1,8,1,8,5,8,183,8,8,10,8,12,8,186,9,8,1,8,1,8,3,8,190,8,8,
-	1,9,1,9,1,9,5,9,195,8,9,10,9,12,9,198,9,9,1,10,1,10,1,10,5,10,203,8,10,
-	10,10,12,10,206,9,10,1,11,1,11,1,11,5,11,211,8,11,10,11,12,11,214,9,11,
-	1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,3,12,228,8,
-	12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,
-	1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,5,12,254,8,12,10,12,12,
-	12,257,9,12,1,13,1,13,1,13,1,13,1,13,1,13,1,13,1,13,3,13,267,8,13,3,13,
-	269,8,13,1,14,1,14,1,14,1,14,1,14,1,14,1,14,5,14,278,8,14,10,14,12,14,281,
-	9,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,5,14,290,8,14,10,14,12,14,293,9,
-	14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,1,14,5,14,304,8,14,10,14,12,
-	14,307,9,14,3,14,309,8,14,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,15,
-	319,8,15,10,15,12,15,322,9,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,
-	15,1,15,5,15,334,8,15,10,15,12,15,337,9,15,1,15,1,15,1,15,1,15,1,15,1,15,
-	1,15,1,15,1,15,5,15,348,8,15,10,15,12,15,351,9,15,1,15,1,15,1,15,1,15,1,
-	15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,15,365,8,15,10,15,12,15,368,9,15,
-	1,15,1,15,1,15,1,15,3,15,374,8,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,
-	15,383,8,15,10,15,12,15,386,9,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,
-	5,15,396,8,15,10,15,12,15,399,9,15,1,15,1,15,1,15,5,15,404,8,15,10,15,12,
-	15,407,9,15,1,16,1,16,3,16,411,8,16,1,16,1,16,1,16,3,16,416,8,16,1,17,1,
-	17,1,17,1,18,1,18,1,18,1,18,1,18,1,18,1,19,1,19,1,19,3,19,430,8,19,1,19,
-	1,19,3,19,434,8,19,1,20,1,20,3,20,438,8,20,1,20,1,20,1,21,1,21,1,21,1,21,
-	5,21,446,8,21,10,21,12,21,449,9,21,1,21,3,21,452,8,21,1,22,1,22,1,22,1,
-	22,1,22,1,22,1,22,1,22,1,22,1,22,3,22,464,8,22,1,23,1,23,1,24,1,24,1,24,
-	1,24,3,24,472,8,24,1,25,1,25,1,25,3,25,477,8,25,1,25,0,2,24,30,26,0,2,4,
-	6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,42,44,46,48,50,0,6,
-	2,0,28,30,33,33,3,0,37,38,45,45,54,54,2,0,29,29,44,44,4,0,19,20,40,41,50,
-	50,56,56,3,0,28,28,34,36,52,52,2,0,1,1,15,15,543,0,52,1,0,0,0,2,55,1,0,
-	0,0,4,60,1,0,0,0,6,147,1,0,0,0,8,149,1,0,0,0,10,162,1,0,0,0,12,170,1,0,
-	0,0,14,175,1,0,0,0,16,179,1,0,0,0,18,191,1,0,0,0,20,199,1,0,0,0,22,207,
-	1,0,0,0,24,227,1,0,0,0,26,268,1,0,0,0,28,308,1,0,0,0,30,373,1,0,0,0,32,
-	415,1,0,0,0,34,417,1,0,0,0,36,420,1,0,0,0,38,433,1,0,0,0,40,435,1,0,0,0,
-	42,441,1,0,0,0,44,463,1,0,0,0,46,465,1,0,0,0,48,471,1,0,0,0,50,476,1,0,
-	0,0,52,53,3,2,1,0,53,54,5,0,0,1,54,1,1,0,0,0,55,56,3,4,2,0,56,3,1,0,0,0,
-	57,59,3,6,3,0,58,57,1,0,0,0,59,62,1,0,0,0,60,58,1,0,0,0,60,61,1,0,0,0,61,
-	64,1,0,0,0,62,60,1,0,0,0,63,65,3,12,6,0,64,63,1,0,0,0,64,65,1,0,0,0,65,
-	5,1,0,0,0,66,148,5,1,0,0,67,68,3,18,9,0,68,69,5,2,0,0,69,70,3,22,11,0,70,
-	148,1,0,0,0,71,148,3,30,15,0,72,148,3,14,7,0,73,148,5,3,0,0,74,75,5,4,0,
-	0,75,148,5,57,0,0,76,77,5,5,0,0,77,78,3,4,2,0,78,79,5,6,0,0,79,148,1,0,
-	0,0,80,81,5,7,0,0,81,82,3,24,12,0,82,83,5,5,0,0,83,84,3,4,2,0,84,85,5,6,
-	0,0,85,148,1,0,0,0,86,87,5,8,0,0,87,88,3,4,2,0,88,89,5,9,0,0,89,90,3,24,
-	12,0,90,148,1,0,0,0,91,92,5,10,0,0,92,93,3,24,12,0,93,94,5,11,0,0,94,102,
-	3,4,2,0,95,96,5,12,0,0,96,97,3,24,12,0,97,98,5,11,0,0,98,99,3,4,2,0,99,
-	101,1,0,0,0,100,95,1,0,0,0,101,104,1,0,0,0,102,100,1,0,0,0,102,103,1,0,
-	0,0,103,107,1,0,0,0,104,102,1,0,0,0,105,106,5,13,0,0,106,108,3,4,2,0,107,
-	105,1,0,0,0,107,108,1,0,0,0,108,109,1,0,0,0,109,110,5,6,0,0,110,148,1,0,
-	0,0,111,112,5,14,0,0,112,113,5,57,0,0,113,114,5,2,0,0,114,115,3,24,12,0,
-	115,116,5,15,0,0,116,119,3,24,12,0,117,118,5,15,0,0,118,120,3,24,12,0,119,
-	117,1,0,0,0,119,120,1,0,0,0,120,121,1,0,0,0,121,122,5,5,0,0,122,123,3,4,
-	2,0,123,124,5,6,0,0,124,148,1,0,0,0,125,126,5,14,0,0,126,127,3,20,10,0,
-	127,128,5,16,0,0,128,129,3,22,11,0,129,130,5,5,0,0,130,131,3,4,2,0,131,
-	132,5,6,0,0,132,148,1,0,0,0,133,134,5,17,0,0,134,135,3,16,8,0,135,136,3,
-	36,18,0,136,148,1,0,0,0,137,138,5,18,0,0,138,139,5,17,0,0,139,140,5,57,
-	0,0,140,148,3,36,18,0,141,142,5,18,0,0,142,145,3,8,4,0,143,144,5,2,0,0,
-	144,146,3,22,11,0,145,143,1,0,0,0,145,146,1,0,0,0,146,148,1,0,0,0,147,66,
-	1,0,0,0,147,67,1,0,0,0,147,71,1,0,0,0,147,72,1,0,0,0,147,73,1,0,0,0,147,
-	74,1,0,0,0,147,76,1,0,0,0,147,80,1,0,0,0,147,86,1,0,0,0,147,91,1,0,0,0,
-	147,111,1,0,0,0,147,125,1,0,0,0,147,133,1,0,0,0,147,137,1,0,0,0,147,141,
-	1,0,0,0,148,7,1,0,0,0,149,150,5,57,0,0,150,156,3,10,5,0,151,152,5,15,0,
-	0,152,153,5,57,0,0,153,155,3,10,5,0,154,151,1,0,0,0,155,158,1,0,0,0,156,
-	154,1,0,0,0,156,157,1,0,0,0,157,9,1,0,0,0,158,156,1,0,0,0,159,160,5,19,
-	0,0,160,161,5,57,0,0,161,163,5,20,0,0,162,159,1,0,0,0,162,163,1,0,0,0,163,
-	11,1,0,0,0,164,166,5,21,0,0,165,167,3,22,11,0,166,165,1,0,0,0,166,167,1,
-	0,0,0,167,171,1,0,0,0,168,171,5,3,0,0,169,171,5,22,0,0,170,164,1,0,0,0,
-	170,168,1,0,0,0,170,169,1,0,0,0,171,173,1,0,0,0,172,174,5,1,0,0,173,172,
-	1,0,0,0,173,174,1,0,0,0,174,13,1,0,0,0,175,176,5,23,0,0,176,177,5,57,0,
-	0,177,178,5,23,0,0,178,15,1,0,0,0,179,184,5,57,0,0,180,181,5,27,0,0,181,
-	183,5,57,0,0,182,180,1,0,0,0,183,186,1,0,0,0,184,182,1,0,0,0,184,185,1,
-	0,0,0,185,189,1,0,0,0,186,184,1,0,0,0,187,188,5,39,0,0,188,190,5,57,0,0,
-	189,187,1,0,0,0,189,190,1,0,0,0,190,17,1,0,0,0,191,196,3,26,13,0,192,193,
-	5,15,0,0,193,195,3,26,13,0,194,192,1,0,0,0,195,198,1,0,0,0,196,194,1,0,
-	0,0,196,197,1,0,0,0,197,19,1,0,0,0,198,196,1,0,0,0,199,204,5,57,0,0,200,
-	201,5,15,0,0,201,203,5,57,0,0,202,200,1,0,0,0,203,206,1,0,0,0,204,202,1,
-	0,0,0,204,205,1,0,0,0,205,21,1,0,0,0,206,204,1,0,0,0,207,212,3,24,12,0,
-	208,209,5,15,0,0,209,211,3,24,12,0,210,208,1,0,0,0,211,214,1,0,0,0,212,
-	210,1,0,0,0,212,213,1,0,0,0,213,23,1,0,0,0,214,212,1,0,0,0,215,216,6,12,
-	-1,0,216,228,5,24,0,0,217,228,5,25,0,0,218,228,5,26,0,0,219,228,3,48,24,
-	0,220,228,3,50,25,0,221,228,5,55,0,0,222,228,3,34,17,0,223,228,3,28,14,
-	0,224,228,3,40,20,0,225,226,7,0,0,0,226,228,3,24,12,8,227,215,1,0,0,0,227,
-	217,1,0,0,0,227,218,1,0,0,0,227,219,1,0,0,0,227,220,1,0,0,0,227,221,1,0,
-	0,0,227,222,1,0,0,0,227,223,1,0,0,0,227,224,1,0,0,0,227,225,1,0,0,0,228,
-	255,1,0,0,0,229,230,10,9,0,0,230,231,5,53,0,0,231,254,3,24,12,9,232,233,
-	10,7,0,0,233,234,7,1,0,0,234,254,3,24,12,8,235,236,10,6,0,0,236,237,7,2,
-	0,0,237,254,3,24,12,7,238,239,10,5,0,0,239,240,5,51,0,0,240,254,3,24,12,
-	5,241,242,10,4,0,0,242,243,7,3,0,0,243,254,3,24,12,5,244,245,10,3,0,0,245,
-	246,5,42,0,0,246,254,3,24,12,4,247,248,10,2,0,0,248,249,5,43,0,0,249,254,
-	3,24,12,3,250,251,10,1,0,0,251,252,7,4,0,0,252,254,3,24,12,2,253,229,1,
-	0,0,0,253,232,1,0,0,0,253,235,1,0,0,0,253,238,1,0,0,0,253,241,1,0,0,0,253,
-	244,1,0,0,0,253,247,1,0,0,0,253,250,1,0,0,0,254,257,1,0,0,0,255,253,1,0,
-	0,0,255,256,1,0,0,0,256,25,1,0,0,0,257,255,1,0,0,0,258,269,5,57,0,0,259,
-	266,3,28,14,0,260,261,5,48,0,0,261,262,3,24,12,0,262,263,5,49,0,0,263,267,
-	1,0,0,0,264,265,5,27,0,0,265,267,5,57,0,0,266,260,1,0,0,0,266,264,1,0,0,
-	0,267,269,1,0,0,0,268,258,1,0,0,0,268,259,1,0,0,0,269,27,1,0,0,0,270,279,
-	5,57,0,0,271,272,5,48,0,0,272,273,3,24,12,0,273,274,5,49,0,0,274,278,1,
-	0,0,0,275,276,5,27,0,0,276,278,5,57,0,0,277,271,1,0,0,0,277,275,1,0,0,0,
-	278,281,1,0,0,0,279,277,1,0,0,0,279,280,1,0,0,0,280,309,1,0,0,0,281,279,
-	1,0,0,0,282,291,3,30,15,0,283,284,5,48,0,0,284,285,3,24,12,0,285,286,5,
-	49,0,0,286,290,1,0,0,0,287,288,5,27,0,0,288,290,5,57,0,0,289,283,1,0,0,
-	0,289,287,1,0,0,0,290,293,1,0,0,0,291,289,1,0,0,0,291,292,1,0,0,0,292,309,
-	1,0,0,0,293,291,1,0,0,0,294,295,5,31,0,0,295,296,3,24,12,0,296,305,5,32,
-	0,0,297,298,5,48,0,0,298,299,3,24,12,0,299,300,5,49,0,0,300,304,1,0,0,0,
-	301,302,5,27,0,0,302,304,5,57,0,0,303,297,1,0,0,0,303,301,1,0,0,0,304,307,
-	1,0,0,0,305,303,1,0,0,0,305,306,1,0,0,0,306,309,1,0,0,0,307,305,1,0,0,0,
-	308,270,1,0,0,0,308,282,1,0,0,0,308,294,1,0,0,0,309,29,1,0,0,0,310,311,
-	6,15,-1,0,311,320,5,57,0,0,312,313,5,48,0,0,313,314,3,24,12,0,314,315,5,
-	49,0,0,315,319,1,0,0,0,316,317,5,27,0,0,317,319,5,57,0,0,318,312,1,0,0,
-	0,318,316,1,0,0,0,319,322,1,0,0,0,320,318,1,0,0,0,320,321,1,0,0,0,321,323,
-	1,0,0,0,322,320,1,0,0,0,323,374,3,32,16,0,324,325,5,31,0,0,325,326,3,24,
-	12,0,326,335,5,32,0,0,327,328,5,48,0,0,328,329,3,24,12,0,329,330,5,49,0,
-	0,330,334,1,0,0,0,331,332,5,27,0,0,332,334,5,57,0,0,333,327,1,0,0,0,333,
-	331,1,0,0,0,334,337,1,0,0,0,335,333,1,0,0,0,335,336,1,0,0,0,336,338,1,0,
-	0,0,337,335,1,0,0,0,338,339,3,32,16,0,339,374,1,0,0,0,340,349,5,57,0,0,
-	341,342,5,48,0,0,342,343,3,24,12,0,343,344,5,49,0,0,344,348,1,0,0,0,345,
-	346,5,27,0,0,346,348,5,57,0,0,347,341,1,0,0,0,347,345,1,0,0,0,348,351,1,
-	0,0,0,349,347,1,0,0,0,349,350,1,0,0,0,350,352,1,0,0,0,351,349,1,0,0,0,352,
-	353,5,39,0,0,353,354,5,57,0,0,354,374,3,32,16,0,355,356,5,31,0,0,356,357,
-	3,24,12,0,357,366,5,32,0,0,358,359,5,48,0,0,359,360,3,24,12,0,360,361,5,
-	49,0,0,361,365,1,0,0,0,362,363,5,27,0,0,363,365,5,57,0,0,364,358,1,0,0,
-	0,364,362,1,0,0,0,365,368,1,0,0,0,366,364,1,0,0,0,366,367,1,0,0,0,367,369,
-	1,0,0,0,368,366,1,0,0,0,369,370,5,39,0,0,370,371,5,57,0,0,371,372,3,32,
-	16,0,372,374,1,0,0,0,373,310,1,0,0,0,373,324,1,0,0,0,373,340,1,0,0,0,373,
-	355,1,0,0,0,374,405,1,0,0,0,375,384,10,5,0,0,376,377,5,48,0,0,377,378,3,
-	24,12,0,378,379,5,49,0,0,379,383,1,0,0,0,380,381,5,27,0,0,381,383,5,57,
-	0,0,382,376,1,0,0,0,382,380,1,0,0,0,383,386,1,0,0,0,384,382,1,0,0,0,384,
-	385,1,0,0,0,385,387,1,0,0,0,386,384,1,0,0,0,387,404,3,32,16,0,388,397,10,
-	2,0,0,389,390,5,48,0,0,390,391,3,24,12,0,391,392,5,49,0,0,392,396,1,0,0,
-	0,393,394,5,27,0,0,394,396,5,57,0,0,395,389,1,0,0,0,395,393,1,0,0,0,396,
-	399,1,0,0,0,397,395,1,0,0,0,397,398,1,0,0,0,398,400,1,0,0,0,399,397,1,0,
-	0,0,400,401,5,39,0,0,401,402,5,57,0,0,402,404,3,32,16,0,403,375,1,0,0,0,
-	403,388,1,0,0,0,404,407,1,0,0,0,405,403,1,0,0,0,405,406,1,0,0,0,406,31,
-	1,0,0,0,407,405,1,0,0,0,408,410,5,31,0,0,409,411,3,22,11,0,410,409,1,0,
-	0,0,410,411,1,0,0,0,411,412,1,0,0,0,412,416,5,32,0,0,413,416,3,40,20,0,
-	414,416,3,50,25,0,415,408,1,0,0,0,415,413,1,0,0,0,415,414,1,0,0,0,416,33,
-	1,0,0,0,417,418,5,17,0,0,418,419,3,36,18,0,419,35,1,0,0,0,420,421,5,31,
-	0,0,421,422,3,38,19,0,422,423,5,32,0,0,423,424,3,4,2,0,424,425,5,6,0,0,
-	425,37,1,0,0,0,426,429,3,20,10,0,427,428,5,15,0,0,428,430,5,55,0,0,429,
-	427,1,0,0,0,429,430,1,0,0,0,430,434,1,0,0,0,431,434,5,55,0,0,432,434,1,
-	0,0,0,433,426,1,0,0,0,433,431,1,0,0,0,433,432,1,0,0,0,434,39,1,0,0,0,435,
-	437,5,46,0,0,436,438,3,42,21,0,437,436,1,0,0,0,437,438,1,0,0,0,438,439,
-	1,0,0,0,439,440,5,47,0,0,440,41,1,0,0,0,441,447,3,44,22,0,442,443,3,46,
-	23,0,443,444,3,44,22,0,444,446,1,0,0,0,445,442,1,0,0,0,446,449,1,0,0,0,
-	447,445,1,0,0,0,447,448,1,0,0,0,448,451,1,0,0,0,449,447,1,0,0,0,450,452,
-	3,46,23,0,451,450,1,0,0,0,451,452,1,0,0,0,452,43,1,0,0,0,453,454,5,48,0,
-	0,454,455,3,24,12,0,455,456,5,49,0,0,456,457,5,2,0,0,457,458,3,24,12,0,
-	458,464,1,0,0,0,459,460,5,57,0,0,460,461,5,2,0,0,461,464,3,24,12,0,462,
-	464,3,24,12,0,463,453,1,0,0,0,463,459,1,0,0,0,463,462,1,0,0,0,464,45,1,
-	0,0,0,465,466,7,5,0,0,466,47,1,0,0,0,467,472,5,61,0,0,468,472,5,62,0,0,
-	469,472,5,63,0,0,470,472,5,64,0,0,471,467,1,0,0,0,471,468,1,0,0,0,471,469,
-	1,0,0,0,471,470,1,0,0,0,472,49,1,0,0,0,473,477,5,58,0,0,474,477,5,59,0,
-	0,475,477,5,60,0,0,476,473,1,0,0,0,476,474,1,0,0,0,476,475,1,0,0,0,477,
-	51,1,0,0,0,54,60,64,102,107,119,145,147,156,162,166,170,173,184,189,196,
-	204,212,227,253,255,266,268,277,279,289,291,303,305,308,318,320,333,335,
-	347,349,364,366,373,382,384,395,397,403,405,410,415,429,433,437,447,451,
-	463,471,476];
+	5,163,8,5,1,6,1,6,3,6,167,8,6,1,6,3,6,170,8,6,1,7,1,7,1,7,1,7,1,8,1,8,1,
+	8,5,8,179,8,8,10,8,12,8,182,9,8,1,8,1,8,3,8,186,8,8,1,9,1,9,1,9,5,9,191,
+	8,9,10,9,12,9,194,9,9,1,10,1,10,1,10,5,10,199,8,10,10,10,12,10,202,9,10,
+	1,11,1,11,1,11,5,11,207,8,11,10,11,12,11,210,9,11,1,12,1,12,1,12,1,12,1,
+	12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,3,12,224,8,12,1,12,1,12,1,12,1,12,
+	1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,12,1,
+	12,1,12,1,12,1,12,1,12,1,12,5,12,250,8,12,10,12,12,12,253,9,12,1,13,1,13,
+	1,13,1,13,1,13,1,13,1,13,1,13,3,13,263,8,13,3,13,265,8,13,1,14,1,14,1,14,
+	1,14,1,14,1,14,1,14,5,14,274,8,14,10,14,12,14,277,9,14,1,14,1,14,1,14,1,
+	14,1,14,1,14,1,14,5,14,286,8,14,10,14,12,14,289,9,14,1,14,1,14,1,14,1,14,
+	1,14,1,14,1,14,1,14,1,14,5,14,300,8,14,10,14,12,14,303,9,14,3,14,305,8,
+	14,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,15,315,8,15,10,15,12,15,318,
+	9,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,15,330,8,15,10,
+	15,12,15,333,9,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,15,344,
+	8,15,10,15,12,15,347,9,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,
+	1,15,1,15,1,15,5,15,361,8,15,10,15,12,15,364,9,15,1,15,1,15,1,15,1,15,3,
+	15,370,8,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,15,379,8,15,10,15,12,15,
+	382,9,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,1,15,5,15,392,8,15,10,15,12,
+	15,395,9,15,1,15,1,15,1,15,5,15,400,8,15,10,15,12,15,403,9,15,1,16,1,16,
+	3,16,407,8,16,1,16,1,16,1,16,3,16,412,8,16,1,17,1,17,1,17,1,18,1,18,1,18,
+	1,18,1,18,1,18,1,19,1,19,1,19,3,19,426,8,19,1,19,1,19,3,19,430,8,19,1,20,
+	1,20,3,20,434,8,20,1,20,1,20,1,21,1,21,1,21,1,21,5,21,442,8,21,10,21,12,
+	21,445,9,21,1,21,3,21,448,8,21,1,22,1,22,1,22,1,22,1,22,1,22,1,22,1,22,
+	1,22,1,22,3,22,460,8,22,1,23,1,23,1,24,1,24,1,24,1,24,3,24,468,8,24,1,25,
+	1,25,1,25,3,25,473,8,25,1,25,0,2,24,30,26,0,2,4,6,8,10,12,14,16,18,20,22,
+	24,26,28,30,32,34,36,38,40,42,44,46,48,50,0,6,2,0,27,29,32,32,3,0,36,37,
+	44,44,53,53,2,0,28,28,43,43,4,0,19,20,39,40,49,49,55,55,3,0,27,27,33,35,
+	51,51,2,0,1,1,15,15,537,0,52,1,0,0,0,2,55,1,0,0,0,4,60,1,0,0,0,6,147,1,
+	0,0,0,8,149,1,0,0,0,10,162,1,0,0,0,12,164,1,0,0,0,14,171,1,0,0,0,16,175,
+	1,0,0,0,18,187,1,0,0,0,20,195,1,0,0,0,22,203,1,0,0,0,24,223,1,0,0,0,26,
+	264,1,0,0,0,28,304,1,0,0,0,30,369,1,0,0,0,32,411,1,0,0,0,34,413,1,0,0,0,
+	36,416,1,0,0,0,38,429,1,0,0,0,40,431,1,0,0,0,42,437,1,0,0,0,44,459,1,0,
+	0,0,46,461,1,0,0,0,48,467,1,0,0,0,50,472,1,0,0,0,52,53,3,2,1,0,53,54,5,
+	0,0,1,54,1,1,0,0,0,55,56,3,4,2,0,56,3,1,0,0,0,57,59,3,6,3,0,58,57,1,0,0,
+	0,59,62,1,0,0,0,60,58,1,0,0,0,60,61,1,0,0,0,61,64,1,0,0,0,62,60,1,0,0,0,
+	63,65,3,12,6,0,64,63,1,0,0,0,64,65,1,0,0,0,65,5,1,0,0,0,66,148,5,1,0,0,
+	67,68,3,18,9,0,68,69,5,2,0,0,69,70,3,22,11,0,70,148,1,0,0,0,71,148,3,30,
+	15,0,72,148,3,14,7,0,73,148,5,3,0,0,74,75,5,4,0,0,75,148,5,56,0,0,76,77,
+	5,5,0,0,77,78,3,4,2,0,78,79,5,6,0,0,79,148,1,0,0,0,80,81,5,7,0,0,81,82,
+	3,24,12,0,82,83,5,5,0,0,83,84,3,4,2,0,84,85,5,6,0,0,85,148,1,0,0,0,86,87,
+	5,8,0,0,87,88,3,4,2,0,88,89,5,9,0,0,89,90,3,24,12,0,90,148,1,0,0,0,91,92,
+	5,10,0,0,92,93,3,24,12,0,93,94,5,11,0,0,94,102,3,4,2,0,95,96,5,12,0,0,96,
+	97,3,24,12,0,97,98,5,11,0,0,98,99,3,4,2,0,99,101,1,0,0,0,100,95,1,0,0,0,
+	101,104,1,0,0,0,102,100,1,0,0,0,102,103,1,0,0,0,103,107,1,0,0,0,104,102,
+	1,0,0,0,105,106,5,13,0,0,106,108,3,4,2,0,107,105,1,0,0,0,107,108,1,0,0,
+	0,108,109,1,0,0,0,109,110,5,6,0,0,110,148,1,0,0,0,111,112,5,14,0,0,112,
+	113,5,56,0,0,113,114,5,2,0,0,114,115,3,24,12,0,115,116,5,15,0,0,116,119,
+	3,24,12,0,117,118,5,15,0,0,118,120,3,24,12,0,119,117,1,0,0,0,119,120,1,
+	0,0,0,120,121,1,0,0,0,121,122,5,5,0,0,122,123,3,4,2,0,123,124,5,6,0,0,124,
+	148,1,0,0,0,125,126,5,14,0,0,126,127,3,20,10,0,127,128,5,16,0,0,128,129,
+	3,22,11,0,129,130,5,5,0,0,130,131,3,4,2,0,131,132,5,6,0,0,132,148,1,0,0,
+	0,133,134,5,17,0,0,134,135,3,16,8,0,135,136,3,36,18,0,136,148,1,0,0,0,137,
+	138,5,18,0,0,138,139,5,17,0,0,139,140,5,56,0,0,140,148,3,36,18,0,141,142,
+	5,18,0,0,142,145,3,8,4,0,143,144,5,2,0,0,144,146,3,22,11,0,145,143,1,0,
+	0,0,145,146,1,0,0,0,146,148,1,0,0,0,147,66,1,0,0,0,147,67,1,0,0,0,147,71,
+	1,0,0,0,147,72,1,0,0,0,147,73,1,0,0,0,147,74,1,0,0,0,147,76,1,0,0,0,147,
+	80,1,0,0,0,147,86,1,0,0,0,147,91,1,0,0,0,147,111,1,0,0,0,147,125,1,0,0,
+	0,147,133,1,0,0,0,147,137,1,0,0,0,147,141,1,0,0,0,148,7,1,0,0,0,149,150,
+	5,56,0,0,150,156,3,10,5,0,151,152,5,15,0,0,152,153,5,56,0,0,153,155,3,10,
+	5,0,154,151,1,0,0,0,155,158,1,0,0,0,156,154,1,0,0,0,156,157,1,0,0,0,157,
+	9,1,0,0,0,158,156,1,0,0,0,159,160,5,19,0,0,160,161,5,56,0,0,161,163,5,20,
+	0,0,162,159,1,0,0,0,162,163,1,0,0,0,163,11,1,0,0,0,164,166,5,21,0,0,165,
+	167,3,22,11,0,166,165,1,0,0,0,166,167,1,0,0,0,167,169,1,0,0,0,168,170,5,
+	1,0,0,169,168,1,0,0,0,169,170,1,0,0,0,170,13,1,0,0,0,171,172,5,22,0,0,172,
+	173,5,56,0,0,173,174,5,22,0,0,174,15,1,0,0,0,175,180,5,56,0,0,176,177,5,
+	26,0,0,177,179,5,56,0,0,178,176,1,0,0,0,179,182,1,0,0,0,180,178,1,0,0,0,
+	180,181,1,0,0,0,181,185,1,0,0,0,182,180,1,0,0,0,183,184,5,38,0,0,184,186,
+	5,56,0,0,185,183,1,0,0,0,185,186,1,0,0,0,186,17,1,0,0,0,187,192,3,26,13,
+	0,188,189,5,15,0,0,189,191,3,26,13,0,190,188,1,0,0,0,191,194,1,0,0,0,192,
+	190,1,0,0,0,192,193,1,0,0,0,193,19,1,0,0,0,194,192,1,0,0,0,195,200,5,56,
+	0,0,196,197,5,15,0,0,197,199,5,56,0,0,198,196,1,0,0,0,199,202,1,0,0,0,200,
+	198,1,0,0,0,200,201,1,0,0,0,201,21,1,0,0,0,202,200,1,0,0,0,203,208,3,24,
+	12,0,204,205,5,15,0,0,205,207,3,24,12,0,206,204,1,0,0,0,207,210,1,0,0,0,
+	208,206,1,0,0,0,208,209,1,0,0,0,209,23,1,0,0,0,210,208,1,0,0,0,211,212,
+	6,12,-1,0,212,224,5,23,0,0,213,224,5,24,0,0,214,224,5,25,0,0,215,224,3,
+	48,24,0,216,224,3,50,25,0,217,224,5,54,0,0,218,224,3,34,17,0,219,224,3,
+	28,14,0,220,224,3,40,20,0,221,222,7,0,0,0,222,224,3,24,12,8,223,211,1,0,
+	0,0,223,213,1,0,0,0,223,214,1,0,0,0,223,215,1,0,0,0,223,216,1,0,0,0,223,
+	217,1,0,0,0,223,218,1,0,0,0,223,219,1,0,0,0,223,220,1,0,0,0,223,221,1,0,
+	0,0,224,251,1,0,0,0,225,226,10,9,0,0,226,227,5,52,0,0,227,250,3,24,12,9,
+	228,229,10,7,0,0,229,230,7,1,0,0,230,250,3,24,12,8,231,232,10,6,0,0,232,
+	233,7,2,0,0,233,250,3,24,12,7,234,235,10,5,0,0,235,236,5,50,0,0,236,250,
+	3,24,12,5,237,238,10,4,0,0,238,239,7,3,0,0,239,250,3,24,12,5,240,241,10,
+	3,0,0,241,242,5,41,0,0,242,250,3,24,12,4,243,244,10,2,0,0,244,245,5,42,
+	0,0,245,250,3,24,12,3,246,247,10,1,0,0,247,248,7,4,0,0,248,250,3,24,12,
+	2,249,225,1,0,0,0,249,228,1,0,0,0,249,231,1,0,0,0,249,234,1,0,0,0,249,237,
+	1,0,0,0,249,240,1,0,0,0,249,243,1,0,0,0,249,246,1,0,0,0,250,253,1,0,0,0,
+	251,249,1,0,0,0,251,252,1,0,0,0,252,25,1,0,0,0,253,251,1,0,0,0,254,265,
+	5,56,0,0,255,262,3,28,14,0,256,257,5,47,0,0,257,258,3,24,12,0,258,259,5,
+	48,0,0,259,263,1,0,0,0,260,261,5,26,0,0,261,263,5,56,0,0,262,256,1,0,0,
+	0,262,260,1,0,0,0,263,265,1,0,0,0,264,254,1,0,0,0,264,255,1,0,0,0,265,27,
+	1,0,0,0,266,275,5,56,0,0,267,268,5,47,0,0,268,269,3,24,12,0,269,270,5,48,
+	0,0,270,274,1,0,0,0,271,272,5,26,0,0,272,274,5,56,0,0,273,267,1,0,0,0,273,
+	271,1,0,0,0,274,277,1,0,0,0,275,273,1,0,0,0,275,276,1,0,0,0,276,305,1,0,
+	0,0,277,275,1,0,0,0,278,287,3,30,15,0,279,280,5,47,0,0,280,281,3,24,12,
+	0,281,282,5,48,0,0,282,286,1,0,0,0,283,284,5,26,0,0,284,286,5,56,0,0,285,
+	279,1,0,0,0,285,283,1,0,0,0,286,289,1,0,0,0,287,285,1,0,0,0,287,288,1,0,
+	0,0,288,305,1,0,0,0,289,287,1,0,0,0,290,291,5,30,0,0,291,292,3,24,12,0,
+	292,301,5,31,0,0,293,294,5,47,0,0,294,295,3,24,12,0,295,296,5,48,0,0,296,
+	300,1,0,0,0,297,298,5,26,0,0,298,300,5,56,0,0,299,293,1,0,0,0,299,297,1,
+	0,0,0,300,303,1,0,0,0,301,299,1,0,0,0,301,302,1,0,0,0,302,305,1,0,0,0,303,
+	301,1,0,0,0,304,266,1,0,0,0,304,278,1,0,0,0,304,290,1,0,0,0,305,29,1,0,
+	0,0,306,307,6,15,-1,0,307,316,5,56,0,0,308,309,5,47,0,0,309,310,3,24,12,
+	0,310,311,5,48,0,0,311,315,1,0,0,0,312,313,5,26,0,0,313,315,5,56,0,0,314,
+	308,1,0,0,0,314,312,1,0,0,0,315,318,1,0,0,0,316,314,1,0,0,0,316,317,1,0,
+	0,0,317,319,1,0,0,0,318,316,1,0,0,0,319,370,3,32,16,0,320,321,5,30,0,0,
+	321,322,3,24,12,0,322,331,5,31,0,0,323,324,5,47,0,0,324,325,3,24,12,0,325,
+	326,5,48,0,0,326,330,1,0,0,0,327,328,5,26,0,0,328,330,5,56,0,0,329,323,
+	1,0,0,0,329,327,1,0,0,0,330,333,1,0,0,0,331,329,1,0,0,0,331,332,1,0,0,0,
+	332,334,1,0,0,0,333,331,1,0,0,0,334,335,3,32,16,0,335,370,1,0,0,0,336,345,
+	5,56,0,0,337,338,5,47,0,0,338,339,3,24,12,0,339,340,5,48,0,0,340,344,1,
+	0,0,0,341,342,5,26,0,0,342,344,5,56,0,0,343,337,1,0,0,0,343,341,1,0,0,0,
+	344,347,1,0,0,0,345,343,1,0,0,0,345,346,1,0,0,0,346,348,1,0,0,0,347,345,
+	1,0,0,0,348,349,5,38,0,0,349,350,5,56,0,0,350,370,3,32,16,0,351,352,5,30,
+	0,0,352,353,3,24,12,0,353,362,5,31,0,0,354,355,5,47,0,0,355,356,3,24,12,
+	0,356,357,5,48,0,0,357,361,1,0,0,0,358,359,5,26,0,0,359,361,5,56,0,0,360,
+	354,1,0,0,0,360,358,1,0,0,0,361,364,1,0,0,0,362,360,1,0,0,0,362,363,1,0,
+	0,0,363,365,1,0,0,0,364,362,1,0,0,0,365,366,5,38,0,0,366,367,5,56,0,0,367,
+	368,3,32,16,0,368,370,1,0,0,0,369,306,1,0,0,0,369,320,1,0,0,0,369,336,1,
+	0,0,0,369,351,1,0,0,0,370,401,1,0,0,0,371,380,10,5,0,0,372,373,5,47,0,0,
+	373,374,3,24,12,0,374,375,5,48,0,0,375,379,1,0,0,0,376,377,5,26,0,0,377,
+	379,5,56,0,0,378,372,1,0,0,0,378,376,1,0,0,0,379,382,1,0,0,0,380,378,1,
+	0,0,0,380,381,1,0,0,0,381,383,1,0,0,0,382,380,1,0,0,0,383,400,3,32,16,0,
+	384,393,10,2,0,0,385,386,5,47,0,0,386,387,3,24,12,0,387,388,5,48,0,0,388,
+	392,1,0,0,0,389,390,5,26,0,0,390,392,5,56,0,0,391,385,1,0,0,0,391,389,1,
+	0,0,0,392,395,1,0,0,0,393,391,1,0,0,0,393,394,1,0,0,0,394,396,1,0,0,0,395,
+	393,1,0,0,0,396,397,5,38,0,0,397,398,5,56,0,0,398,400,3,32,16,0,399,371,
+	1,0,0,0,399,384,1,0,0,0,400,403,1,0,0,0,401,399,1,0,0,0,401,402,1,0,0,0,
+	402,31,1,0,0,0,403,401,1,0,0,0,404,406,5,30,0,0,405,407,3,22,11,0,406,405,
+	1,0,0,0,406,407,1,0,0,0,407,408,1,0,0,0,408,412,5,31,0,0,409,412,3,40,20,
+	0,410,412,3,50,25,0,411,404,1,0,0,0,411,409,1,0,0,0,411,410,1,0,0,0,412,
+	33,1,0,0,0,413,414,5,17,0,0,414,415,3,36,18,0,415,35,1,0,0,0,416,417,5,
+	30,0,0,417,418,3,38,19,0,418,419,5,31,0,0,419,420,3,4,2,0,420,421,5,6,0,
+	0,421,37,1,0,0,0,422,425,3,20,10,0,423,424,5,15,0,0,424,426,5,54,0,0,425,
+	423,1,0,0,0,425,426,1,0,0,0,426,430,1,0,0,0,427,430,5,54,0,0,428,430,1,
+	0,0,0,429,422,1,0,0,0,429,427,1,0,0,0,429,428,1,0,0,0,430,39,1,0,0,0,431,
+	433,5,45,0,0,432,434,3,42,21,0,433,432,1,0,0,0,433,434,1,0,0,0,434,435,
+	1,0,0,0,435,436,5,46,0,0,436,41,1,0,0,0,437,443,3,44,22,0,438,439,3,46,
+	23,0,439,440,3,44,22,0,440,442,1,0,0,0,441,438,1,0,0,0,442,445,1,0,0,0,
+	443,441,1,0,0,0,443,444,1,0,0,0,444,447,1,0,0,0,445,443,1,0,0,0,446,448,
+	3,46,23,0,447,446,1,0,0,0,447,448,1,0,0,0,448,43,1,0,0,0,449,450,5,47,0,
+	0,450,451,3,24,12,0,451,452,5,48,0,0,452,453,5,2,0,0,453,454,3,24,12,0,
+	454,460,1,0,0,0,455,456,5,56,0,0,456,457,5,2,0,0,457,460,3,24,12,0,458,
+	460,3,24,12,0,459,449,1,0,0,0,459,455,1,0,0,0,459,458,1,0,0,0,460,45,1,
+	0,0,0,461,462,7,5,0,0,462,47,1,0,0,0,463,468,5,60,0,0,464,468,5,61,0,0,
+	465,468,5,62,0,0,466,468,5,63,0,0,467,463,1,0,0,0,467,464,1,0,0,0,467,465,
+	1,0,0,0,467,466,1,0,0,0,468,49,1,0,0,0,469,473,5,57,0,0,470,473,5,58,0,
+	0,471,473,5,59,0,0,472,469,1,0,0,0,472,470,1,0,0,0,472,471,1,0,0,0,473,
+	51,1,0,0,0,53,60,64,102,107,119,145,147,156,162,166,169,180,185,192,200,
+	208,223,249,251,262,264,273,275,285,287,299,301,304,314,316,329,331,343,
+	345,360,362,369,378,380,391,393,399,401,406,411,425,429,433,443,447,459,
+	467,472];
 
 	private static __ATN: ATN;
 	public static get _ATN(): ATN {
@@ -3297,17 +3267,11 @@ export class RetstatContext extends ParserRuleContext {
 	public RETURN(): TerminalNode {
 		return this.getToken(LuaParser.RETURN, 0);
 	}
-	public BREAK(): TerminalNode {
-		return this.getToken(LuaParser.BREAK, 0);
-	}
-	public CONTINUE(): TerminalNode {
-		return this.getToken(LuaParser.CONTINUE, 0);
+	public explist(): ExplistContext {
+		return this.getTypedRuleContext(ExplistContext, 0) as ExplistContext;
 	}
 	public SEMI(): TerminalNode {
 		return this.getToken(LuaParser.SEMI, 0);
-	}
-	public explist(): ExplistContext {
-		return this.getTypedRuleContext(ExplistContext, 0) as ExplistContext;
 	}
     public get ruleIndex(): number {
     	return LuaParser.RULE_retstat;
