@@ -862,7 +862,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
       list_params.size() > 0 &&
       (list_params.get(list_params.size()) as StringValue).string === '...';
     const list_args = flattenList(args);
-    return this.scoped(() => {
+    const previousScope = this.currentScope;
+    this.currentScope = VisibilityScope.childOf(f.scope());
+    try {
       let i = 1;
       for (; i <= list_params.size() - (hasVarargs ? 1 : 0); i++) {
         this.currentScope.setLocal(
@@ -883,7 +885,9 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         return (f as FunctionValue).body().accept(this);
       });
       return result;
-    });
+    } finally {
+      this.currentScope = previousScope;
+    }
   }
 
   private exec_ext_function(
@@ -1156,7 +1160,11 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
   visitFuncbody = (ctx: FuncbodyContext): Value => {
     const parameters = ctx.parlist().accept(this);
     const block = ctx.block();
-    return new FunctionValue(parameters as InternalListValue, block);
+    return new FunctionValue(
+      parameters as InternalListValue,
+      block,
+      this.currentScope
+    );
   };
 
   visitParlist_namellist = (ctx: Parlist_namellistContext): Value => {

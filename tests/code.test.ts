@@ -92,6 +92,30 @@ const samples: [string, string, any[]][] = [
         `,
     [2, 4, 6, 8, 10],
   ],
+  [
+    'counter with closures',
+    `
+        function createCounter()
+            local value = 0
+            return function ()
+                value = value + 1
+                return value
+            end
+        end
+        
+        local value = 42
+        local counter1 = createCounter()
+        local counter2 = createCounter()
+        
+        a = counter1()
+        b = counter2()
+        c = counter2()
+        d = counter2()
+        
+        return value, a, b, c, d
+        `,
+    [42, 1, 1, 2, 3],
+  ],
 ];
 
 test.each(samples)('%s', (name, input, output) => {
