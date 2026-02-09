@@ -1,5 +1,6 @@
 import { BlockContext } from '../parser/LuaParser';
 import LuaInterpreter from './LuaInterpreter';
+import VisibilityScope from './VisibilityScope';
 
 abstract class Value {
   abstract asIdString(): string;
@@ -187,12 +188,18 @@ class FunctionValue extends Value {
   private readonly uuid: string;
   private readonly parameters: InternalListValue;
   private readonly block: BlockContext;
+  private readonly definingScope: VisibilityScope;
 
-  constructor(parameters: InternalListValue, block: BlockContext) {
+  constructor(
+    parameters: InternalListValue,
+    block: BlockContext,
+    definingScope: VisibilityScope
+  ) {
     super();
     this.uuid = crypto.randomUUID();
     this.parameters = parameters;
     this.block = block;
+    this.definingScope = definingScope;
   }
 
   body(): BlockContext {
@@ -201,6 +208,10 @@ class FunctionValue extends Value {
 
   params(): InternalListValue {
     return this.parameters;
+  }
+
+  scope(): VisibilityScope {
+    return this.definingScope;
   }
 
   asIdString(): string {
