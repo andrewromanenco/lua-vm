@@ -4,6 +4,7 @@ import LuaInterpreter from './LuaInterpreter';
 abstract class Value {
   abstract asIdString(): string;
   abstract toString(): string;
+  abstract getMetatable(): TableValue | NilValue;
 }
 
 class NilValue extends Value {
@@ -13,6 +14,10 @@ class NilValue extends Value {
 
   toString(): string {
     return 'nil';
+  }
+
+  getMetatable(): TableValue | NilValue {
+    return new NilValue();
   }
 }
 
@@ -40,6 +45,10 @@ class NumberValue extends Value {
   toString(): string {
     return this._number.toString();
   }
+
+  getMetatable(): TableValue | NilValue {
+    return new NilValue();
+  }
 }
 
 class StringValue extends Value {
@@ -66,12 +75,18 @@ class StringValue extends Value {
   toString(): string {
     return this._str;
   }
+
+  getMetatable(): TableValue | NilValue {
+    return new NilValue();
+  }
 }
 
 class TableValue extends Value {
   private readonly uuid = crypto.randomUUID();
   // ref to key mapped to [key, value]
   private readonly _table: Map<string, Value[]> = new Map<string, Value[]>();
+
+  private _metatable: TableValue | NilValue = new NilValue();
 
   get(key: Value): Value {
     const value = this._table.get(key.asIdString());
@@ -108,6 +123,14 @@ class TableValue extends Value {
 
   toString(): string {
     return this.asIdString();
+  }
+
+  setMetatable(metatable: TableValue | NilValue) {
+    this._metatable = metatable;
+  }
+
+  getMetatable(): TableValue | NilValue {
+    return this._metatable;
   }
 
   size(): number {
@@ -154,6 +177,10 @@ class BooleanValue extends Value {
   toString(): string {
     return this.value.toString();
   }
+
+  getMetatable(): TableValue | NilValue {
+    return new NilValue();
+  }
 }
 
 class FunctionValue extends Value {
@@ -182,6 +209,10 @@ class FunctionValue extends Value {
 
   toString(): string {
     return this.asIdString();
+  }
+
+  getMetatable(): TableValue | NilValue {
+    return new NilValue();
   }
 }
 
@@ -224,6 +255,10 @@ class InternalListValue extends Value {
   toString(): string {
     throw new Error('Not implemented');
   }
+
+  getMetatable(): TableValue | NilValue {
+    throw new Error('Not implemented');
+  }
 }
 
 class InternalPairValue extends Value {
@@ -263,6 +298,10 @@ class InternalPairValue extends Value {
   toString(): string {
     throw new Error('Not implemented');
   }
+
+  getMetatable(): TableValue | NilValue {
+    throw new Error('Not implemented');
+  }
 }
 
 class InternalVar extends Value {
@@ -284,6 +323,10 @@ class InternalVar extends Value {
   toString(): string {
     throw new Error('Not implemented');
   }
+
+  getMetatable(): TableValue | NilValue {
+    throw new Error('Not implemented');
+  }
 }
 
 class InterpreterValue extends Value {
@@ -302,6 +345,10 @@ class InterpreterValue extends Value {
   }
   toString(): string {
     throw new Error('Method not implemented.');
+  }
+
+  getMetatable(): TableValue | NilValue {
+    throw new Error('Not implemented');
   }
 }
 
