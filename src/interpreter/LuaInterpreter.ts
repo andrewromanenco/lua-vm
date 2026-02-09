@@ -1121,7 +1121,7 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
     }
 
     table.setMetatable(metatable);
-    return new NilValue();
+    return metatable;
   }
 
   exec_getmetatable(list_args: InternalListValue) {

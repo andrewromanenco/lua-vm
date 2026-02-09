@@ -19,14 +19,15 @@ describe('metatable', () => {
         meta.__pow = function() return "pow"; end
         meta.__unm = function() return "unm"; end
         meta.__idiv = function() return "idiv"; end
-        
+
         a = { id = "a" }
-        setmetatable(a, meta)
+        returned_table_ref = setmetatable(a, meta)
+        same_ref = meta == returned_table_ref
         b = { id = "b" }
         setmetatable(b, meta)
         c = { id = "c" }
         -- c without metatable
-        
+
         r1 = a + b
         r2 = 1 - b
         r3 = a * 2
@@ -47,6 +48,7 @@ describe('metatable', () => {
     expectToBeString(result.globalVar('r6'), 'pow');
     expectToBeString(result.globalVar('r7'), 'unm');
     expectToBeString(result.globalVar('r8'), 'idiv');
+    expectToBeBool(result.globalVar('same_ref'), true);
   });
 
   test('bitwise', () => {
@@ -58,12 +60,12 @@ describe('metatable', () => {
         meta.__shl = function() return "shl"; end
         meta.__shr = function() return "shr"; end
         meta.__bnot = function() return "bnot"; end
-        
+
         a = { id = "a" }
         setmetatable(a, meta)
         b = { id = "b" }
         setmetatable(b, meta)
-        
+
         r1 = a & b
         r2 = a | 3.14
         r3 = 7 ~ b
@@ -89,12 +91,12 @@ describe('metatable', () => {
         meta.__eq = function() log = log .. "eq"; return "eq"; end
         meta.__lt = function() log = log .. "lt"; return nil; end
         meta.__le = function() log = log .. "le"; return false; end
-        
+
         a = { id = "a" }
         setmetatable(a, meta)
         b = { id = "b" }
         setmetatable(b, meta)
-        
+
         r1 = a == b
         r2 = a < b
         r3 = a <= b
@@ -122,15 +124,15 @@ describe('metatable', () => {
             end
         }
         setmetatable(t, meta)
-        
+
         r1 = t.a
         r2 = t.b
         r3 = t.c
-        
+
         t2 = {}
         meta2 = { __index = { x = 10, y = 20 } }
         setmetatable(t2, meta2)
-        
+
         r4 = t2.x
         r5 = t2.z
 
@@ -165,18 +167,18 @@ describe('metatable', () => {
             end
         }
         setmetatable(t, meta)
-        
+
         t.a = 10
         t.b = 20
         t.c = "val"
-        
+
         r1 = t.a
         r2 = t.b
-        
+
         t2 = {}
         target = {}
         setmetatable(t2, { __newindex = target })
-        
+
         t2.foo = "bar"
         r3 = target.foo
         r4 = t2.foo
@@ -209,9 +211,9 @@ describe('metatable', () => {
             end
         }
         setmetatable(t, meta)
-        
+
         r1 = t(1, 2)
-        
+
         t2 = {}
         meta2 = {
             __call = function(table, a, b)
@@ -225,10 +227,10 @@ describe('metatable', () => {
         log = ""
         t_base = {}
         setmetatable(t_base, { __call = function(s, val) log = log .. "called"; end })
-        
+
         t_rec = {}
         setmetatable(t_rec, { __call = t_base })
-        
+
         t_rec("A")
     `;
 
@@ -244,12 +246,12 @@ describe('metatable', () => {
         meta = { }
         meta.__concat = function() return "concat"; end
         meta.__len = function() return "len"; end
-        
+
         a = { id = "a" }
         setmetatable(a, meta)
         b = { id = "b" }
         setmetatable(b, meta)
-        
+
         r1 = a .. b
         r2 = a .. "x"
         r3 = 1 .. b
