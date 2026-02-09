@@ -44,7 +44,6 @@ This strict separation ensures **safe and predictable behavior** in embedded con
 ### Limitations
 - Unsupported Features:
 	- userdata, thread, and coroutines
-	- Metatables
 	- Attributes
 
 ##  Concept
