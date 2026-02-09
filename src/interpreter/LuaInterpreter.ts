@@ -391,12 +391,6 @@ export default class LuaInterpreter extends LuaParserVisitor<Value> {
         }
       }
       throw ReturnStmt.withList(resultList);
-    } else if (ctx.CONTINUE()) {
-      throw new NotYetImplemented(
-        'continue is not supported in Lua',
-        ctx,
-        'N003'
-      );
     } else {
       throw new RuntimeError(
         "This 'break' should not happen; open an issue on GitHub",
